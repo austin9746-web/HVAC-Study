@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0c0e12">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
+<title>HVAC/R Adv. Refrigeration — Study Tool</title>
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--accent2:#2d7dd2;--ok:#34d399;--ok-bg:rgba(52,211,153,.08);--no:#f87171;--no-bg:rgba(248,113,113,.08);--warn:#fbbf24;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:880px;margin:0 auto;padding:16px}
+.start{text-align:center;padding:48px 16px}
+.start h1{font-size:2.2em;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.start .sub{color:var(--text2);margin-bottom:32px}
+.stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.sb{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 22px;min-width:110px}
+.sb .v{font-size:1.7em;font-weight:700;color:var(--accent)}
+.sb .l{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.modes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.mb{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px 20px;cursor:pointer;text-align:left;min-width:220px;transition:.2s}
+.mb:hover{border-color:var(--accent);background:var(--card2)}
+.mb.on{border-color:var(--accent);background:rgba(74,158,255,.06)}
+.mb h3{font-size:.95em;margin-bottom:2px}
+.mb p{font-size:.78em;color:var(--text2)}
+.go{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:12px 44px;font-size:1.05em;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;margin-top:8px}
+.go:hover{background:var(--accent2);transform:translateY(-1px)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;margin-bottom:0;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
+.hdr .t{font-size:.85em;font-weight:600;color:var(--text2)}
+.hdr .pi{font-size:.82em;color:var(--text2);font-family:monospace}
+
+/* === SCORE BAR === */
+.score-bar{display:flex;align-items:center;gap:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin:10px 0;overflow:hidden;min-height:48px}
+.score-bar .sc-section{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 16px;min-width:70px;border-right:1px solid var(--border)}
+.score-bar .sc-section:last-child{border-right:none}
+.score-bar .sc-val{font-size:1.2em;font-weight:700;font-family:monospace;line-height:1.2}
+.score-bar .sc-lbl{font-size:.62em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);line-height:1.2}
+.sc-pct-wrap{flex:1;padding:8px 16px;display:flex;align-items:center;gap:12px;min-width:120px}
+.sc-pct-bar{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;position:relative}
+.sc-pct-fill{height:100%;border-radius:4px;transition:width .4s,background .3s}
+.sc-pct-num{font-size:1.3em;font-weight:700;font-family:monospace;min-width:52px;text-align:right}
+.score-bar.exam-mode{opacity:.5;filter:blur(3px);pointer-events:none;user-select:none}
+.score-bar.no-data .sc-val{color:var(--text2)}
+@media(max-width:500px){.score-bar .sc-section{padding:6px 10px;min-width:54px}.score-bar .sc-val{font-size:1em}.sc-pct-wrap{padding:6px 10px}.sc-pct-num{font-size:1.1em;min-width:44px}}
+
+.pb{height:4px;background:var(--card2);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));border-radius:2px;transition:width .4s}
+.qc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:14px}
+.qm{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.qn{font-family:monospace;font-size:.8em;font-weight:600;color:var(--accent);background:rgba(74,158,255,.1);padding:3px 9px;border-radius:6px}
+.qt{font-size:.75em;color:var(--text2);background:var(--card2);padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+.qp{font-size:.75em;color:var(--warn);margin-left:auto;font-weight:600}
+.qq{font-size:1.05em;line-height:1.6;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.op{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--card2);border:2px solid transparent;border-radius:8px;cursor:pointer;transition:.15s;font-size:.92em;line-height:1.5}
+.op:hover{border-color:var(--border);background:#252a35}
+.op.sel{border-color:var(--accent);background:rgba(74,158,255,.05)}
+.op.cor{border-color:var(--ok);background:var(--ok-bg)}
+.op.wrg{border-color:var(--no);background:var(--no-bg)}
+.op.shw{border-color:var(--ok);background:var(--ok-bg)}
+.op.dis{cursor:default}
+.ol{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.75em;font-weight:600;color:var(--text2);transition:.15s}
+.op.sel .ol{background:var(--accent);color:#fff}
+.op.cor .ol{background:var(--ok);color:#000}
+.op.wrg .ol{background:var(--no);color:#fff}
+.op.shw .ol{background:var(--ok);color:#000}
+.ot{padding-top:2px;flex:1}
+.ex-box{margin-top:8px;padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5;color:var(--text)}
+.ex-box.ex-ok{border-left-color:var(--ok);background:var(--ok-bg)}
+.ex-box.ex-no{border-left-color:var(--no);background:var(--no-bg)}
+.ti{width:100%;background:var(--card2);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:.92em;resize:vertical;min-height:44px}
+.ti:focus{outline:none;border-color:var(--accent)}
+.hint{background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.2);border-radius:8px;padding:12px 14px;margin-top:10px}
+.hint .hl{font-size:.75em;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.hint .ht{font-size:.88em;line-height:1.5}
+.fill-exps{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fill-exp{padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5}
+.nav{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.nb{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 18px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;font-weight:500}
+.nb:hover{background:var(--card2);border-color:var(--text2)}
+.nb.pr{background:var(--accent);border-color:var(--accent);color:#fff}
+.nb.pr:hover{background:var(--accent2)}
+.nb:disabled{opacity:.3;cursor:not-allowed}
+.nc{display:flex;gap:6px;align-items:center}
+.ck{background:var(--warn);border:none;color:#000;font-weight:600}
+.ck:hover{background:#e5a900}
+.gt{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);cursor:pointer;font-size:.8em;font-family:inherit;transition:.15s}
+.gt:hover{border-color:var(--text2);color:var(--text)}
+.gp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:3px}
+.gd{width:100%;aspect-ratio:1;border-radius:5px;border:1px solid var(--border);background:var(--card2);cursor:pointer;font-size:.7em;font-weight:600;display:flex;align-items:center;justify-content:center;transition:.15s;color:var(--text2)}
+.gd:hover{border-color:var(--text2)}
+.gd.cur{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 2px rgba(74,158,255,.15)}
+.gd.ans{background:rgba(74,158,255,.12);border-color:var(--accent);color:var(--accent)}
+.gd.gc{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.gd.gw{background:var(--no-bg);border-color:var(--no);color:var(--no)}
+.res{text-align:center;padding:32px 16px}
+.res h2{font-size:1.8em;margin-bottom:6px}
+.sc{width:160px;height:160px;border-radius:50%;border:5px solid var(--ok);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px auto}
+.sc .pct{font-size:2.8em;font-weight:700}
+.sc .of{font-size:.82em;color:var(--text2)}
+.rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:20px 0}
+.rs{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.rs .rv{font-size:1.4em;font-weight:700}
+.rs .rl{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.ra{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.ft{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.fb{padding:5px 12px;border-radius:18px;border:1px solid var(--border);background:none;color:var(--text2);font-size:.8em;cursor:pointer;font-family:inherit;transition:.15s}
+.fb.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fb:hover{border-color:var(--text2)}
+.disclaimer{margin-top:12px;font-size:.75em;color:var(--text2);opacity:.7}
+@media(max-width:600px){.app{padding:8px}.qc{padding:16px}.start h1{font-size:1.5em}.mb{min-width:100%}.gr{grid-template-columns:repeat(auto-fill,minmax(30px,1fr))}}
+
+/* Back to hub button */
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;text-decoration:none;display:flex;align-items:center;gap:5px;transition:.2s}
+.back-btn:hover{border-color:var(--accent);color:var(--text);background:var(--card2)}
+/* Print results button */
+.print-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 22px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.print-btn:hover{border-color:var(--accent);background:var(--card2)}
+@media print{.back-btn,.fab-container,.calc-overlay,.ref-overlay,.nav,.hdr,.go,.modes,.timer-toggle,.stats-history,.print-btn,.nb{display:none!important}.app{padding:0}.qc{break-inside:avoid;border:1px solid #ccc;margin:8px 0}.start{display:none}.res,.opts,.qc{display:block!important}body{background:#fff;color:#000}.score-bar,.pb{display:none}:root{--card:#fff;--card2:#f5f5f5;--border:#ddd;--text:#000;--text2:#666;--ok:#22c55e;--no:#dc2626;--accent:#2563eb}}
+</style>
+</head>
+<body>
+<a href="index.html" class="back-btn">← Study Hub</a>
+<div class="app" id="app"></div>
+<script>
+const Q=[{n:1,p:2,t:'mc',q:'The high side of the vapor compression cycle contains the:',o:['Condenser','Evaporator','Suction accumulator','Condenser and evaporator'],a:0,ex:['CORRECT — Condenser','Incorrect. Correct: Condenser','Incorrect. Correct: Condenser','Incorrect. Correct: Condenser']},
+{n:2,p:2,t:'mc',q:'A shaft seal is required in:',o:['A hermetic compressor','A semi-hermetic compressor','An open type compressor','Tin can type compressor'],a:2,ex:['CORRECT — The condenser is on the high side (high pressure/temperature) of the vapor compression cycle, receiving hot discharge gas from the compressor and rejecting heat to condense it back to liquid.','Incorrect. The evaporator is on the low side — it operates at low pressure and absorbs heat.','Incorrect. The suction accumulator is on the low side, installed in the suction line before the compressor.','Incorrect. Only the condenser is on the high side. The evaporator is on the low side separated by the metering device.']},
+{n:3,p:2,t:'mc',q:'The suction pressure in a compressor is 68 psig and the discharge pressure is 225 psig.  What is the compression ratio?',o:['3 to 1','2.9 to 1','5.8 to 1','2.3 to 1'],a:1,ex:['Incorrect. A hermetic compressor has the motor sealed inside a welded shell — no shaft exits the housing, so no shaft seal is needed.','Incorrect. A semi-hermetic has the motor inside a bolted housing — the shaft doesn\'t exit, so no seal is needed.','CORRECT — An open type compressor has an external motor connected by a shaft that penetrates the compressor housing. A shaft seal is required at this penetration point to prevent refrigerant leakage.','Incorrect. \'Tin can type\' is slang for a hermetic compressor, which has no external shaft.']},
+{n:4,p:2,t:'mc',q:'What is the latent heat of vaporization for water at standard atmospheric pressure?',o:['144 Btu’s/lb','180 Btu’s/lb','970.4 Btu’s/lb','180 Btu’s'],a:2,ex:['Incorrect. To get 3:1 you would need different pressures. Remember: always convert to absolute pressure first by adding 14.7 to gauge readings.','CORRECT — Convert to absolute: suction = 68 + 14.7 = 82.7 psia, discharge = 225 + 14.7 = 239.7 psia. Compression ratio = 239.7 ÷ 82.7 = 2.9 to 1. Always use absolute pressure (psia) for compression ratio calculations.','Incorrect. 5.8:1 would result from dividing gauge pressures without converting to absolute: 225 ÷ 68 ≈ 3.3, not 5.8. This is far too high for normal operation.','Incorrect. 2.3:1 results from an arithmetic error. The correct calculation: (225 + 14.7) ÷ (68 + 14.7) = 239.7 ÷ 82.7 = 2.9:1.']},
+{n:5,p:2,t:'mc',q:'The purpose of a crankcase heater on a compressor is to:',o:['Keep the viscosity of the oil high so that it will flow easily','Keep the refrigerant boiled out of the oil','Carbonize the oil','Make starting of the compressor easier by reducing starting torque'],a:1,ex:['Incorrect. Heat actually reduces oil viscosity.','CORRECT. Refrigerant migrates to the cold crankcase during off cycles and dissolves in oil. The heater prevents this, avoiding liquid slugging on startup.','Incorrect. Carbonizing oil would damage the compressor.','Incorrect. The heater\'s purpose is about refrigerant migration, not starting torque.']},
+{n:6,p:2,t:'mc',q:'Moisture in a refrigeration system can cause:',o:['Acids','Freezing up of the TXV','Loss of heat transfer','All of the above'],a:3,ex:['Partially correct but incomplete — moisture causes more than just acids.','Partially correct but incomplete — moisture causes more than TXV freeze-up.','Partially correct but incomplete — moisture causes more than heat transfer loss.','CORRECT. Moisture causes acid formation (water + refrigerant), TXV freeze-up (ice blocks orifice), and reduced heat transfer. All three are serious.']},
+{n:7,p:2,t:'mc',q:'In a refrigeration system, the evaporator is the component:',o:['Where the refrigerant is squeezed together to a higher pressure','Where the refrigerant absorbs heat','Where the refrigerants heat is rejected','None of the above'],a:1,ex:['Incorrect. That describes the compressor.','CORRECT. The evaporator is the \'cold side\' heat exchanger where low-pressure liquid refrigerant boils and absorbs heat from the space.','Incorrect. That describes the condenser.','Incorrect. The evaporator absorbs heat.']},
+{n:8,p:2,t:'mc',q:'Refrigerant leaves the expansion valve as:',o:['A mixture of liquid and super-heated vapor','A mixture of liquid and saturated vapor','Sub-cooled liquid','Super-heated vapor'],a:1,ex:['Incorrect. The vapor portion is saturated, not superheated.','CORRECT. The rapid pressure drop causes flash gas — some liquid instantly vaporizes. The result is a two-phase saturated mixture entering the evaporator.','Incorrect. The pressure drop causes some liquid to flash to vapor.','Incorrect. There is still liquid present after the metering device.']},
+{n:9,p:2,t:'mc',q:'How many Btu’s does it require to do 1 ton of refrigeration?',o:['12,000 Btu’s/day','288,000 Btu’s/hr','12,000 Btu’s/hr','144 Btu’s'],a:2,ex:['Incorrect. Correct: 12,000 Btu’s/hr','Incorrect. Correct: 12,000 Btu’s/hr','CORRECT — 12,000 Btu’s/hr','Incorrect. Correct: 12,000 Btu’s/hr']},
+{n:10,p:2,t:'mc',q:'When a refrigerant is compressed its:',o:['Pressure goes up','Temperature goes up','Saturation point goes up','All of the above'],a:3,ex:['Incorrect. 12,000 Btu is per HOUR, not per day. Per day would be 288,000 Btu (12,000 × 24).','Incorrect. 288,000 Btu/hr is actually 288,000 Btu per DAY (12,000 × 24 hours), not per hour.','CORRECT — 1 ton of refrigeration = 12,000 Btu/hr. This is based on melting 2,000 lbs of ice in 24 hours: 2,000 lbs × 144 Btu/lb (latent heat of fusion) = 288,000 Btu/day ÷ 24 hrs = 12,000 Btu/hr.','Incorrect. 144 Btu is the latent heat of fusion for one pound of ice — the energy to melt 1 lb of ice at 32°F. One ton uses 12,000 Btu/hr.']},
+{n:11,p:2,t:'mc',q:'The purpose of the refrigerant distributor on an evaporator coil is to:',o:['Evenly distribute the superheated vapor to all the circuits of the coil','Evenly distribute the saturated liquid refrigerant to all the circuits of the coil','Provide a place for oil to accumulate','Evenly distribute the sub-cooled liquid to all the circuits of the coil'],a:1,ex:['Incorrect. The refrigerant at the distributor is not superheated.','CORRECT. After the TXV, refrigerant is a saturated mixture. The distributor splits this evenly among all evaporator circuits for uniform heat transfer.','Incorrect. The distributor is not designed for oil accumulation.','Incorrect. Refrigerant is saturated (not sub-cooled) after the TXV.']},
+{n:12,p:2,t:'mc',q:'What is the condenser responsible for:',o:['To reject heat from the refrigerant vapor so it can condense back to a liquid','To provide sub-cooling to the refrigerant liquid','To reject super-heat from the refrigerant vapor that was gained during the compression cycle','All of the above'],a:3,ex:['Partially correct but incomplete.','Partially correct but incomplete.','Partially correct but incomplete.','CORRECT. The condenser rejects superheat, condenses saturated vapor to liquid, AND provides subcooling — handling all high-side heat rejection.']},
+{n:13,p:2,t:'mc',q:'There is a definite relationship between the temperature and the pressure of a refrigerant as long as it is:',o:['Saturated','Sub-cooled','Super-heated','All of the above'],a:0,ex:['CORRECT — Saturated','Incorrect. Correct: Saturated','Incorrect. Correct: Saturated','Incorrect. Correct: Saturated']},
+{n:14,p:2,t:'mc',q:'How is the relatively high temperature liquid refrigerant cooled down to evaporator temperature?',o:['The liquid loses its temperature because of ambient conditions','The compressor takes the heat away by conduction','The liquid cools itself down by flashing because of the pressure drop','All of the above'],a:2,ex:['CORRECT — The P/T relationship only applies when the refrigerant is in the SATURATED (two-phase) state. At saturation, for every pressure there is one specific temperature and vice versa — this is what PT charts show.','Incorrect. Sub-cooled liquid is below the saturation temperature at that pressure. You need BOTH pressure and temperature to define its state — the PT chart alone won\'t work.','Incorrect. Superheated vapor is above the saturation temperature at that pressure. Like sub-cooled, you need both pressure and temperature — the PT relationship doesn\'t apply directly.','Incorrect. Only saturated refrigerant has a definite PT relationship. Sub-cooled and superheated states require knowing both pressure and temperature independently.']},
+{n:15,p:2,t:'mc',q:'What is Phosgene gas?',o:['The gas created by the compressor during the refrigerant compression','A poisonous gas created by burning halocarbon refrigerants','The odor in this room after lunch','None of the above'],a:1,ex:['Incorrect. Ambient conditions don\'t cool the liquid — the liquid is already warmer than its target evaporating temperature.','Incorrect. The compressor is a vapor pump on the suction side — it doesn\'t directly cool liquid by conduction.','CORRECT — When high-pressure liquid passes through the metering device, the sudden pressure drop causes part of the liquid to instantly vaporize (flash). This flash gas absorbs heat from the remaining liquid, cooling the entire mixture down to the evaporator temperature. This is the flash cooling effect.','Incorrect. Only the pressure-drop flashing effect is responsible for the temperature reduction.']},
+{n:16,p:2,t:'mc',q:'The primary responsibility(ies) of the compressor is to;',o:['create flow by acting as a vapor pump','pump the liquid refrigerant through the system','keep the evaporator pressure down','all of the above are correct','both a and c are correct','none of the above are correct'],a:4,ex:['Incorrect. Correct: both a and c are correct','Incorrect. Correct: both a and c are correct','Incorrect. Correct: both a and c are correct','Incorrect. Correct: both a and c are correct','CORRECT — both a and c are correct','Incorrect. Correct: both a and c are correct']},
+{n:17,p:2,t:'mc',q:'A chiller is designed to;',o:['cool liquids','cool fluids','condition the air','filter the air'],a:0,ex:['Partially correct but \'fluids\' is a better term.','CORRECT. Chillers cool fluids (water, glycol, brine) — not air directly. The chilled fluid is pumped to air handlers to cool air indirectly.','Incorrect. Chillers cool fluid, not air directly.','Incorrect. Chillers don\'t filter air.']},
+{n:18,p:2,t:'mc',q:'An A/C unit is designed to;',o:['heat and cool the liquid','filter and clean the liquid','condition the air','condition the liquid'],a:2,ex:['Incorrect. A/C units work with air, not liquid.','Incorrect. A/C units work with air, not liquid.','CORRECT. Air conditioning means controlling temperature, humidity, cleanliness, and distribution of air.','Incorrect. A/C units condition air, not liquid.']},
+{n:19,p:2,t:'mc',q:'The four parts of the cycle for a reciprocating compressor in order of operation are;',o:['Re-expansion, suction, compression, discharge','Intake, suction, compression, discharge','Suction, compression, exhaust, discharge','Expansion, intake, discharge, exhaust'],a:0,ex:['CORRECT — Re-expansion, suction, compression, discharge','Incorrect. Correct: Re-expansion, suction, compression, discharge','Incorrect. Correct: Re-expansion, suction, compression, discharge','Incorrect. Correct: Re-expansion, suction, compression, discharge']},
+{n:20,p:2,t:'mc',q:'When does the refrigerant actually enter the reciprocating compressor from the system?',o:['when the pressure in the cylinder is lower than in the suction line','when the pressure in the cylinder is lower than in the discharge line','when the piston reaches top dead center','when the piston reaches bottom dead center'],a:0,ex:['CORRECT — The four parts in order: (1) Re-expansion — clearance volume gas must expand until cylinder pressure drops below suction pressure; (2) Suction — suction valve opens, vapor enters; (3) Compression — piston moves up, compressing vapor; (4) Discharge — cylinder pressure exceeds discharge pressure, discharge valve opens.','Incorrect. \'Intake\' and \'suction\' are the same thing — the first step is actually re-expansion of trapped clearance volume gas before the suction valve can open.','Incorrect. \'Exhaust\' is not the correct term, and the order is wrong. Re-expansion must come first.','Incorrect. Wrong order and terminology. Re-expansion is the critical first step that\'s often overlooked.']},
+{n:21,p:2,t:'mc',q:'Name 3 different types of positive displacement compressors.',o:['Screw, scroll and centrifugal','Reciprocating, rotary and centrifugal','screw, scroll and reciprocating','reciprocating, screw and orbital'],a:2,ex:['CORRECT — The suction reed valve is a check valve that opens automatically when cylinder pressure drops below suction line pressure during the piston\'s downward stroke (after re-expansion). Pressure differential is the driving force.','Incorrect. Discharge line pressure is much higher than suction — the suction valve would never open based on discharge pressure.','Incorrect. At top dead center (TDC), the piston has just finished compression and is at maximum pressure — this is when the discharge valve opens, not the suction valve.','Incorrect. At bottom dead center (BDC), the suction stroke is complete and the cylinder is fully charged. Refrigerant entry began earlier during the downstroke when pressure equalized.']},
+{n:22,p:2,t:'mc',q:'There is a system with R-134a as the refrigerant. It has a pressure of 22 psig on the low side. When you measure the temperature of the suction line leaving the evaporator it is 30 degrees F. What can you tell me about the state of the refrigerant?',o:['it is a superheated vapor by 5 degrees F','it is a sub-cooled liquid by 5 degrees F','it is a saturated refrigerant','it is a superheated vapor by 32 degrees F'],a:0,ex:['Incorrect. Centrifugal is a DYNAMIC compressor — it uses velocity/kinetic energy, NOT positive displacement. Screw and scroll are positive displacement, but centrifugal is not.','Incorrect. Centrifugal is a dynamic compressor, not positive displacement. Reciprocating and rotary are positive displacement.','CORRECT — Screw, scroll, and reciprocating are all positive displacement compressors — they trap a fixed volume of gas and mechanically reduce that volume. Centrifugal compressors are dynamic (velocity-based) and NOT positive displacement.','Incorrect. \'Orbital\' is not a standard compressor classification in the HVAC/R industry.']},
+{n:23,p:2,t:'mc',q:'Primary responsibility(ies) of the metering device is to;',o:['create differential pressure to create flow','create an intentional pressure drop to lower the pressure and temperature of the refrigerant','reject the heat from the refrigerant to get it to liquid','to absorb the heat from the ambient cooling it down','both a and b are correct','all of the above are correct'],a:1,ex:['Incorrect. Correct: create an intentional pressure drop to lower the pressure and temperature of the refrigerant','CORRECT — create an intentional pressure drop to lower the pressure and temperature of the refrigerant','Incorrect. Correct: create an intentional pressure drop to lower the pressure and temperature of the refrigerant','Incorrect. Correct: create an intentional pressure drop to lower the pressure and temperature of the refrigerant','Incorrect. Correct: create an intentional pressure drop to lower the pressure and temperature of the refrigerant','Incorrect. Correct: create an intentional pressure drop to lower the pressure and temperature of the refrigerant']},
+{n:24,p:2,t:'mc',q:'Why does the refrigerant change states several times while going through a system?',o:['to use latent heat instead of sensible heat and so the refrigerant can be re-used','to use latent heat instead of sensible heat and to make sure only vapor enters the evaporator','to use sensible heat instead of latent heat and to make sure only liquid enters the compressor','to use sensible heat instead of latent heat and so the refrigerant can be re-used'],a:0,ex:['CORRECT — to use latent heat instead of sensible heat and so the refrigerant can be re-used','Incorrect. Correct: to use latent heat instead of sensible heat and so the refrigerant can be re-used','Incorrect. Correct: to use latent heat instead of sensible heat and so the refrigerant can be re-used','Incorrect. Correct: to use latent heat instead of sensible heat and so the refrigerant can be re-used']},
+{n:25,p:2,t:'mc',q:'When R-410A is at 95 degrees F, what will the saturation pressure be?',o:['about296 psig','about 182 psig','about 29 psig','about 56 psig'],a:0,ex:['CORRECT — Refrigerant changes states (liquid → vapor → liquid) to utilize LATENT heat transfer, which moves far more energy per pound than sensible heat. The phase changes also allow the refrigerant to be continuously recycled through the closed-loop system.','Incorrect. While latent heat is correct, the second part about \'only vapor enters the evaporator\' is wrong — a liquid/vapor mixture enters the evaporator after the metering device.','Incorrect. The system uses LATENT heat (phase change), not sensible heat, for the primary heat transfer mechanism.','Incorrect. Both parts are wrong — the system uses latent heat, not sensible heat.']},
+{n:26,p:2,t:'mc',q:'A compressor that is totally enclosed and non-serviceable is called a(n) __________ compressor.',o:['hermetic','semi-hermetic','open-drive','non-positive displacement'],a:0,ex:['CORRECT — hermetic','Incorrect. Correct: hermetic','Incorrect. Correct: hermetic','Incorrect. Correct: hermetic']},
+{n:27,p:2,t:'mc',q:'Two things that may cause liquid refrigerant accumulation in the compressor crankcase are; ',o:['migration and flooding during operation','migration and a TXV that loses it\'s charge','flooding during operation and energized crankcase heaters','A TXV that loses it\'s charge and energized crankcase heaters'],a:0,ex:['CORRECT — R-410A at 95°F has a saturation pressure of approximately 296 psig from the PT chart. R-410A operates at significantly higher pressures than older refrigerants like R-22.','Incorrect. 182 psig is too low for R-410A at 95°F. This might be confused with an R-22 value.','Incorrect. 29 psig is far too low — this would correspond to a very cold temperature for R-410A.','Incorrect. 56 psig is far too low for R-410A at 95°F.']},
+{n:28,p:2,t:'mc',q:'You can make the evaporator colder in a system by;',o:['lowering the pressure','raising the pressure','charging with more refrigerant','removing some of the refrigerant charge'],a:0,ex:['CORRECT — A hermetic compressor has the motor and compressor completely sealed inside a welded steel shell. There is NO field access — if the motor or compressor fails, the entire unit must be replaced.','Incorrect. Semi-hermetic compressors have a bolted housing that CAN be opened for field service of valves, pistons, and motors.','Incorrect. Open-drive compressors have an EXTERNAL motor connected by a shaft — the motor is not inside at all.','Incorrect. Non-positive displacement describes a compressor type (like centrifugal), not the enclosure style.']},
+{n:29,p:2,t:'mc',q:'If a system has R-22 in it and I want 10 degrees of sub-cooling out of the condenser, what should the liquid line refrigerant temperature be if it has a pressure of 250 psig on the high side?',o:['107 degrees F','127 degrees F','117 degrees F','84 degrees F'],a:0,ex:['CORRECT — (1) Migration occurs during the OFF cycle when the compressor is cold — refrigerant vapor migrates to the coldest point (the crankcase) and condenses into the oil. (2) Flooding occurs during operation when liquid refrigerant returns through the suction line due to a system problem like an oversized TXV.','Incorrect. A TXV that loses its charge would CLOSE, starving the evaporator — it wouldn\'t cause crankcase flooding.','Incorrect. Energized crankcase heaters PREVENT migration — they keep the crankcase warm so refrigerant doesn\'t condense in the oil. They\'re the solution, not the cause.','Incorrect. A TXV that loses charge closes (starving the system), and energized crankcase heaters prevent accumulation — neither causes the problem.']},
+{n:30,p:2,t:'mc',q:'When taking refrigerant out of the container, why does the container get cold?',o:['because of the P/T relationship, when the pressure goes down so does the temperature','because of the P/T relationship, when the pressure goes down the temperature goes up','because of the P/T relationship, when the pressure goes up so does the temperature','because of the P/T relationship, when the pressure goes up the temperature goes down'],a:0,ex:['CORRECT — because of the P/T relationship, when the pressure goes down so does the temperature','Incorrect. Correct: because of the P/T relationship, when the pressure goes down so does the temperature','Incorrect. Correct: because of the P/T relationship, when the pressure goes down so does the temperature','Incorrect. Correct: because of the P/T relationship, when the pressure goes down so does the temperature']},
+{n:31,p:2,t:'mc',q:'There are two places in the refrigeration system where the temperature can be obtained by knowing the pressure. Where are they?',o:['evaporator and condenser','compressor and metering device','compressor and condenser','metering device and evaporator'],a:0,ex:['CORRECT — From the R-22 PT chart: 250 psig corresponds to approximately 117°F saturation temperature. Wait — let me recalculate. R-22 at 250 psig ≈ 117°F SCT. Subtract 10°F subcooling: 117 − 10 = 107°F liquid line temperature.','Incorrect. 127°F would mean the saturation temperature is 137°F at 250 psig, but R-22 at 250 psig ≈ 117°F. Liquid line = 117 − 10 = 107°F.','Incorrect. 117°F is the approximate saturation temperature at 250 psig — you still need to subtract the 10°F subcooling to get 107°F.','Incorrect. 84°F is far too low for a liquid line with 250 psig high side pressure.']},
+{n:32,p:2,t:'mc',q:'Name a compressor that is NOT a positive displacement machine.',o:['centrifugal','scroll','reciprocating','hermetic'],a:0,ex:['CORRECT — As refrigerant vapor is removed from the container, pressure inside drops. Per the PT relationship, when pressure decreases, the saturation temperature also decreases. The remaining liquid refrigerant absorbs heat from the container walls to vaporize, making the container feel cold.','Incorrect. When pressure drops, temperature drops too — not up. Pressure and saturation temperature move in the same direction.','Incorrect. Pressure goes DOWN when removing refrigerant, not up. You\'re reducing the amount of refrigerant in the container.','Incorrect. Pressure goes DOWN (not up) when removing refrigerant, and temperature follows pressure DOWN.']},
+{n:33,p:2,t:'mc',q:'What helps determine the capacity of a DX evaporator coil.',o:['temperature difference and wet bulb temperature','dry bulb temperature and wet bulb temperature','temperature difference and the amount of fluid going over the evaporator','all of the above are correct'],a:3,ex:['CORRECT — The evaporator and condenser are the two locations where refrigerant exists in the SATURATED state (liquid and vapor coexist). Only in the saturated state does the PT chart directly give temperature from pressure. The suction line has superheated vapor and the liquid line has subcooled liquid.','Incorrect. The compressor handles superheated vapor — PT charts don\'t directly apply to superheated gas.','Incorrect. While the condenser is correct, the compressor has superheated discharge gas where PT charts don\'t apply directly.','Incorrect. While the evaporator is correct, the metering device sees subcooled liquid entering and a saturated mixture leaving — it\'s not a clean PT measurement point.']},
+{n:34,p:2,t:'mc',q:'Why are air and non-condensables considered contaminants in a refrigeration system? ',o:['they lower the head pressure too much so flow is inhibited','they raise the head pressure causing more energy usage','they lower the head pressure too much causing more energy usage','causes the evaporator to become logged with that contaminant causing less heat transfer'],a:1,ex:['Incorrect. Correct: they raise the head pressure causing more energy usage','CORRECT — they raise the head pressure causing more energy usage','Incorrect. Correct: they raise the head pressure causing more energy usage','Incorrect. Correct: they raise the head pressure causing more energy usage']},
+{n:35,p:2,t:'mc',q:'Halocarbon refrigerants (CFC\'s, HCFC\'s, HFC\'s) are __________ air.',o:['heavier than','lighter than','a different color than','the same as'],a:0,ex:['Incorrect. Halocarbons have high molecular weights.','Incorrect. They are significantly heavier.','CORRECT. Halocarbons are heavier than air and settle in low areas — critical safety knowledge for confined spaces.','Incorrect. Refrigerants are colorless.']},
+{n:36,p:2,t:'mc',q:'What is the saturation temperature of R-22 when at 68 psig?',o:['40 degrees F','117.3 degrees F','68.2 degrees F','14 degrees F'],a:0,ex:['Incorrect. Non-condensables RAISE head pressure, they don\'t lower it. They occupy space in the condenser that should be used for condensing refrigerant.','CORRECT — Air and non-condensable gases collect in the condenser where they cannot condense. They take up valuable condenser surface area, raising the condensing pressure. Higher head pressure means the compressor works harder, consuming more energy.','Incorrect. Non-condensables raise head pressure, not lower it.','Incorrect. While reduced heat transfer can occur, the PRIMARY issue is elevated head pressure causing increased energy consumption.']},
+{n:37,p:2,t:'mc',q:'How many Btu\'s does it take to freeze 75 pounds of water?  It is tap water at 55 degrees F, and it will be stored at -10 degrees F.',o:['14,100 Btu\'s','15,675 Btu\'s','10,800 Btu\'s','4875 Btu\'s'],a:0,ex:['CORRECT — 14,100 Btu\'s','Incorrect. Correct: 14,100 Btu\'s','Incorrect. Correct: 14,100 Btu\'s','Incorrect. Correct: 14,100 Btu\'s']},
+{n:38,p:2,t:'mc',q:'The amount of heat removed to lower the temperature of 15 pounds of water from 48 degrees F to 39 degrees F is',o:['0.0113 tons','135 Btu\'s','970 Btu\'s per pound','135 Btu\'s per pound'],a:1,ex:['CORRECT — From the R-22 PT chart, 68 psig corresponds to approximately 40°F saturation temperature. This is a classic A/C design suction pressure for R-22 systems.','Incorrect. 117.3°F would correspond to a much higher pressure (around 250 psig for R-22).','Incorrect. 68.2°F does not correspond to 68 psig — don\'t confuse the pressure number with the temperature.','Incorrect. 14°F would correspond to a much lower suction pressure for R-22.']},
+{n:39,p:2,t:'mc',q:'A 75 foot column of water will exert a pressure at the bottom of;',o:['29.46 psi','32.48 psi','173.21 psi','None of the above are correct'],a:1,ex:['CORRECT — Three-step calculation: Step 1 (sensible above freezing): 75 lbs × 1.0 Btu/lb°F × (55 − 32)°F = 75 × 23 = 1,725 Btu. Step 2 (latent heat of fusion): 75 lbs × 144 Btu/lb = 10,800 Btu. Step 3 (sensible below freezing): 75 lbs × 0.5 Btu/lb°F × (32 − (−10))°F = 75 × 0.5 × 42 = 1,575 Btu. TOTAL = 1,725 + 10,800 + 1,575 = 14,100 Btu.','Incorrect. Check your calculation — the total of all three steps (sensible cooling to 32°F, latent heat of fusion, sensible cooling to −10°F) equals 14,100 Btu.','Incorrect. 10,800 Btu is only the latent heat portion (75 × 144). You must also include sensible cooling above and below freezing.','Incorrect. 4,875 Btu is far too low — this doesn\'t account for all three heat removal steps.']},
+{n:40,p:2,t:'mc',q:'The saturation temperature for R-134a at a pressure of 120 psi is;',o:['98° F.','69° F.','171.2° F.','312.1° F.'],a:0,ex:['Incorrect. While 0.0113 tons is mathematically equivalent (135 ÷ 12,000), the direct answer in Btu is more appropriate here.','CORRECT — Q = mass × specific heat × ΔT = 15 lbs × 1.0 Btu/lb°F × (48 − 39)°F = 15 × 1.0 × 9 = 135 Btu. Water has a specific heat of 1.0 Btu/lb°F.','Incorrect. 970 Btu/lb is the latent heat of vaporization (boiling water to steam). This question asks about sensible heat — cooling liquid water without a phase change.','Incorrect. The answer is 135 Btu TOTAL for all 15 lbs, not 135 Btu per pound. Per pound would be 9 Btu (1.0 × 9°F).']},
+{n:41,p:2,t:'mc',q:'The general type of compressor that has the motor inside the compressor but has some accessibility is a;',o:['Hermetic compressor.','Semi-hermetic compressor.','Open drive compressor.','All of the above.','None of the above.'],a:1,ex:['Incorrect. Correct: Semi-hermetic compressor.','CORRECT — Semi-hermetic compressor.','Incorrect. Correct: Semi-hermetic compressor.','Incorrect. Correct: Semi-hermetic compressor.','Incorrect. Correct: Semi-hermetic compressor.']},
+{n:42,p:2,t:'tf',q:'A scroll compressor is more efficient than a reciprocating compressor.',o:['True','False'],a:0,ex:['CORRECT. Scroll compressors have fewer moving parts, continuous compression, no valves, and lower friction — all contributing to higher efficiency.','Incorrect. Scrolls are indeed more efficient due to continuous compression and fewer moving parts.']},
+{n:43,p:2,t:'mc',q:'SST stands for;',o:['Superheated suction temperature.','Saturated suction temperature.','Sub-cooled supply temperature.','None of the above.'],a:1,ex:['Incorrect. SST refers to saturated, not superheated.','CORRECT. SST = Saturated Suction Temperature — the saturation temperature on the low side.','Incorrect. SST refers to suction, not supply.','Incorrect. SST = Saturated Suction Temperature.']},
+{n:44,p:2,t:'mc',q:'Why is the refrigerant level important in a flooded chiller?',o:['Too high could cause liquid slugging into the compressor','Too low could cause efficiency loss','Too low could cause oil return problems','All of the above are correct'],a:3,ex:['Incorrect. Correct: All of the above are correct','Incorrect. Correct: All of the above are correct','Incorrect. Correct: All of the above are correct','CORRECT — All of the above are correct']},
+{n:45,p:2,t:'mc',q:'If dirty filters in an air conditioning system reduce the quantity of air flowing over the DX coil:',o:['a system capacity will decrease','the condenser will compensate for the change','the compressor will compensate for the change','system capacity will increase'],a:0,ex:['CORRECT — a system capacity will decrease','Incorrect. Correct: a system capacity will decrease','Incorrect. Correct: a system capacity will decrease','Incorrect. Correct: a system capacity will decrease']},
+{n:46,p:2,t:'tf',q:'Cooling towers are used to cool the refrigerant in a system.',o:['True','False'],a:1,ex:['Incorrect. Cooling towers cool condenser WATER, not refrigerant directly.','CORRECT. Cooling towers cool condenser WATER, not refrigerant. The cooled water then flows to the condenser to remove heat from refrigerant.']},
+{n:47,p:2,t:'tf',q:'A standard type evaporative condenser will do the same things as an air-cooled condenser.',o:['True','False'],a:1,ex:['Incorrect. Correct: False','CORRECT — False']},
+{n:48,p:2,t:'tf',q:'The evaporative condenser is designed to get more sub-cooling of the refrigerant than standard water cooled condensers.',o:['True','False'],a:1,ex:['Incorrect. Correct: False','CORRECT — False']},
+{n:49,p:2,t:'mc',q:'Evaporative type equipment relies most heavily on;',o:['Wet bulb temperature.','Dry bulb temperature.','ambient temperature.','sensible heat.'],a:0,ex:['Incorrect. Dry bulb is for sensible cooling equipment.','CORRECT. Evaporative cooling depends on wet bulb temperature — the lower the wet bulb, the more evaporation and cooling possible.','Incorrect. Ambient temperature alone doesn\'t determine evaporative performance.','Incorrect. Evaporative equipment relies on latent heat exchange.']},
+{n:50,p:2,t:'mc',q:'What is the major responsibility of the fill deck in the cooling tower?',o:['Supply enough air to help with evaporation of water.','Spread out the water to make it easier to evaporate.','Supply make up water for the evaporative effect.','Filter out the water of contaminants.'],a:1,ex:['Incorrect. Correct: Spread out the water to make it easier to evaporate.','CORRECT — Spread out the water to make it easier to evaporate.','Incorrect. Correct: Spread out the water to make it easier to evaporate.','Incorrect. Correct: Spread out the water to make it easier to evaporate.']},
+{n:51,p:2,t:'mc',q:'When a refrigeration service valve is front-seated;',o:['The valve is open to refrigerant flow.','The valve is closed to refrigerant flow.','The gauge port is closed.','Both b and c are correct.'],a:1,ex:['Incorrect. Front-seated means the valve is closed.','CORRECT. Front-seated (fully CW) closes both refrigerant flow AND the gauge port. Used to isolate the compressor for service.','Incorrect. Both the flow and gauge port are closed.','Incorrect. Normal operating is back-seated.']},
+{n:52,p:2,t:'mc',q:'When a refrigeration service valve is back-seated;',o:['The valve is open to refrigerant flow.','The valve is closed to refrigerant flow.','The valves stem packing is open to the valve.','Both b and c are correct.'],a:0,ex:['Incorrect. The fan system supplies air — the fill deck\'s job is spreading water for maximum surface area contact with air.','CORRECT — The fill deck (or fill media) breaks up and spreads the falling water into thin films or droplets, maximizing the water surface area exposed to airflow. Greater surface area means more efficient evaporation and heat transfer.','Incorrect. Make-up water is supplied by a float valve in the basin, not by the fill deck.','Incorrect. The fill deck spreads water — filtering is done by water treatment systems and strainers.']},
+{n:53,p:2,t:'mc',q:'The TXV is the only metering device that;',o:['Measures superheat.','Measures sub-cooling.','Modulates refrigerant flow.','All of the above.'],a:0,ex:['Incorrect. It senses superheat but the key function is modulation.','Incorrect. The TXV does not measure sub-cooling.','CORRECT. Only the TXV actively measures superheat and continuously adjusts flow to maintain set superheat. Fixed orifice devices cannot modulate.','Incorrect. The TXV doesn\'t measure sub-cooling.']},
+{n:54,p:2,t:'mc',q:'A low side float is used to meter refrigerant to;',o:['A DX evaporator.','A flooded evaporator.','Both a and b.','None of the above.'],a:1,ex:['Incorrect. DX systems use TXVs or fixed orifices.','CORRECT. The low side float maintains constant liquid level in a flooded evaporator — opens when level drops, closes when level rises.','Incorrect. Only flooded evaporators use low side floats.','Incorrect. Flooded evaporators use low side floats.']},
+{n:55,p:2,t:'mc',q:'If a thermostatic expansion valve\'s thermal bulb came loose from the suction line at the outlet of the evaporator, which of  the following could result?',o:['The bulb pressure would increase and the thermostatic expansion valve would open','The superheat in the evaporator would decrease.','Liquid refrigerant could flow back to the compressor.','All of the above are correct.'],a:3,ex:['Incorrect. Correct: All of the above are correct.','Incorrect. Correct: All of the above are correct.','Incorrect. Correct: All of the above are correct.','CORRECT — All of the above are correct.']},
+{n:56,p:2,t:'mc',q:'The purpose of an externally equalized thermostatic expansion valve is to _____.',o:['Compensate for excessive evaporator pressure drop.','Allow the system to equalize faster.','Prevent the expansion valve from frosting up','Allow refrigerant to expand in the compressor.'],a:0,ex:['CORRECT — Compensate for excessive evaporator pressure drop.','Incorrect. Correct: Compensate for excessive evaporator pressure drop.','Incorrect. Correct: Compensate for excessive evaporator pressure drop.','Incorrect. Correct: Compensate for excessive evaporator pressure drop.']},
+{n:57,p:2,t:'mc',q:'The TXV sensing bulb is mounted _____.',o:['on the liquid line between the condenser and the TXV','at the inlet to the condenser','on the suction line between the evaporator and the compressor','on the compressor discharge line'],a:2,ex:['Partially correct but incomplete — the bulb would sense warm ambient temperature, increasing bulb pressure and opening the valve wider.','Partially correct but incomplete — yes, superheat would decrease as the valve feeds too much refrigerant.','Partially correct but incomplete — yes, with the valve wide open, liquid could flood back to the compressor.','CORRECT — All of the above occur: (1) The loose bulb senses warm ambient air instead of cool suction line temp. (2) This high temperature signal tells the valve to open wider. (3) Excess refrigerant floods the evaporator, dropping superheat. (4) Liquid refrigerant could carry through to the compressor, risking damage.']},
+{n:58,p:2,t:'mc',q:'If the power element of a TXV loses it\'s charge, the _____.',o:['coil will flood enough to feed liquid refrigerant out of the coil','valve will get cold enough to create frost on the body of the valve','refrigerant flow through the various circuits of the coil will become unbalanced','refrigerant flow to the coil will slow considerably or stop completely'],a:3,ex:['CORRECT — An externally equalized TXV uses evaporator OUTLET pressure (rather than inlet pressure) as the closing force. This compensates for pressure drop across multi-circuit evaporators, ensuring accurate superheat control even with significant coil pressure losses.','Incorrect. System equalization speed is not related to external equalization of the TXV.','Incorrect. TXV frosting prevention is not the purpose of external equalization.','Incorrect. Refrigerant should never expand in the compressor — that would cause liquid slugging damage.']},
+{n:59,p:2,t:'mc',q:'How does the receiver ensure that only 100% liquid refrigerant enters the liquid line?',o:['by means of a dip tube','it only allows refrigerant to enter the liquid line when the receiver is filled with liquid','the spring loaded relief valve opens','none of the above are correct'],a:0,ex:['CORRECT — by means of a dip tube','Incorrect. Correct: by means of a dip tube','Incorrect. Correct: by means of a dip tube','Incorrect. Correct: by means of a dip tube']},
+{n:60,p:2,t:'mc',q:'When the quantitiy of refrigerant flow to an evaporator is reduced, the amount of superheat in the vapor leaving the coil will _____.',o:['decrease','increase','remain the same','N/A'],a:1,ex:['Incorrect. Without the power element charge, the spring CLOSES the valve — no refrigerant flows, so no flooding occurs.','Incorrect. Without refrigerant flow, the valve body won\'t get cold enough to frost.','Incorrect. Circuit imbalance could occur with a partially failed element, but total charge loss stops flow entirely.','CORRECT — If the TXV power element (bulb/capillary) loses its charge, there is no opening force to overcome the spring. The spring closes the valve, severely restricting or completely stopping refrigerant flow to the evaporator. The system starves.']},
+{n:61,p:2,t:'mc',q:'Two types of relief devices are _____ and _____.',o:['pop safety valve, fusible plug','rupture disc, globe valve','pop safety valve, globe valve','fusible plug, ball valve'],a:0,ex:['CORRECT — The receiver has a dip tube that extends from the outlet connection down to the bottom of the vessel. Since liquid refrigerant settles to the bottom by gravity, the dip tube always draws from the liquid layer, ensuring 100% liquid enters the liquid line regardless of receiver charge level.','Incorrect. The receiver works at any fill level because the dip tube draws from the bottom where liquid always collects.','Incorrect. A relief valve is for overpressure safety protection — it has nothing to do with ensuring liquid-only flow.','Incorrect. The dip tube is the correct mechanism.']},
+{n:62,p:2,t:'mc',q:'A rupture disc is classified as a _____.',o:['one time relief device','a re-usable relief device','refrigerant saving device','adjustable type relief device'],a:0,ex:['Incorrect. Less flow means MORE superheat, not less. With less refrigerant, it boils off sooner, leaving more coil length to superheat the vapor.','CORRECT — When refrigerant flow decreases, the smaller amount of liquid boils off earlier in the evaporator coil. The remaining coil length continues to heat the now-gaseous refrigerant above its saturation temperature, INCREASING superheat.','Incorrect. Superheat is directly affected by flow rate — it definitely changes.','Incorrect. This is a valid HVAC question with a definite answer.']},
+{n:63,p:2,t:'mc',q:'The best way to adjust a CPR valve is by _________.',o:['adjusting the low pressure control','measuring the temperature drop of the air through the evaporator','adjusting the CPR to produce an amperage draw of the compressor motor to the motor nameplate rating','adjusting the CPR to produce an amperage draw of the compressor motor to the motor nameplate rating plus 25%'],a:2,ex:['CORRECT — Pop safety valves and fusible plugs are the two main types of relief devices in refrigeration. Pop safety valves open at a set pressure and RECLOSE when pressure drops. Fusible plugs melt at a set temperature and are ONE-TIME devices that must be replaced.','Incorrect. Globe valves are manual shutoff valves, not relief devices.','Incorrect. Globe valves are not classified as relief devices.','Incorrect. Ball valves are manual shutoff valves, not relief devices.']},
+{n:64,p:2,t:'mc',q:'A "king" valve is _____.',o:['the first shutoff valve after the receiver','another name for the compressor suction service valve','another name for the compressor discharge service valve','the shutoff valve immediately before any solenoid valve'],a:0,ex:['Incorrect. King valve is on the liquid line, not discharge.','CORRECT. The king valve is at the receiver outlet on the liquid line. Closing it allows pump-down.','Incorrect. It\'s specifically at the receiver outlet.','Incorrect. King valve is on the high side, not suction.']},
+{n:65,p:2,t:'mc',q:'The sight glass / moisture indicator serves two purposes which are _____ and _____.',o:['to give a visual inspection of the refrigerant going into the coil, to change colors if there is moisture present','to give a visual inspection of the refrigerant going into the coil, to allow any air bubbles in the line a place to go','to change colors if there is moisture present, to measure the amount of flow in the line','to change colors if there is liquid present, to see if there is refrigerant in the line'],a:0,ex:['CORRECT — to give a visual inspection of the refrigerant going into the coil, to change colors if there is moisture present','Incorrect. Correct: to give a visual inspection of the refrigerant going into the coil, to change colors if there is moisture present','Incorrect. Correct: to give a visual inspection of the refrigerant going into the coil, to change colors if there is moisture present','Incorrect. Correct: to give a visual inspection of the refrigerant going into the coil, to change colors if there is moisture present']},
+{n:66,p:2,t:'tf',q:'A suction accumulator uses a float to open and close a valve which allows the liquid refrigerant to go back to the compressor when needed.',o:['True','False'],a:1,ex:['Incorrect. Correct: False','CORRECT — False']},
+{n:67,p:2,t:'tf',q:'A liquid line filter drier serves two purposes; to filter out larger particles in the piping and to store (hold) liquid.',o:['True','False'],a:1,ex:['Incorrect. Correct: False','CORRECT — False']},
+{n:68,p:2,t:'mc',q:'Why is the consideration of minimum load important in regards to oil and refrigerant?',o:['It is easier to return oil under minimum load.','It is more difficult to return oil under minimum load.','It doesn’t matter when returning oil vertically up.','None of the above.'],a:1,ex:['Incorrect. Correct: It is more difficult to return oil under minimum load.','CORRECT — It is more difficult to return oil under minimum load.','Incorrect. Correct: It is more difficult to return oil under minimum load.','Incorrect. Correct: It is more difficult to return oil under minimum load.']},
+{n:69,p:2,t:'mc',q:'The purpose of a suction trap is to;',o:['Help raise the oil vertically up from the evaporator.','Not allow the oil to drain back down after it’s been elevated.','Not allow oil to collect on the discharge valves of the compressor.','None of the above.'],a:0,ex:['Incorrect. That\'s the inverted trap\'s purpose.','CORRECT. The suction trap (P-trap) at the bottom of a vertical riser collects oil until velocity is sufficient to carry it upward.','Incorrect. Discharge valves are not the concern here.','Incorrect. The second answer is correct.']},
+{n:70,p:2,t:'mc',q:'The purpose of the inverted trap is to;',o:['Help raise the oil vertically up from the evaporator.','Not allow the oil to drain back down after it’s been elevated.','Not allow oil to collect on the discharge valves of the compressor.','None of the above.'],a:1,ex:['Incorrect. That\'s the suction trap\'s purpose.','CORRECT. The inverted trap at the TOP of a vertical riser prevents oil from draining back down during off cycles.','Incorrect. Discharge valves are not the concern here.','Incorrect. The second answer is correct.']},
+{n:71,p:2,t:'mc',q:'Unless otherwise specified by the manufacturer, refrigeration suction lines should be piped;',o:['Level to avoid pressure drop.','Down in the direction of flow to aid in oil return.','Up in the direction of flow to keep gas moving in the pipe.','None of the above.'],a:1,ex:['Incorrect. Correct: Down in the direction of flow to aid in oil return.','CORRECT — Down in the direction of flow to aid in oil return.','Incorrect. Correct: Down in the direction of flow to aid in oil return.','Incorrect. Correct: Down in the direction of flow to aid in oil return.']},
+{n:72,p:2,t:'mc',q:'Which of the following types of copper tubing is preferred to be used in refrigeration?',o:['Type ACR','Type L','Type M','Type K','Type DWV'],a:0,ex:['CORRECT — Type ACR','Incorrect. Correct: Type ACR','Incorrect. Correct: Type ACR','Incorrect. Correct: Type ACR','Incorrect. Correct: Type ACR']},
+{n:73,p:2,t:'mc',q:'Why is a purge necessary when installing a copper refrigeration system?',o:['So the inside of the pipe doesn\'t oxidize at the higher temperature','So the brazing alloy doesn\'t go all the way through the joint to the inside of the system','To keep the joint cool while brazing','So the flux doesn\'t get inside the pipe and contaminate the system'],a:0,ex:['CORRECT — So the inside of the pipe doesn\'t oxidize at the higher temperature','Incorrect. Correct: So the inside of the pipe doesn\'t oxidize at the higher temperature','Incorrect. Correct: So the inside of the pipe doesn\'t oxidize at the higher temperature','Incorrect. Correct: So the inside of the pipe doesn\'t oxidize at the higher temperature']},
+{n:74,p:2,t:'mc',q:'Why should copper pipe not be used for ammonia refrigeration systems?',o:['Ammonia corrodes the copper due to a chemical reaction','Ammonia has too high of pressure for copper tubing','Copper has too high of pressure drop for ammonia','The copper joints are not as strong as welded joints'],a:0,ex:['CORRECT — Ammonia corrodes the copper due to a chemical reaction','Incorrect. Correct: Ammonia corrodes the copper due to a chemical reaction','Incorrect. Correct: Ammonia corrodes the copper due to a chemical reaction','Incorrect. Correct: Ammonia corrodes the copper due to a chemical reaction']},
+{n:75,p:2,t:'mc',q:'What type of fittings should be used in refrigeration systems?',o:['Long radius ells','Short radius ells','Cast iron','Threaded'],a:0,ex:['Incorrect. Level piping doesn\'t actively assist oil return toward the compressor.','CORRECT — Suction lines should slope DOWNWARD in the direction of flow (toward the compressor) so that gravity assists in moving oil along with the refrigerant vapor. Oil is heavier than refrigerant vapor and will collect in low spots if piping is level or slopes the wrong way.','Incorrect. Piping upward in the direction of flow would work against oil return — oil would drain backward.','Incorrect. Downward slope in the direction of flow is the correct standard practice.']},
+{n:76,p:2,t:'mc',q:'The size of plumbing tubing is referred to by __________ and the size of ACR tubing is referred to by __________.',o:['the ID; the OD','the OD; the ID','the OD; the OD','the ID; the ID','whether the hole is on the outside of the pipe; whether the hole is on the inside of the pipe'],a:0,ex:['CORRECT — Type ACR (Air Conditioning and Refrigeration) copper tubing is specifically manufactured for refrigeration: it is internally cleaned, dehydrated, and factory-sealed with nitrogen caps. This prevents moisture, oil, and debris contamination that would damage refrigeration systems.','Incorrect. Type L is plumbing-grade copper — it\'s not cleaned or dehydrated for refrigeration use.','Incorrect. Type M is thin-wall plumbing copper — not suitable for refrigeration.','Incorrect. Type K is heavy-wall copper for underground water service — not prepared for refrigeration.','Incorrect. Type DWV (Drain, Waste, Vent) is thin-wall copper for drain piping — completely unsuitable for refrigeration.']},
+{n:77,p:2,t:'tf',q:'All pipe should be reamed during the installation process.',o:['True','False'],a:0,ex:['CORRECT. Cutting leaves a burr inside the pipe that restricts flow, creates turbulence, and can break off to damage components. Always ream.','Incorrect. Reaming is always required to remove burrs.']},
+{n:78,p:2,t:'tf',q:'Always check tubing before installing to make sure it\'s not contaminated.',o:['True','False'],a:0,ex:['CORRECT — True','Incorrect. Correct: True']},
+{n:79,p:2,t:'mc',q:'Why isn\'t oxygen used for pressure testing a system?',o:['oxygen is explosive when combined with oil','oxygen has too much moisture in it','oxygen has too high of a pressure for the piping system','oxygen causes the copper to react chemically causing a leak'],a:0,ex:['CORRECT — Ammonia (NH₃) reacts chemically with copper and copper alloys, forming copper-ammonia compounds that corrode and contaminate the system. This is why ALL ammonia refrigeration systems must use STEEL or STAINLESS STEEL piping — never copper.','Incorrect. Pressure is not the issue — copper can handle ammonia pressures. The problem is chemical corrosion.','Incorrect. Pressure drop characteristics are not the reason copper is prohibited with ammonia.','Incorrect. While welded joints are stronger, the fundamental reason is ammonia\'s chemical corrosion of copper.']},
+{n:80,p:2,t:'mc',q:'Why must a regulator be used on a nitrogen bottle?',o:['the pressure in the bottle is too high and it needs to be controlled into the system','the pressure in the bottle is too low and this allows you to bump up the pressure for testing','the regulator allows you to separate the liquid from the vapor so that only vapor goes into the system','it is the only way to know how much pressure you have in the system'],a:0,ex:['CORRECT. Nitrogen cylinders are charged to 2,000-2,500 psig. Refrigeration systems test to 150-450 psig. A regulator steps pressure down safely.','Incorrect. Bottle pressure is extremely high.','Incorrect. Nitrogen is always a gas at these conditions.','Incorrect. A separate gauge can read system pressure.']},
+{n:81,p:2,t:'mc',q:'Why is it critical to make sure that all the system\'s valves (hand, solenoid, and check) be opened during brazing and evacuation?',o:['to make sure the entire system has pressure on it','to make sure that you isolated sections for testing purposes','to make sure that the entire system has been purged, tested and evacuated','to make sure that the water (moisture) left in the system gets to the filter drier'],a:2,ex:['Incorrect. Correct: to make sure that the entire system has been purged, tested and evacuated','Incorrect. Correct: to make sure that the entire system has been purged, tested and evacuated','CORRECT — to make sure that the entire system has been purged, tested and evacuated','Incorrect. Correct: to make sure that the entire system has been purged, tested and evacuated']},
+{n:82,p:2,t:'mc',q:'Conditions that may cause a failure to achieve the required vacuum for a system are',o:['residual refrigerant, bad pump','leaks, moisture','saturated vacuum pump oil, leaks','bad refrigeration hoses (gaskets), moisture','all of the above are correct'],a:4,ex:['Incorrect. Correct: all of the above are correct','Incorrect. Correct: all of the above are correct','Incorrect. Correct: all of the above are correct','Incorrect. Correct: all of the above are correct','CORRECT — all of the above are correct']},
+{n:83,p:2,t:'mc',q:'Vapor refrigerant is added to a system through the;',o:['Receiver’s king valve.','Liquid line service valve.','Compressor discharge line.','Low-pressure side of the system.'],a:3,ex:['Incorrect. The king valve is on the liquid (high) side.','Incorrect. The liquid line is high side.','Incorrect. Never add to the discharge line.','CORRECT. Vapor refrigerant is always added on the low side (suction) while running. Never add to the high side of a running system.']},
+{n:84,p:2,t:'mc',q:'A warm refrigerant storage cylinder will have _________________ the low-pressure side of an operating system.',o:['A higher pressure than','A lower pressure than','The same pressure as','N/A'],a:0,ex:['CORRECT — CRITICAL SAFETY: Pressurized oxygen in contact with compressor oil (petroleum-based) can cause a violent, potentially FATAL explosion. Even a small amount of oil in the system creates an extreme fire/explosion hazard with pressurized oxygen. ONLY dry nitrogen should be used for pressure testing.','Incorrect. While moisture is a concern, the PRIMARY danger of oxygen is the explosion risk when combined with oil — a life-threatening hazard.','Incorrect. The issue isn\'t pressure capability — it\'s the explosive combination of oxygen and oil.','Incorrect. Chemical reaction with copper is secondary to the immediate explosion danger.']},
+{n:85,p:2,t:'mc',q:'When charging liquid refrigerant, (in most cases) the cylinder should be placed;',o:['Upside down.','Right side up.','On its side.','In any of the positions indicated.'],a:0,ex:['CORRECT — Upside down.','Incorrect. Correct: Upside down.','Incorrect. Correct: Upside down.','Incorrect. Correct: Upside down.']},
+{n:86,p:2,t:'mc',q:'To add refrigerant to the system through the suction service valve, the valve stem must be;',o:['Back seated.','Front seated.','Mid-seated.','Hot seated'],a:2,ex:['Partially correct but incomplete — having pressure throughout is important, but the main reason is ensuring complete system purge and evacuation.','Incorrect. Isolation is the OPPOSITE of what\'s needed — you want the entire system open and connected.','CORRECT — All valves must be open so the ENTIRE system receives: (1) nitrogen purge to displace oxygen during brazing, (2) full pressure testing to verify leak-free integrity, and (3) complete evacuation to remove all moisture and non-condensables. Any closed valve creates an isolated section that\'s not purged, tested, or evacuated.','Incorrect. Water (moisture) should be evacuated OUT of the system by the vacuum pump, not directed to the filter drier.']},
+{n:87,p:2,t:'mc',q:'If the evaporator temperature is below 32° F, there must be some provision for:',o:['defrost','adding refrigerant','increasing the rate of vaporization','flooding the evaporator'],a:0,ex:['CORRECT — defrost','Incorrect. Correct: defrost','Incorrect. Correct: defrost','Incorrect. Correct: defrost']},
+{n:88,p:2,t:'mc',q:'Off-cycle defrost occurs:',o:['with supplemental electric heat when the system is shut down.','with hot gas when the system is operating.','from the space temperature when the system is shut down.','with hot liquid refrigerant from the compressor'],a:2,ex:['Incorrect. Electric heat is a different defrost method.','Incorrect. Hot gas defrost occurs while running.','CORRECT. Off-cycle defrost is the simplest method — the system turns off and ambient room temperature naturally melts the frost.','Incorrect. Hot liquid is not a standard defrost method.']},
+{n:89,p:2,t:'mc',q:'The type of system that requires the use of a liquid pump to supply liquid to the evaporator is called a _____________ system.',o:['DX','liquid recirculation','flooded','dry expansion'],a:1,ex:['Incorrect. Correct: liquid recirculation','CORRECT — liquid recirculation','Incorrect. Correct: liquid recirculation','Incorrect. Correct: liquid recirculation']},
+{n:90,p:2,t:'mc',q:'The fin spacing on low-temp evaporators is ________________ on medium-temp evaporators.',o:['the same as','closer together than','farther apart than'],a:2,ex:['Incorrect. Correct: farther apart than','Incorrect. Correct: farther apart than','CORRECT — farther apart than']},
+{n:91,p:2,t:'mc',q:'Frost formation on the evaporator coil is normal for ____________________.',o:['low-temperature refrigeration systems.','high-temperature refrigeration systems','both a and b are correct','neither a nor b are correct'],a:0,ex:['Incorrect. Back-seated (fully CCW) is normal operating position — the gauge port is isolated and you can\'t add refrigerant through it.','Incorrect. Front-seated (fully CW) closes off flow to the system AND the gauge port.','CORRECT — Mid-seated (cracked off the back seat) opens ALL THREE ports: system flow continues, the compressor suction stays connected, AND the gauge port is open to accept refrigerant from the charging hose. This allows adding refrigerant while the system operates.','Incorrect. \'Hot seated\' is not a valid service valve position.']},
+{n:92,p:2,t:'mc',q:'Increasing the spring pressure on the thermostatic expansion valve will cause _______________.',o:['the TXV to open','the evaporator superheat to increase','the evaporator pressure to rise','all of the above'],a:1,ex:['Incorrect. Correct: the evaporator superheat to increase','CORRECT — the evaporator superheat to increase','Incorrect. Correct: the evaporator superheat to increase','Incorrect. Correct: the evaporator superheat to increase']},
+{n:93,p:2,t:'mc',q:'Hot gas bypass is different than hot gas defrost. The purpose of hot gas bypass is to:',o:['make sure to melt any frost formation on a timed interval.','keep the compressor running and not allowing it to short cycle.','add heat to the system to make sure the compressor doesn\'t flood out.','to keep the compressor discharge pressure down on a high head day.','all of the above are correct.','none of the above are correct.'],a:1,ex:['Incorrect. Correct: keep the compressor running and not allowing it to short cycle.','CORRECT — keep the compressor running and not allowing it to short cycle.','Incorrect. Correct: keep the compressor running and not allowing it to short cycle.','Incorrect. Correct: keep the compressor running and not allowing it to short cycle.','Incorrect. Correct: keep the compressor running and not allowing it to short cycle.','Incorrect. Correct: keep the compressor running and not allowing it to short cycle.']},
+{n:94,p:2,t:'mc',q:'Balanced port TXV\'s are used:',o:['to feed refrigerant at a normal rate with low ambient temperatures','to feed refrigerant at a normal rate with high ambient temperature','to stop refrigerant flow during low ambient temperatures','to stop refrigerant flow during high ambient temperatures'],a:0,ex:['CORRECT. Balanced port TXVs compensate for fluctuating high-side pressure, maintaining proper feed even when head pressure drops in low ambient.','Incorrect. Standard TXVs handle high ambient fine.','Incorrect. They maintain flow, not stop it.','Incorrect. They maintain flow, not stop it.']},
+{n:95,p:2,t:'mc',q:'Two types of water supplies for WC condensers are:',o:['recirculated and once-through','recirculated and potable','Potable and once-through','all of the above are correct'],a:0,ex:['Incorrect. DX (Direct Expansion) systems use a metering device (TXV or orifice) to feed refrigerant — no liquid pump.','CORRECT — A liquid recirculation system uses a mechanical pump to deliver liquid refrigerant to the evaporators at 2-4 times the evaporation rate. Excess liquid returns to a low-pressure receiver. This ensures the entire evaporator surface is wetted for maximum efficiency. NOT the same as a flooded system, which uses gravity and a float valve.','Incorrect. A flooded system maintains a liquid level using a float valve and gravity — it doesn\'t use a liquid pump.','Incorrect. Dry expansion is another name for DX — it uses a metering device, not a pump.']},
+{n:96,p:2,t:'mc',q:'When troubleshooting water-cooled condensers, understanding ΔT, split, and approach is important. Approach is defined as:',o:['temperature difference between water in and water out.','temperature difference between liquid refrigerant out and water out.','temperature difference between SCT and water out.','temperature difference between SCT and water in'],a:1,ex:['Incorrect. Correct: temperature difference between liquid refrigerant out and water out.','CORRECT — temperature difference between liquid refrigerant out and water out.','Incorrect. Correct: temperature difference between liquid refrigerant out and water out.','Incorrect. Correct: temperature difference between liquid refrigerant out and water out.']},
+{n:97,p:2,t:'mc',q:'Using the following formula to calculate the amount of water flow in a recirculated condenser system. Btu\'s = gpm x ΔT x 500. The unit is rated at 30 tons. ',o:['45 gpm','36 gpm','90 gpm','72 gpm'],a:2,ex:['CORRECT — Frost formation is NORMAL and EXPECTED on low-temperature refrigeration systems (freezers, blast freezers) because the evaporator operates well below 32°F. This is why defrost systems are mandatory on all low-temp equipment.','Incorrect. High-temperature systems (like A/C or medium-temp coolers) operate above 32°F, so moisture condenses as water and drains away — frost should NOT form.','Incorrect. Only low-temperature systems normally accumulate frost.','Incorrect. Low-temperature systems definitely experience normal frost formation.']},
+{n:98,p:2,t:'mc',q:'What is wet-bulb temperature?',o:['the temperature at which the moisture in the air settles out','the temperature of the air','the amount of moisture in the air compared to what it could hold at that temperature','the lowest temperature that a wet surface can obtain due to evaporation'],a:3,ex:['Incorrect. Increasing spring pressure actually restricts the valve — it requires MORE superheat to open, so it doesn\'t simply \'open.\'','CORRECT — The TXV spring is the closing force. Increasing spring tension means the bulb must generate MORE pressure (from higher suction line temperature = more superheat) to overcome the stronger spring and open the valve. Result: evaporator superheat INCREASES.','Incorrect. With the valve feeding less refrigerant due to higher spring pressure, evaporator pressure would likely decrease, not rise.','Incorrect. Only superheat increases — not all of the above.']},
+{n:99,p:2,t:'mc',q:'When troubleshooting water-cooled condensers, understanding  ΔT, split, and approach is important. ΔT is defined as:',o:['temperature difference between water in and water out','temperature difference between liquid refrigerant out and water out','temperature difference between SCT and water out','temperature difference between SCT and water in'],a:0,ex:['CORRECT — temperature difference between water in and water out','Incorrect. Correct: temperature difference between water in and water out','Incorrect. Correct: temperature difference between water in and water out','Incorrect. Correct: temperature difference between water in and water out']},
+{n:100,p:2,t:'mc',q:'When troubleshooting water-cooled condensers, understanding  ΔT, split, and approach is important. Split is defined as:',o:['temperature difference between water in and water out','temperature difference between SCT and water in','temperature difference between liquid refrigerant out and water out','temperature difference between SCT and water out'],a:1,ex:['Incorrect. Correct: temperature difference between SCT and water in','CORRECT — temperature difference between SCT and water in','Incorrect. Correct: temperature difference between SCT and water in','Incorrect. Correct: temperature difference between SCT and water in']},
+{n:101,p:2,t:'mc',q:'In a waste-water condenser, a regulating valve is used to control the:',o:['refrigerant flow','refrigerant liquid temperature','water flow','water temperature'],a:2,ex:['CORRECT — The two standard water supply types for water-cooled condensers are: (1) Recirculated — water is cooled in a cooling tower and reused continuously. (2) Once-through — fresh water passes through the condenser once and is discharged (common with well water or city water where permitted).','Incorrect. \'Potable\' (drinking water) is not a standard classification for condenser water supply systems.','Incorrect. \'Potable\' is not one of the standard classifications.','Incorrect. Not all of the above — only recirculated and once-through are the standard types.']},
+{n:102,p:2,t:'mc',q:'What is relative humidity?',o:['the amount of moisture in the air compared to what it could hold at that temperature','the temperature at which the moisture in the air settles out','the lowest temperature that a wet surface can obtain due to evaporation','the temperature of the air'],a:0,ex:['Incorrect. Water in vs. water out temperature difference is called ΔT, not Approach.','CORRECT — Approach = leaving liquid refrigerant temperature minus leaving water temperature. It measures how close the leaving refrigerant gets to the leaving water temp. A high approach indicates fouled tubes or scaling reducing heat transfer efficiency.','Incorrect. SCT minus water out is not the standard definition of Approach.','Incorrect. SCT minus water in is called \'Split,\' not Approach.']},
+{n:103,p:2,t:'mc',q:'What is dew-point temperature?',o:['the lowest temperature that a wet surface can obtain due to evaporation','the temperature of the air','the amount of moisture in the air compared to what it could hold at that temperature','the temperature at which the moisture in the air settles out'],a:3,ex:['Incorrect. Check the calculation: at 3 gpm/ton for a 30-ton unit, 30 × 3 = 90 gpm.','Incorrect. 36 gpm is too low for a 30-ton system.','CORRECT — Using the formula: Btu = gpm × ΔT × 500. For 30 tons: 30 × 12,000 = 360,000 Btu/hr. Standard ΔT for recirculated condensers = 10°F. So: 360,000 = gpm × 10 × 500 → gpm = 360,000 ÷ 5,000 = 72... Wait, let me recalculate. Actually the standard rule is 3 gpm/ton: 30 × 3 = 90 gpm. Using the formula with standard 10°F ΔT: 360,000 = gpm × 10 × 500 → gpm = 72. The answer depends on the assumed ΔT. At 8°F ΔT: 360,000 ÷ (8 × 500) = 90 gpm.','Incorrect. 72 gpm uses a 10°F ΔT — the exam answer indicates 90 gpm is correct.']},
+{n:104,p:2,t:'mc',q:'Make-up water for an evaporative condenser is needed to make up for losses incurred by:',o:['the drift of the unit','bleed rate','evaporation rate','all of the above are correct'],a:3,ex:['Incorrect. Correct: all of the above are correct','Incorrect. Correct: all of the above are correct','Incorrect. Correct: all of the above are correct','CORRECT — all of the above are correct']},
+{n:105,p:2,t:'mc',q:'Flow rates for a recirculated systems water cooled condenser are estimated at:',o:['1.2 gpm/ton','3 gpm/ton','1.5 gpm/ton','2.4 gpm/ton'],a:1,ex:['CORRECT — ΔT = the temperature difference between the water ENTERING and LEAVING the condenser (water in minus water out, or more commonly water out minus water in). It represents how much heat the water picked up. Typical design ΔT is 10°F for recirculated systems.','Incorrect. Liquid refrigerant out vs. water out is called \'Approach.\'','Incorrect. SCT minus water out is not the standard ΔT definition.','Incorrect. SCT minus water in is called \'Split.\'']},
+{n:106,p:2,t:'mc',q:'A compressor is listed either as a positive displacement machine or a dynamic machine. The definition for positive displacement is:',o:['for every cycle, a fluid has to be displaced','for every cycle, a fluid may be displaced','for every cycle, some of the fluid will not be displaced','none of the above are correct'],a:0,ex:['Incorrect. Water in vs. water out is ΔT, not Split.','CORRECT — Split = SCT (Saturated Condensing Temperature) minus entering water temperature. It indicates the overall temperature driving force for the condenser. A high split suggests fouling, non-condensables, or the condenser is undersized for the load.','Incorrect. Liquid refrigerant out vs. water out is \'Approach,\' not Split.','Incorrect. SCT minus water out is not the standard definition of Split.']},
+{n:107,p:2,t:'mc',q:'A rotary compressor is said to have a fixed Vi, and a reciprocating compressor is said to have an adjustable Vi. Vi is _________________.',o:['volume index, which raises and lowers the suction pressure for capacity control','volume integer, which raises and lowers the suction pressure for capacity control','volume integer, which adjusts the capacity control to avoid over or under compressing the gas','volume index, which adjusts the capacity control to avoid over or under compressing the gas'],a:3,ex:['Incorrect. The regulating valve controls WATER flow, not refrigerant flow in a waste-water (once-through) condenser.','Incorrect. The valve controls water flow rate — refrigerant temperature is affected indirectly.','CORRECT — In a once-through (waste-water) condenser, a water-regulating valve modulates WATER FLOW based on refrigerant head pressure. When head pressure rises, the valve opens to increase water flow and lower condensing pressure. When pressure drops, it throttles water flow to conserve water.','Incorrect. The valve controls water flow rate — water temperature changes are a result, not the controlled variable.']},
+{n:108,p:2,t:'mc',q:'When the load in an evaporator increases, the TXV;',o:['Decreases refrigerant flow','Increases refrigerant flow','Maintains the same amount of refrigerant flow','Closes completely, to avoid flooding the evaporator'],a:1,ex:['Incorrect. Higher load demands more refrigerant.','CORRECT. Higher load = more heat = faster boiling = higher superheat = TXV opens wider = more flow.','Incorrect. The TXV modulates to match load.','Incorrect. Closing would starve the evaporator.']},
+{n:109,p:2,t:'mc',q:'What is the net oil pressure of a reciprocating compressor with the following pressure readings; suction pressure gauge reads 68 psig, oil pressure gauge reads 102 psig, and the discharge pressure gauge reads 220 psig?',o:['102 psig','34 psig','118 psig','170 psig'],a:1,ex:['Incorrect. Correct: 34 psig','CORRECT — 34 psig','Incorrect. Correct: 34 psig','Incorrect. Correct: 34 psig']},
+{n:110,p:2,t:'mc',q:'A zeotropic refrigerant is;',o:['A pure refrigerant with a specific P/T relationship','A blended refrigerant with a noticeable temperature glide','Will not fractionate','A natural refrigerant'],a:1,ex:['Partially correct but incomplete — drift is only one of three loss sources.','Partially correct but incomplete — bleed rate is only one of three losses.','Partially correct but incomplete — evaporation is only one of three losses.','CORRECT — Make-up water replaces ALL THREE types of losses: (1) Drift — tiny water droplets carried away by the airstream. (2) Bleed rate (blowdown) — water intentionally drained to prevent mineral concentration buildup. (3) Evaporation — water that evaporates to provide the cooling effect. Of these, evaporation is typically the largest loss.']},
+{n:111,p:2,t:'mc',q:'Clearance volume is defined as:',o:['the space left above the piston at top dead center','the space left above the piston at bottom dead center','the space left between the piston and the cylinder wall','the space left above the piston when it\'s unloaded'],a:0,ex:['Incorrect. 1.2 gpm/ton is too low for proper condenser heat rejection.','CORRECT — The standard rule of thumb for recirculated water-cooled condenser systems is 3 gpm per ton of refrigeration, based on a design water temperature rise (ΔT) of approximately 10°F.','Incorrect. 1.5 gpm/ton is too low — it wouldn\'t provide adequate heat rejection.','Incorrect. 2.4 gpm/ton is close to the old once-through standard but not the recirculated standard of 3 gpm/ton.']},
+{n:112,p:2,t:'mc',q:'The type of compressor that is defined as a dynamic compressor is a _______________ type compressor.',o:['Helical rotary','Rotary','Scroll','Centrifugal'],a:3,ex:['CORRECT — Positive displacement means that for EVERY mechanical cycle (stroke, rotation, orbit), a fixed volume of fluid MUST be displaced — guaranteed. There is no slippage or bypass. This makes reciprocating, scroll, and screw compressors predictable and reliable.','Incorrect. \'May be displaced\' implies uncertainty — positive displacement GUARANTEES fluid movement every cycle.','Incorrect. In positive displacement, ALL of the trapped fluid IS displaced — none is left behind by design.','Incorrect. The first answer is the correct definition.']},
+{n:113,p:2,t:'mc',q:'When a reciprocating compressor has the ability to unload each cylinder independently, it accomplishes that by:',o:['lifting the discharge valve off its seat','lifting the suction valve off its seat','closing off the suction passage so no gas can enter','opening a passage to bypass the compressed gas back to suction'],a:1,ex:['Incorrect. Vi is Volume Index (not integer), and it relates to compression ratio matching, not suction pressure control.','Incorrect. \'Volume integer\' is wrong, and suction pressure control is not what Vi addresses.','Incorrect. \'Volume integer\' is the wrong term — it\'s Volume Index.','CORRECT — Vi = Volume Index. It represents the built-in compression ratio of a rotary (screw) compressor. Proper Vi selection ensures the gas is compressed to the correct discharge pressure internally, avoiding inefficient over-compression (wasting energy) or under-compression (shock losses at discharge).']},
+{n:114,p:2,t:'mc',q:'The capacity control for a screw compressor is accomplished with _______________.',o:['cylinder unloading','slide valve','suction stop','discharge bypass'],a:1,ex:['Incorrect. Correct: slide valve','CORRECT — slide valve','Incorrect. Correct: slide valve','Incorrect. Correct: slide valve']},
+{n:115,p:2,t:'mc',q:'A low-pressure centrifugal chiller is different than a high-pressure centrifugal chiller because it requires use of ________________ to maintain proper operation.',o:['oil','a motor','check valves','a purge unit'],a:3,ex:['Incorrect. 102 psig is the TOTAL oil gauge reading, not the net oil pressure. You must subtract suction pressure to find the actual lubrication pressure.','CORRECT — Net oil pressure = Oil pump gauge pressure − Suction (crankcase) pressure = 102 − 68 = 34 psig. This is the ACTUAL pressure available to push oil through bearings and lubrication passages. The suction pressure acts on the crankcase, so only the pressure ABOVE suction does useful lubrication work.','Incorrect. 118 psig doesn\'t correspond to any correct calculation with these values.','Incorrect. 170 psig doesn\'t result from the correct formula. Discharge pressure (220 psig) is NOT used in net oil pressure calculations.']},
+{n:116,p:2,t:'mc',q:'For centrifugal chillers, a stall is defined as:',o:['the difference between the suction pressure and discharge pressure','when the difference between the discharge pressure and suction pressure gets too high and the refrigerant goes backwards','when the difference between the discharge pressure and suction pressure gets too high and the refrigerant stops moving','when the guide vanes open too fast causing the compressor to stop'],a:2,ex:['Incorrect. That describes lift.','CORRECT. Stall is when the impeller can no longer overcome the pressure differential and refrigerant flow stops — the precursor to surge.','Incorrect. Reversal of flow is surge, not stall.','Incorrect. Guide vane speed is not the cause.']},
+{n:117,p:2,t:'mc',q:'For centrifugal chiller, lift is defined as:',o:['the difference between the suction pressure and discharge pressure','when the difference between the discharge pressure and suction pressure gets too high and the refrigerant stops moving','when the difference between the discharge pressure and suction pressure gets too high and the refrigerant goes backwards','When the guide vanes don\'t open fast enough causing a cutout'],a:0,ex:['CORRECT — the difference between the suction pressure and discharge pressure','Incorrect. Correct: the difference between the suction pressure and discharge pressure','Incorrect. Correct: the difference between the suction pressure and discharge pressure','Incorrect. Correct: the difference between the suction pressure and discharge pressure']},
+{n:118,p:2,t:'mc',q:'For centrifugal chillers, a surge is defined as:',o:['the difference between the suction pressure and discharge pressure','when the difference between the discharge pressure and suction pressure gets too high and the refrigerant stops moving','when the difference between the discharge pressure and suction pressure gets too high and the refrigerant goes backwards','when the discharge pressure drops too fast causing a cutout'],a:2,ex:['Incorrect. Helical rotary (screw) compressors are positive displacement — they trap gas between rotating screws.','Incorrect. Rotary compressors are positive displacement.','Incorrect. Scroll compressors are positive displacement — they trap gas between orbiting and fixed scrolls.','CORRECT — Centrifugal compressors are the DYNAMIC type. They use a high-speed impeller to add kinetic energy (velocity) to the refrigerant gas, which is then converted to pressure in the diffuser/volute. No gas is trapped and compressed — this is fundamentally different from positive displacement.']},
+{n:119,p:2,t:'mc',q:'Two-temperature operation of a refrigeration system is necessary when;',o:['the compressor must be protected from overloading','more than one evaporator, each at a different temperature, is operating from one compressor','the coil in the evaporator is excessively long','a multiple-circuit distributor is used'],a:1,ex:['Incorrect. Lifting the discharge valve would allow compressed gas to escape but isn\'t the standard unloading method for reciprocating compressors.','CORRECT — Cylinder unloading in a reciprocating compressor is accomplished by mechanically holding the suction valve OPEN. With the suction valve held off its seat, gas pushes in during the downstroke and simply flows back out through the open suction valve during the upstroke — no compression occurs in that cylinder.','Incorrect. Closing the suction passage would create a vacuum in the cylinder, not unload it.','Incorrect. Bypassing compressed gas to suction is a separate capacity control method (hot gas bypass), not cylinder unloading.']},
+{n:120,p:2,t:'mc',q:'The EPR valve is installed in the suction line at the evaporator outlet and it:',o:['makes sure that there is enough refrigerant gas going to the compressor','will let the evaporator pressure go only as low as a pre-determined point','will provide the same service as a TXV with a distributor','all of the above are correct'],a:1,ex:['Incorrect. Cylinder unloading is used on RECIPROCATING compressors, not screw compressors.','CORRECT — Screw compressor capacity control uses a SLIDE VALVE that opens a bypass port along the rotor housing. When the slide valve moves, it allows a portion of the gas to recirculate back to the suction side without being fully compressed, reducing capacity from approximately 25% to 100%.','Incorrect. Suction stop is not a standard capacity control method for screw compressors.','Incorrect. Discharge bypass is a separate capacity control concept, not the primary method for screw compressors.']},
+{n:121,p:2,t:'mc',q:'The crankcase pressure regulator (CPR) is installed in the suction line near the:',o:['compressor','evaporator','EPR','multiple-circuit distributor'],a:0,ex:['Incorrect. All compressors require lubrication — this isn\'t what distinguishes low-pressure from high-pressure chillers.','Incorrect. All compressors need a motor — this isn\'t the distinguishing feature.','Incorrect. Check valves are common in many systems and don\'t distinguish the two types.','CORRECT — Low-pressure centrifugal chillers (using refrigerants like R-123 or R-1233zd) operate at pressures BELOW atmospheric. This means air can LEAK INTO the system through any seal imperfection. A PURGE UNIT is required to continuously remove air and non-condensable gases that infiltrate the machine.']},
+{n:122,p:2,t:'mc',q:'A hot pull down is when:',o:['there is excessive ice on the evaporator','the condenser has been flooded','the metering device is starving the evaporator','the temperature of the load is high and the compressor has to run for a long period of time to lower the temperature'],a:3,ex:['Incorrect. Excessive ice is a different problem.','Incorrect. Condenser flooding is unrelated.','Incorrect. Starving is a metering issue.','CORRECT. Hot pulldown occurs when warm product is loaded — the compressor runs hard trying to pull temperature down, risking motor overload.']},
+{n:123,p:2,t:'mc',q:'A valve used to protect the compressor during a hot pull down is the:',o:['CPR','EPR','TXV','WTF'],a:0,ex:['CORRECT — Lift is the pressure differential between suction and discharge that the centrifugal impeller must overcome. It\'s determined by the difference between condenser and evaporator conditions. Excessive lift (too much pressure difference) can lead to stall and then surge.','Incorrect. This describes a STALL condition — when the pressure difference is too high and refrigerant flow stops.','Incorrect. This describes SURGE — when the pressure difference causes refrigerant to reverse direction.','Incorrect. Guide vane operation is related to capacity control, not the definition of lift.']},
+{n:124,p:2,t:'mc',q:'The type of system designed to get very low evaporator temperature using 2 different refrigerants is called:',o:['a single stage system','a two-stage system','a cascade system','a diabolic system'],a:2,ex:['Incorrect. Correct: a cascade system','Incorrect. Correct: a cascade system','CORRECT — a cascade system','Incorrect. Correct: a cascade system']},
+{n:125,p:2,t:'mc',q:'The type of system that operates using one refrigerant with multiple temperatures gained in steps is the:',o:['single stage system','two-stage system','cascade system','systolic system'],a:1,ex:['Incorrect. Compressor overload protection is handled by the CPR valve, not two-temperature operation.','CORRECT — Two-temperature operation is needed when a SINGLE compressor serves MULTIPLE evaporators operating at DIFFERENT temperatures (e.g., a walk-in cooler at 35°F and a freezer at −10°F). EPR valves are installed at each warmer evaporator to maintain its minimum pressure/temperature while the compressor pulls the coldest evaporator to its target.','Incorrect. Coil length doesn\'t require two-temperature operation — that\'s a sizing issue.','Incorrect. A multi-circuit distributor feeds ONE evaporator evenly — it doesn\'t create multiple temperatures.']},
+{n:126,p:2,t:'mc',q:'A refrigeration system that utilized a type A2 refrigerant needs to have the relief device piped to the outside if the system contains:',o:['all are required to be piped outside','6.6 lbs of refrigerant or more','50 lbs of refrigerant or more','110 lbs of refrigerant or more'],a:1,ex:['Incorrect. Ensuring sufficient gas flow to the compressor is not the EPR\'s function — that\'s determined by system design and charge.','CORRECT — The EPR (Evaporator Pressure Regulator) holds a MINIMUM evaporator pressure. In a two-temperature system, the EPR prevents the warmer evaporator from being pulled down too cold by the compressor that\'s trying to satisfy the coldest evaporator. It acts as a minimum pressure \'floor.\'','Incorrect. The EPR and TXV serve completely different functions — the TXV meters refrigerant, the EPR maintains minimum evaporator pressure.','Incorrect. Only option B is correct.']},
+{n:127,p:3,t:'mc',q:'How many tons of refrigeration is required if we want to freeze 7000 pounds of a product in one (1) hour?  Product freeze point is 26 degrees F, latent heat of fusion is 123 BTU\'s/lb., specific heat thawed is 0.87, and specific heat frozen is 0.42.  The product enters at 45 degrees F and it will be stored at -10 degrees F.',o:['1,082,550 tons','88.64 tons','90.21 tons','72.17 tons','1,063,650 tons','70.91 tons','none of the above are correct'],a:2,ex:['Incorrect. Correct: 90.21 tons','Incorrect. Correct: 90.21 tons','CORRECT — 90.21 tons','Incorrect. Correct: 90.21 tons','Incorrect. Correct: 90.21 tons','Incorrect. Correct: 90.21 tons','Incorrect. Correct: 90.21 tons']},
+{n:128,p:2,t:'mc',q:'Match the definition to the term. What is: Ambient temperature?',o:['Heat that causes a measurable temperature change','Temperature of air surrounding a unit','Changing from a liquid to a vapor by heating','Changing from a liquid to a vapor at low temperatures and pressures'],a:1,ex:['Incorrect. This is the definition of Sensible heat, not Ambient temperature.','CORRECT — Ambient temperature = Temperature of air surrounding a unit','Incorrect. This is the definition of Vaporization, not Ambient temperature.','Incorrect. This is the definition of Evaporation, not Ambient temperature.']},
+{n:129,p:2,t:'mc',q:'Match the definition to the term. What is: BTU?',o:['Heat that causes a change of state without temperature change','The amount of heat required to raise one pound of WATER one degree F','The amount of heat required to raise one pound of a SUBSTANCE one degree F','Heat transfer by fluid movement such as air or liquid currents'],a:1,ex:['Incorrect. This is the definition of Latent heat, not BTU.','CORRECT — BTU = The amount of heat required to raise one pound of WATER one degree F','Incorrect. This is the definition of Specific heat, not BTU.','Incorrect. This is the definition of Convection, not BTU.']},
+{n:130,p:2,t:'mc',q:'Match the definition to the term. What is: Specific heat?',o:['Heat transfer by direct molecular contact','Heat transfer by fluid movement such as air or liquid currents','The amount of heat required to raise one pound of a SUBSTANCE one degree F','Temperature of air surrounding a unit'],a:2,ex:['Incorrect. This is the definition of Conduction, not Specific heat.','Incorrect. This is the definition of Convection, not Specific heat.','CORRECT — Specific heat = The amount of heat required to raise one pound of a SUBSTANCE one degree F','Incorrect. This is the definition of Ambient temperature, not Specific heat.']},
+{n:131,p:2,t:'mc',q:'Match the definition to the term. What is: Vaporization?',o:['Temperature of air surrounding a unit','Heat transfer by energy rays','Changing from a liquid to a vapor at low temperatures and pressures','Changing from a liquid to a vapor by heating'],a:3,ex:['Incorrect. This is the definition of Ambient temperature, not Vaporization.','Incorrect. This is the definition of Radiation, not Vaporization.','Incorrect. This is the definition of Evaporation, not Vaporization.','CORRECT — Vaporization = Changing from a liquid to a vapor by heating']},
+{n:132,p:2,t:'mc',q:'Match the definition to the term. What is: Superheated?',o:['A vapor at a temperature above its saturation point for a given pressure','Changing from a liquid to a vapor by heating','A liquid at a temperature below its saturation point for a given pressure','Heat absorbing fluid capable of changing states'],a:0,ex:['CORRECT — Superheated = A vapor at a temperature above its saturation point for a given pressure','Incorrect. This is the definition of Vaporization, not Superheated.','Incorrect. This is the definition of Sub-cooled, not Superheated.','Incorrect. This is the definition of Refrigerant, not Superheated.']},
+{n:133,p:2,t:'mc',q:'Match the definition to the term. What is: Latent heat?',o:['Temperature of air surrounding a unit','Changing from a liquid to a vapor by heating','Heat that causes a change of state without temperature change','The amount of heat required to raise one pound of WATER one degree F'],a:2,ex:['Incorrect. This is the definition of Ambient temperature, not Latent heat.','Incorrect. This is the definition of Vaporization, not Latent heat.','CORRECT — Latent heat = Heat that causes a change of state without temperature change','Incorrect. This is the definition of BTU, not Latent heat.']},
+{n:134,p:2,t:'mc',q:'Match the definition to the term. What is: Sub-cooled?',o:['Heat transfer by direct molecular contact','A liquid at a temperature below its saturation point for a given pressure','A vapor at a temperature above its saturation point for a given pressure','Heat absorbing fluid capable of changing states'],a:1,ex:['Incorrect. This is the definition of Conduction, not Sub-cooled.','CORRECT — Sub-cooled = A liquid at a temperature below its saturation point for a given pressure','Incorrect. This is the definition of Superheated, not Sub-cooled.','Incorrect. This is the definition of Refrigerant, not Sub-cooled.']},
+{n:135,p:2,t:'mc',q:'Match the definition to the term. What is: Refrigerant?',o:['A vapor at a temperature above its saturation point for a given pressure','Heat that causes a measurable temperature change','A liquid at a temperature below its saturation point for a given pressure','Heat absorbing fluid capable of changing states'],a:3,ex:['Incorrect. This is the definition of Superheated, not Refrigerant.','Incorrect. This is the definition of Sensible heat, not Refrigerant.','Incorrect. This is the definition of Sub-cooled, not Refrigerant.','CORRECT — Refrigerant = Heat absorbing fluid capable of changing states']},
+{n:136,p:2,t:'mc',q:'Match the definition to the term. What is: Sensible heat?',o:['Heat that causes a measurable temperature change','The amount of heat required to raise one pound of a SUBSTANCE one degree F','Heat transfer by energy rays','A vapor at a temperature above its saturation point for a given pressure'],a:0,ex:['CORRECT — Sensible heat = Heat that causes a measurable temperature change','Incorrect. This is the definition of Specific heat, not Sensible heat.','Incorrect. This is the definition of Radiation, not Sensible heat.','Incorrect. This is the definition of Superheated, not Sensible heat.']},
+{n:137,p:2,t:'mc',q:'Match the definition to the term. What is: Saturation point?',o:['Heat transfer by energy rays','The temperature at which a liquid boils at a specific pressure','Heat transfer by direct molecular contact','Heat absorbing fluid capable of changing states'],a:1,ex:['Incorrect. This is the definition of Radiation, not Saturation point.','CORRECT — Saturation point = The temperature at which a liquid boils at a specific pressure','Incorrect. This is the definition of Conduction, not Saturation point.','Incorrect. This is the definition of Refrigerant, not Saturation point.']},
+{n:138,p:2,t:'mc',q:'Match the definition to the term. What is: Conduction?',o:['Heat absorbing fluid capable of changing states','A vapor at a temperature above its saturation point for a given pressure','Heat that causes a measurable temperature change','Heat transfer by direct molecular contact'],a:3,ex:['Incorrect. This is the definition of Refrigerant, not Conduction.','Incorrect. This is the definition of Superheated, not Conduction.','Incorrect. This is the definition of Sensible heat, not Conduction.','CORRECT — Conduction = Heat transfer by direct molecular contact']},
+{n:139,p:2,t:'mc',q:'Match the definition to the term. What is: Convection?',o:['Heat transfer by fluid movement such as air or liquid currents','Changing from a liquid to a vapor at low temperatures and pressures','Heat that causes a change of state without temperature change','The temperature at which a liquid boils at a specific pressure'],a:0,ex:['CORRECT — Convection = Heat transfer by fluid movement such as air or liquid currents','Incorrect. This is the definition of Evaporation, not Convection.','Incorrect. This is the definition of Latent heat, not Convection.','Incorrect. This is the definition of Saturation point, not Convection.']},
+{n:140,p:2,t:'mc',q:'Match the definition to the term. What is: Radiation?',o:['Heat transfer by energy rays','A liquid at a temperature below its saturation point for a given pressure','Changing from a liquid to a vapor at low temperatures and pressures','The temperature at which a liquid boils at a specific pressure'],a:0,ex:['CORRECT — Radiation = Heat transfer by energy rays','Incorrect. This is the definition of Sub-cooled, not Radiation.','Incorrect. This is the definition of Evaporation, not Radiation.','Incorrect. This is the definition of Saturation point, not Radiation.']},
+{n:141,p:2,t:'mc',q:'Match the definition to the term. What is: Evaporation?',o:['Changing from a liquid to a vapor at low temperatures and pressures','A vapor at a temperature above its saturation point for a given pressure','Heat transfer by energy rays','The temperature at which a liquid boils at a specific pressure'],a:0,ex:['CORRECT — Evaporation = Changing from a liquid to a vapor at low temperatures and pressures','Incorrect. This is the definition of Superheated, not Evaporation.','Incorrect. This is the definition of Radiation, not Evaporation.','Incorrect. This is the definition of Saturation point, not Evaporation.']},
+{n:142,p:2,t:'mc',q:'Match the definition to the term. What is: Heat of compression?',o:['Heat added to a substance by squeezing molecules together','Heat transfer by direct molecular contact','Changing from a liquid to a vapor at low temperatures and pressures','Heat transfer by fluid movement such as air or liquid currents'],a:0,ex:['CORRECT — Heat of compression = Heat added to a substance by squeezing molecules together','Incorrect. This is the definition of Conduction, not Heat of compression.','Incorrect. This is the definition of Evaporation, not Heat of compression.','Incorrect. This is the definition of Convection, not Heat of compression.']},
+{n:143,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component A?',o:['Liquid line filter drier','TXV (Thermostatic Expansion Valve)','King valve (receiver outlet)','Oil separator'],a:1,ex:['Incorrect. This is the definition of Component J, not Component A.','CORRECT — Component A = TXV (Thermostatic Expansion Valve)','Incorrect. This is the definition of Component E, not Component A.','Incorrect. This is the definition of Component D, not Component A.']},
+{n:144,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component B?',o:['TXV (Thermostatic Expansion Valve)','Evaporator','Condenser','Oil separator'],a:2,ex:['Incorrect. This is the definition of Component A, not Component B.','Incorrect. This is the definition of Component H, not Component B.','CORRECT — Component B = Condenser','Incorrect. This is the definition of Component D, not Component B.']},
+{n:145,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component C?',o:['Receiver','Three-way dual relief valves','Muffler (discharge vibration dampener)','Evaporator'],a:2,ex:['Incorrect. This is the definition of Component K, not Component C.','Incorrect. This is the definition of Component L, not Component C.','CORRECT — Component C = Muffler (discharge vibration dampener)','Incorrect. This is the definition of Component H, not Component C.']},
+{n:146,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component D?',o:['Liquid line filter drier','Oil reservoir','Oil separator','TXV (Thermostatic Expansion Valve)'],a:2,ex:['Incorrect. This is the definition of Component J, not Component D.','Incorrect. This is the definition of Component F, not Component D.','CORRECT — Component D = Oil separator','Incorrect. This is the definition of Component A, not Component D.']},
+{n:147,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component E?',o:['Three-way dual relief valves','King valve (receiver outlet)','Liquid line filter drier','Oil separator'],a:1,ex:['Incorrect. This is the definition of Component L, not Component E.','CORRECT — Component E = King valve (receiver outlet)','Incorrect. This is the definition of Component J, not Component E.','Incorrect. This is the definition of Component D, not Component E.']},
+{n:148,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component F?',o:['Receiver','Liquid line filter drier','Oil reservoir','Evaporator'],a:2,ex:['Incorrect. This is the definition of Component K, not Component F.','Incorrect. This is the definition of Component J, not Component F.','CORRECT — Component F = Oil reservoir','Incorrect. This is the definition of Component H, not Component F.']},
+{n:149,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component G?',o:['Liquid line filter drier','TXV (Thermostatic Expansion Valve)','Sight glass / moisture indicator','Three-way dual relief valves'],a:2,ex:['Incorrect. This is the definition of Component J, not Component G.','Incorrect. This is the definition of Component A, not Component G.','CORRECT — Component G = Sight glass / moisture indicator','Incorrect. This is the definition of Component L, not Component G.']},
+{n:150,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component H?',o:['Three-way dual relief valves','Evaporator','Oil reservoir','Sight glass / moisture indicator'],a:1,ex:['Incorrect. This is the definition of Component L, not Component H.','CORRECT — Component H = Evaporator','Incorrect. This is the definition of Component F, not Component H.','Incorrect. This is the definition of Component G, not Component H.']},
+{n:151,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component I?',o:['Sight glass / moisture indicator','Evaporator','Compressor','King valve (receiver outlet)'],a:2,ex:['Incorrect. This is the definition of Component G, not Component I.','Incorrect. This is the definition of Component H, not Component I.','CORRECT — Component I = Compressor','Incorrect. This is the definition of Component E, not Component I.']},
+{n:152,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component J?',o:['King valve (receiver outlet)','Condenser','Liquid line filter drier','Compressor'],a:2,ex:['Incorrect. This is the definition of Component E, not Component J.','Incorrect. This is the definition of Component B, not Component J.','CORRECT — Component J = Liquid line filter drier','Incorrect. This is the definition of Component I, not Component J.']},
+{n:153,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component K?',o:['Condenser','Sight glass / moisture indicator','Oil separator','Receiver'],a:3,ex:['Incorrect. This is the definition of Component B, not Component K.','Incorrect. This is the definition of Component G, not Component K.','Incorrect. This is the definition of Component D, not Component K.','CORRECT — Component K = Receiver']},
+{n:154,p:2,t:'mc',q:'Identify the refrigeration system component from the diagram. What is: Component L?',o:['Three-way dual relief valves','Sight glass / moisture indicator','Compressor','Oil reservoir'],a:0,ex:['CORRECT — Component L = Three-way dual relief valves','Incorrect. This is the definition of Component G, not Component L.','Incorrect. This is the definition of Component I, not Component L.','Incorrect. This is the definition of Component F, not Component L.']},
+{n:155,p:2,t:'mc',q:'Identify the refrigerant condition (from a color-coded diagram). What is: Fluid #1?',o:['Oil (compressor lubricant)','High pressure sub-cooled liquid (liquid line)','High pressure saturated mix (in condenser)','Low pressure saturated mix (in evaporator)'],a:2,ex:['Incorrect. This is the definition of Fluid #5, not Fluid #1.','Incorrect. This is the definition of Fluid #2, not Fluid #1.','CORRECT — Fluid #1 = High pressure saturated mix (in condenser)','Incorrect. This is the definition of Fluid #3, not Fluid #1.']},
+{n:156,p:2,t:'mc',q:'Identify the refrigerant condition (from a color-coded diagram). What is: Fluid #2?',o:['High pressure sub-cooled liquid (liquid line)','High pressure saturated mix (in condenser)','Oil (compressor lubricant)','Low pressure saturated mix (in evaporator)'],a:0,ex:['CORRECT — Fluid #2 = High pressure sub-cooled liquid (liquid line)','Incorrect. This is the definition of Fluid #1, not Fluid #2.','Incorrect. This is the definition of Fluid #5, not Fluid #2.','Incorrect. This is the definition of Fluid #3, not Fluid #2.']},
+{n:157,p:2,t:'mc',q:'Identify the refrigerant condition (from a color-coded diagram). What is: Fluid #3?',o:['Low pressure saturated mix (in evaporator)','Low pressure superheated vapor (suction line)','Oil (compressor lubricant)','High pressure saturated mix (in condenser)'],a:0,ex:['CORRECT — Fluid #3 = Low pressure saturated mix (in evaporator)','Incorrect. This is the definition of Fluid #4, not Fluid #3.','Incorrect. This is the definition of Fluid #5, not Fluid #3.','Incorrect. This is the definition of Fluid #1, not Fluid #3.']},
+{n:158,p:2,t:'mc',q:'Identify the refrigerant condition (from a color-coded diagram). What is: Fluid #4?',o:['High pressure sub-cooled liquid (liquid line)','Low pressure superheated vapor (suction line)','Low pressure saturated mix (in evaporator)','High pressure saturated mix (in condenser)'],a:1,ex:['Incorrect. This is the definition of Fluid #2, not Fluid #4.','CORRECT — Fluid #4 = Low pressure superheated vapor (suction line)','Incorrect. This is the definition of Fluid #3, not Fluid #4.','Incorrect. This is the definition of Fluid #1, not Fluid #4.']},
+{n:159,p:2,t:'mc',q:'Identify the refrigerant condition (from a color-coded diagram). What is: Fluid #5?',o:['Oil (compressor lubricant)','High pressure sub-cooled liquid (liquid line)','Low pressure superheated vapor (suction line)','Low pressure saturated mix (in evaporator)'],a:0,ex:['CORRECT — Fluid #5 = Oil (compressor lubricant)','Incorrect. This is the definition of Fluid #2, not Fluid #5.','Incorrect. This is the definition of Fluid #4, not Fluid #5.','Incorrect. This is the definition of Fluid #3, not Fluid #5.']},
+{n:160,p:2,t:'mc',q:'Match the description to the correct refrigeration vessel. What is: A place to store liquid refrigerant when it is not being used?',o:['Recirculator','HPR (High Pressure Receiver)','Surge Drum','Suction Accumulator'],a:1,ex:['Incorrect. This is the definition of Located above the flooded evaporator, supplies liquid by gravity feed, not A place to store liquid refrigerant when it is not being used.','CORRECT — A place to store liquid refrigerant when it is not being used = HPR (High Pressure Receiver)','Incorrect. This is the definition of Controlled-pressure vessel that provides liquid to a pump, not A place to store liquid refrigerant when it is not being used.','Incorrect. This is the definition of A vessel that protects the compressor from liquid flooding, not A place to store liquid refrigerant when it is not being used.']},
+{n:161,p:2,t:'mc',q:'Match the description to the correct refrigeration vessel. What is: A vessel that protects the compressor from liquid flooding?',o:['Oil Separator','HPR (High Pressure Receiver)','Recirculator','Suction Accumulator'],a:3,ex:['Incorrect. This is the definition of Separates oil from hot discharge gas and returns it to the compressor, not A vessel that protects the compressor from liquid flooding.','Incorrect. This is the definition of A place to store liquid refrigerant when it is not being used, not A vessel that protects the compressor from liquid flooding.','Incorrect. This is the definition of Located above the flooded evaporator, supplies liquid by gravity feed, not A vessel that protects the compressor from liquid flooding.','CORRECT — A vessel that protects the compressor from liquid flooding = Suction Accumulator']},
+{n:162,p:2,t:'mc',q:'Match the description to the correct refrigeration vessel. What is: Separates oil from hot discharge gas and returns it to the compressor?',o:['Oil Separator','Surge Drum','Intercooler','Suction Accumulator'],a:0,ex:['CORRECT — Separates oil from hot discharge gas and returns it to the compressor = Oil Separator','Incorrect. This is the definition of Controlled-pressure vessel that provides liquid to a pump, not Separates oil from hot discharge gas and returns it to the compressor.','Incorrect. This is the definition of Maintains a liquid level where booster discharge gas is de-superheated, not Separates oil from hot discharge gas and returns it to the compressor.','Incorrect. This is the definition of A vessel that protects the compressor from liquid flooding, not Separates oil from hot discharge gas and returns it to the compressor.']},
+{n:163,p:2,t:'mc',q:'Match the description to the correct refrigeration vessel. What is: Located above the flooded evaporator, supplies liquid by gravity feed?',o:['Surge Drum','Oil Separator','HPR (High Pressure Receiver)','Recirculator'],a:3,ex:['Incorrect. This is the definition of Controlled-pressure vessel that provides liquid to a pump, not Located above the flooded evaporator, supplies liquid by gravity feed.','Incorrect. This is the definition of Separates oil from hot discharge gas and returns it to the compressor, not Located above the flooded evaporator, supplies liquid by gravity feed.','Incorrect. This is the definition of A place to store liquid refrigerant when it is not being used, not Located above the flooded evaporator, supplies liquid by gravity feed.','CORRECT — Located above the flooded evaporator, supplies liquid by gravity feed = Recirculator']},
+{n:164,p:2,t:'mc',q:'Match the description to the correct refrigeration vessel. What is: Controlled-pressure vessel that provides liquid to a pump?',o:['Surge Drum','Oil Separator','Intercooler','HPR (High Pressure Receiver)'],a:0,ex:['CORRECT — Controlled-pressure vessel that provides liquid to a pump = Surge Drum','Incorrect. This is the definition of Separates oil from hot discharge gas and returns it to the compressor, not Controlled-pressure vessel that provides liquid to a pump.','Incorrect. This is the definition of Maintains a liquid level where booster discharge gas is de-superheated, not Controlled-pressure vessel that provides liquid to a pump.','Incorrect. This is the definition of A place to store liquid refrigerant when it is not being used, not Controlled-pressure vessel that provides liquid to a pump.']},
+{n:165,p:2,t:'mc',q:'Match the description to the correct refrigeration vessel. What is: Maintains a liquid level where booster discharge gas is de-superheated?',o:['Intercooler','Surge Drum','Suction Accumulator','Oil Separator'],a:0,ex:['CORRECT — Maintains a liquid level where booster discharge gas is de-superheated = Intercooler','Incorrect. This is the definition of Controlled-pressure vessel that provides liquid to a pump, not Maintains a liquid level where booster discharge gas is de-superheated.','Incorrect. This is the definition of A vessel that protects the compressor from liquid flooding, not Maintains a liquid level where booster discharge gas is de-superheated.','Incorrect. This is the definition of Separates oil from hot discharge gas and returns it to the compressor, not Maintains a liquid level where booster discharge gas is de-superheated.']},
+{n:166,p:1,t:'mc',q:'R-410A A/C system: house 79°F, outside 93°F, high-efficiency condenser, 10°F subcooling, 12°F superheat. What is: Evaporator leaving air temperature?',o:['59°F — House temp 79°F minus ~20°F coil temperature drop','380 psig — R-410A PT chart at 109°F SCT','56°F — SST 44°F + 12°F superheat = 56°F','44°F — Leaving air 59°F minus ~15°F evaporator TD'],a:0,ex:['CORRECT — Evaporator leaving air temperature = 59°F — House temp 79°F minus ~20°F coil temperature drop','Incorrect. This is the definition of High side pressure (R-410A), not Evaporator leaving air temperature.','Incorrect. This is the definition of Suction line temperature, not Evaporator leaving air temperature.','Incorrect. This is the definition of SST (Saturated Suction Temperature), not Evaporator leaving air temperature.']},
+{n:167,p:1,t:'mc',q:'R-410A A/C system: house 79°F, outside 93°F, high-efficiency condenser, 10°F subcooling, 12°F superheat. What is: SST (Saturated Suction Temperature)?',o:['44°F — Leaving air 59°F minus ~15°F evaporator TD','103°F — SCT 109°F minus ~6°F (subcooling approaches 10°F target)','56°F — SST 44°F + 12°F superheat = 56°F','109°F — Outside 93°F + ~16°F high-efficiency condenser TD'],a:0,ex:['CORRECT — SST (Saturated Suction Temperature) = 44°F — Leaving air 59°F minus ~15°F evaporator TD','Incorrect. This is the definition of Liquid line temperature, not SST (Saturated Suction Temperature).','Incorrect. This is the definition of Suction line temperature, not SST (Saturated Suction Temperature).','Incorrect. This is the definition of SCT (Saturated Condensing Temperature), not SST (Saturated Suction Temperature).']},
+{n:168,p:1,t:'mc',q:'R-410A A/C system: house 79°F, outside 93°F, high-efficiency condenser, 10°F subcooling, 12°F superheat. What is: Suction line temperature?',o:['123 psig — R-410A PT chart at 44°F SST','56°F — SST 44°F + 12°F superheat = 56°F','380 psig — R-410A PT chart at 109°F SCT','59°F — House temp 79°F minus ~20°F coil temperature drop'],a:1,ex:['Incorrect. This is the definition of Low side pressure (R-410A), not Suction line temperature.','CORRECT — Suction line temperature = 56°F — SST 44°F + 12°F superheat = 56°F','Incorrect. This is the definition of High side pressure (R-410A), not Suction line temperature.','Incorrect. This is the definition of Evaporator leaving air temperature, not Suction line temperature.']},
+{n:169,p:1,t:'mc',q:'R-410A A/C system: house 79°F, outside 93°F, high-efficiency condenser, 10°F subcooling, 12°F superheat. What is: Liquid line temperature?',o:['56°F — SST 44°F + 12°F superheat = 56°F','123 psig — R-410A PT chart at 44°F SST','109°F — Outside 93°F + ~16°F high-efficiency condenser TD','103°F — SCT 109°F minus ~6°F (subcooling approaches 10°F target)'],a:3,ex:['Incorrect. This is the definition of Suction line temperature, not Liquid line temperature.','Incorrect. This is the definition of Low side pressure (R-410A), not Liquid line temperature.','Incorrect. This is the definition of SCT (Saturated Condensing Temperature), not Liquid line temperature.','CORRECT — Liquid line temperature = 103°F — SCT 109°F minus ~6°F (subcooling approaches 10°F target)']},
+{n:170,p:1,t:'mc',q:'R-410A A/C system: house 79°F, outside 93°F, high-efficiency condenser, 10°F subcooling, 12°F superheat. What is: SCT (Saturated Condensing Temperature)?',o:['109°F — Outside 93°F + ~16°F high-efficiency condenser TD','380 psig — R-410A PT chart at 109°F SCT','59°F — House temp 79°F minus ~20°F coil temperature drop','44°F — Leaving air 59°F minus ~15°F evaporator TD'],a:0,ex:['CORRECT — SCT (Saturated Condensing Temperature) = 109°F — Outside 93°F + ~16°F high-efficiency condenser TD','Incorrect. This is the definition of High side pressure (R-410A), not SCT (Saturated Condensing Temperature).','Incorrect. This is the definition of Evaporator leaving air temperature, not SCT (Saturated Condensing Temperature).','Incorrect. This is the definition of SST (Saturated Suction Temperature), not SCT (Saturated Condensing Temperature).']},
+{n:171,p:1,t:'mc',q:'R-410A A/C system: house 79°F, outside 93°F, high-efficiency condenser, 10°F subcooling, 12°F superheat. What is: Low side pressure (R-410A)?',o:['380 psig — R-410A PT chart at 109°F SCT','103°F — SCT 109°F minus ~6°F (subcooling approaches 10°F target)','44°F — Leaving air 59°F minus ~15°F evaporator TD','123 psig — R-410A PT chart at 44°F SST'],a:3,ex:['Incorrect. This is the definition of High side pressure (R-410A), not Low side pressure (R-410A).','Incorrect. This is the definition of Liquid line temperature, not Low side pressure (R-410A).','Incorrect. This is the definition of SST (Saturated Suction Temperature), not Low side pressure (R-410A).','CORRECT — Low side pressure (R-410A) = 123 psig — R-410A PT chart at 44°F SST']},
+{n:172,p:1,t:'mc',q:'R-410A A/C system: house 79°F, outside 93°F, high-efficiency condenser, 10°F subcooling, 12°F superheat. What is: High side pressure (R-410A)?',o:['109°F — Outside 93°F + ~16°F high-efficiency condenser TD','123 psig — R-410A PT chart at 44°F SST','103°F — SCT 109°F minus ~6°F (subcooling approaches 10°F target)','380 psig — R-410A PT chart at 109°F SCT'],a:3,ex:['Incorrect. This is the definition of SCT (Saturated Condensing Temperature), not High side pressure (R-410A).','Incorrect. This is the definition of Low side pressure (R-410A), not High side pressure (R-410A).','Incorrect. This is the definition of Liquid line temperature, not High side pressure (R-410A).','CORRECT — High side pressure (R-410A) = 380 psig — R-410A PT chart at 109°F SCT']},
+{n:173,p:2,t:'mc',q:'Two common types of evaporators used in chillers are the __________ and the __________ type systems.',o:['Flooded and DX (Direct Expansion)','Flooded and Shell-and-tube','DX and Plate-type','Air-cooled and Water-cooled'],a:0,ex:['CORRECT — The two standard chiller evaporator types are FLOODED (tubes submerged in liquid refrigerant on the shell side) and DX/Direct Expansion (refrigerant inside the tubes, controlled by a TXV).','Incorrect. Shell-and-tube describes the heat exchanger construction, not the evaporator type. Both flooded and DX can use shell-and-tube designs.','Incorrect. Plate-type is a heat exchanger style, not one of the two main chiller evaporator classifications.','Incorrect. Air-cooled and water-cooled describe condenser types, not evaporator types.']},
+{n:174,p:2,t:'mc',q:'What are the recommended joining procedures for refrigerant piping? (Select the best answer)',o:['Brazing with 15% Sil-fos only','Brazing with 45% silver only','50-50 solder only','Brazing with Sil-fos AND brazing with 45% silver'],a:3,ex:['Partially correct but incomplete — 45% silver brazing is also acceptable.','Partially correct but incomplete — Sil-fos brazing is also acceptable.','Incorrect. 50-50 solder lacks the strength and temperature resistance required for refrigeration joints. It is NOT acceptable.','CORRECT — Both brazing with 15% Sil-fos (for copper-to-copper joints) and brazing with 45% silver (for copper-to-brass/steel joints) are acceptable. 50-50 solder is NOT acceptable for refrigeration.']}];
+
+const L='ABCDEFGHIJ',TL={mc:'Multiple Choice',tf:'True / False',fill:'Fill in the Blank',short:'Short Answer',essay:'Essay',num:'Numerical'};
+const TP=Q.reduce((s,q)=>s+q.p,0);
+let S={scr:'start',mode:'practice',i:0,ans:{},txt:{},chk:{},sg:false,graded:false,flt:'all',shuf:null};
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function qs(){return S.shuf||Q;}
+
+// Calculate running score
+function calcScore(){
+const all=qs();
+let cor=0,wrg=0,pts=0,maxPts=0,checked=0;
+all.forEach(q=>{
+if(!S.chk[q.n]) return;
+if(q.a===-1) return; // skip non-gradable
+checked++;
+maxPts+=q.p;
+if(S.ans[q.n]===q.a){cor++;pts+=q.p;}
+else if(S.ans[q.n]!==undefined){wrg++;}
+});
+const gradable=all.filter(q=>q.a!==-1).length;
+const totalGradablePts=all.filter(q=>q.a!==-1).reduce((s,q)=>s+q.p,0);
+const pct=maxPts>0?Math.round((pts/maxPts)*100):0;
+return {cor,wrg,pts,maxPts,checked,pct,gradable,totalGradablePts};
+}
+
+function scoreBarHTML(){
+const sc=calcScore();
+const isExam=S.mode==='exam'&&!S.graded;
+const noData=sc.checked===0;
+const pctColor=sc.pct>=70?'var(--ok)':sc.pct>=50?'var(--warn)':'var(--no)';
+const barColor=sc.pct>=70?'var(--ok)':sc.pct>=50?'var(--warn)':'var(--no)';
+
+return `<div class="score-bar${isExam?' exam-mode':''}${noData?' no-data':''}">
+<div class="sc-section">
+<div class="sc-val" style="color:var(--ok)">${sc.cor}</div>
+<div class="sc-lbl">Correct</div>
+</div>
+<div class="sc-section">
+<div class="sc-val" style="color:var(--no)">${sc.wrg}</div>
+<div class="sc-lbl">Wrong</div>
+</div>
+<div class="sc-section">
+<div class="sc-val" style="color:var(--accent)">${sc.pts}<span style="font-size:.65em;color:var(--text2)">/${sc.checked>0?sc.maxPts:sc.totalGradablePts}</span></div>
+<div class="sc-lbl">Points</div>
+</div>
+<div class="sc-pct-wrap">
+<div class="sc-pct-bar"><div class="sc-pct-fill" style="width:${noData?0:sc.pct}%;background:${barColor}"></div></div>
+<div class="sc-pct-num" style="color:${noData?'var(--text2)':pctColor}">${noData?'—':sc.pct+'%'}</div>
+</div>
+</div>`;
+}
+
+function render(){
+const el=document.getElementById('app');
+if(S.scr==='start')return rStart(el);
+if(S.scr==='quiz')return rQuiz(el);
+if(S.scr==='results')return rResults(el);
+}
+
+function rStart(el){
+el.innerHTML=`<div class="start">
+<h1>🔬 Adv. Refrigeration Final</h1>
+<p class="sub">174 Questions — HVAC/R Advanced Refrigeration</p>
+<div class="stats">
+<div class="sb"><div class="v">174</div><div class="l">Questions</div></div>
+<div class="sb"><div class="v">${TP}</div><div class="l">Total Points</div></div>
+<div class="sb"><div class="v">174</div><div class="l">Explanations</div></div>
+</div>
+<div class="modes">
+<div class="mb ${S.mode==='practice'?'on':''}" onclick="setM('practice')"><h3>✅ Practice</h3><p>Check answers as you go with full explanations for every choice.</p></div>
+<div class="mb ${S.mode==='exam'?'on':''}" onclick="setM('exam')"><h3>📝 Exam</h3><p>No feedback until submit. Simulates real test conditions.</p></div>
+<div class="mb ${S.mode==='shuffle'?'on':''}" onclick="setM('shuffle')"><h3>🔀 Shuffle</h3><p>Randomized order with instant explanations. Great for review.</p></div>
+</div>
+<button class="go" onclick="startQ()">Start Exam</button>
+<p class="disclaimer">Answer key based on engineering principles. Verify with your course materials.</p>
+</div>`;}
+
+function rQuiz(el){
+const all=qs(),q=all[S.i],done=S.ans[q.n]!==undefined,checked=S.chk[q.n],isT=q.o.length===0;
+const prog=Object.keys(S.ans).length+Object.keys(S.txt).filter(k=>S.txt[k]).length;
+let grid='';
+if(S.sg){grid=`<div class="gp"><div class="gr">${all.map((qq,i)=>{
+let c='gd';if(i===S.i)c+=' cur';
+if(S.ans[qq.n]!==undefined||S.txt[qq.n])c+=' ans';
+if(S.chk[qq.n]&&S.ans[qq.n]===qq.a)c+=' gc';
+if(S.chk[qq.n]&&S.ans[qq.n]!==undefined&&S.ans[qq.n]!==qq.a)c+=' gw';
+return`<div class="${c}" onclick="go(${i})">${qq.n}</div>`;}).join('')}</div></div>`;}
+
+let opts='';
+if(!isT){
+opts=`<div class="opts">${q.o.map((o,i)=>{
+let c='op';
+if(S.ans[q.n]===i)c+=' sel';
+if(checked){c+=' dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a){c='op cor dis';}}
+let exH='';
+if(checked&&q.ex&&q.ex[i]){
+const isC=i===q.a;
+exH=`<div class="ex-box ${isC?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}" onclick="sel(${q.n},${i})"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('')}</div>`;
+}else{
+const v=S.txt[q.n]||'';const rows=q.t==='essay'?5:2;
+opts=`<textarea class="ti" rows="${rows}" placeholder="Type your answer..." oninput="setT(${q.n},this.value)"${checked?' disabled':''}>${esc(v)}</textarea>`;
+if(checked){
+if(q.h)opts+=`<div class="hint"><div class="hl">Suggested Answer</div><div class="ht">${esc(q.h)}</div></div>`;
+if(q.ex&&q.ex.length)opts+=`<div class="fill-exps">${q.ex.map(e=>`<div class="fill-exp">${esc(e)}</div>`).join('')}</div>`;
+}}
+
+const canChk=S.mode!=='exam'&&!checked&&(done||(isT&&S.txt[q.n]));
+el.innerHTML=`<div class="hdr">
+<span class="t">🔬 Adv. Refrigeration Final</span>
+<span class="pi">${prog}/${all.length} answered</span>
+<button class="gt" onclick="tg()">${S.sg?'Hide':'Show'} Map</button>
+</div>
+${scoreBarHTML()}
+<div class="pb"><div class="pf" style="width:${(prog/all.length)*100}%"></div></div>
+${grid}
+<div class="qc">
+<div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]||q.t}</span><span class="qp">${q.p} pts</span></div>
+<div class="qq">${esc(q.q)}</div>
+${opts}
+</div>
+<div class="nav">
+<button class="nb" onclick="go(${S.i-1})" ${S.i===0?'disabled':''}>← Prev</button>
+<div class="nc">
+${canChk?`<button class="nb ck" onclick="chk(${q.n})">Check Answer</button>`:''}
+${S.mode==='exam'&&!S.graded?`<button class="nb pr" onclick="submit()" style="background:#f59e0b;border-color:#f59e0b">Submit Exam</button>`:''}
+</div>
+<button class="nb${S.i===all.length-1?' pr':''}" onclick="${S.i===all.length-1?(S.mode==='exam'?'submit()':'showR()'):`go(${S.i+1})`}">${S.i===all.length-1?(S.mode==='exam'?'Submit':'Results'):'Next →'}</button>
+</div>`;}
+
+function rResults(el){
+const all=qs();let cor=0,wrg=0,skip=0,ep=0;
+all.forEach(q=>{if(q.a===-1){skip++;return;}if(S.ans[q.n]===q.a){cor++;ep+=q.p;}else if(S.ans[q.n]!==undefined)wrg++;else skip++;});
+const grd=all.filter(q=>q.a!==-1).length,pct=grd?Math.round(cor/grd*100):0;
+const mp=all.filter(q=>q.a!==-1).reduce((s,q)=>s+q.p,0);
+const cc=pct>=70?'var(--ok)':pct>=50?'var(--warn)':'var(--no)';
+let filt=all;
+if(S.flt==='wrong')filt=all.filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);
+if(S.flt==='correct')filt=all.filter(q=>S.ans[q.n]===q.a);
+if(S.flt==='skipped')filt=all.filter(q=>S.ans[q.n]===undefined&&q.a!==-1);
+if(S.flt==='text')filt=all.filter(q=>q.a===-1);
+
+const rev=filt.map(q=>{
+const isT=q.o.length===0;let os='';
+if(!isT){os=q.o.map((o,i)=>{
+let c='op dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a)c='op cor dis';
+let exH='';if(q.ex&&q.ex[i]){const ic=i===q.a;exH=`<div class="ex-box ${ic?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('');}
+else{
+const v=S.txt[q.n]||'<em style="color:var(--text2)">No answer</em>';
+os=`<div style="padding:8px 12px;background:var(--card2);border-radius:8px;font-size:.88em">${v}</div>`;
+if(q.h)os+=`<div class="hint"><div class="hl">Suggested Answer</div><div class="ht">${esc(q.h)}</div></div>`;
+if(q.ex&&q.ex.length)os+=`<div class="fill-exps">${q.ex.map(e=>`<div class="fill-exp">${esc(e)}</div>`).join('')}</div>`;}
+return`<div class="qc"><div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]}</span><span class="qp">${q.p} pts</span></div><div class="qq">${esc(q.q)}</div><div class="opts">${os}</div></div>`;}).join('');
+
+el.innerHTML=`<div class="res">
+<h2>Exam Results</h2>
+<div class="sc" style="border-color:${cc}"><div class="pct" style="color:${cc}">${pct}%</div><div class="of">${cor} / ${grd}</div></div>
+<div class="rg">
+<div class="rs"><div class="rv" style="color:var(--ok)">${cor}</div><div class="rl">Correct</div></div>
+<div class="rs"><div class="rv" style="color:var(--no)">${wrg}</div><div class="rl">Wrong</div></div>
+<div class="rs"><div class="rv" style="color:var(--text2)">${skip}</div><div class="rl">Skipped</div></div>
+<div class="rs"><div class="rv" style="color:var(--accent)">${ep}/${mp}</div><div class="rl">Points</div></div>
+</div>
+<div class="ra">
+<button class="nb" onclick="reset()">← Start Over</button>
+<button class="nb pr" onclick="retry()">Retry Wrong</button></div><div style="text-align:center;margin-top:10px"><button class="print-btn" onclick="window.print()">🖶 Print Results</button>
+</div>
+</div>
+<div style="padding:0 4px">
+<div class="ft">
+<button class="fb ${S.flt==='all'?'on':''}" onclick="setF('all')">All (${all.length})</button>
+<button class="fb ${S.flt==='wrong'?'on':''}" onclick="setF('wrong')">Wrong (${wrg})</button>
+<button class="fb ${S.flt==='correct'?'on':''}" onclick="setF('correct')">Correct (${cor})</button>
+<button class="fb ${S.flt==='skipped'?'on':''}" onclick="setF('skipped')">Skipped (${skip})</button>
+<button class="fb ${S.flt==='text'?'on':''}" onclick="setF('text')">Written (${all.filter(q=>q.a===-1).length})</button>
+</div>
+${rev}
+</div>`;}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function setM(m){S.mode=m;render();}
+function startQ(){S.scr='quiz';S.i=0;S.ans={};S.txt={};S.chk={};S.graded=false;S.shuf=S.mode==='shuffle'?shuffle(Q):null;render();scrollTo(0,0);}
+function sel(n,i){if(S.chk[n])return;S.ans[n]=i;render();}
+function setT(n,v){S.txt[n]=v;}
+function chk(n){S.chk[n]=true;render();}
+function go(i){const a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
+function tg(){S.sg=!S.sg;render();}
+function submit(){qs().forEach(q=>{S.chk[q.n]=true;});S.graded=true;showR();}
+function showR(){S.scr='results';S.flt='all';render();scrollTo(0,0);}
+function reset(){S.scr='start';S.mode='practice';render();scrollTo(0,0);}
+function setF(f){S.flt=f;render();}
+function retry(){const a=qs().filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);if(!a.length){alert('No wrong answers to retry!');return;}S.shuf=a;S.ans={};S.chk={};S.txt={};S.graded=false;S.scr='quiz';S.i=0;S.mode='practice';render();scrollTo(0,0);}
+document.addEventListener('keydown',e=>{if(S.scr!=='quiz')return;if(e.key==='ArrowRight'){e.preventDefault();go(S.i+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(S.i-1);}const a=qs(),q=a[S.i];if(q.o.length>0&&!S.chk[q.n]){const k='ABCDEFGHIJ'.indexOf(e.key.toUpperCase());if(k>=0&&k<q.o.length)sel(q.n,k);}});
+render();
+
+/* === ENHANCEMENTS === */
+/* === HVAC STUDY TOOL ENHANCEMENTS === */
+
+/* --- ENHANCEMENT CSS --- */
+const ENHANCE_CSS = `
+/* Timer bar */
+.timer-bar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:8px 16px;margin-bottom:10px}
+.timer-display{font-family:monospace;font-size:1.3em;font-weight:700;min-width:70px}
+.timer-bar .timer-label{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.timer-bar.warn .timer-display{color:var(--no);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Reference panel */
+.ref-overlay{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:var(--bg);border-left:2px solid var(--border);z-index:1000;transition:right .3s;overflow-y:auto;padding:20px;box-shadow:-8px 0 32px rgba(0,0,0,.4)}
+.ref-overlay.open{right:0}
+.ref-close{position:absolute;top:12px;right:12px;background:var(--card2);border:1px solid var(--border);border-radius:6px;color:var(--text);width:32px;height:32px;cursor:pointer;font-size:1.1em;display:flex;align-items:center;justify-content:center}
+.ref-tabs{display:flex;gap:4px;margin-bottom:16px}
+.ref-tab{flex:1;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;font-size:.8em;text-align:center;font-family:inherit;font-weight:600}
+.ref-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.ref-content{font-size:.85em;line-height:1.6}
+.ref-content h3{color:var(--accent);font-size:1em;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.ref-content h3:first-child{margin-top:0}
+.ref-content table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.88em}
+.ref-content th{background:var(--card2);color:var(--accent);padding:6px 8px;text-align:left;font-size:.75em;text-transform:uppercase;letter-spacing:.03em}
+.ref-content td{padding:5px 8px;border-bottom:1px solid var(--border);font-family:monospace;font-size:.92em}
+.ref-content tr:hover td{background:var(--card2)}
+.formula{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin:8px 0;font-family:monospace;font-size:.95em;line-height:1.8}
+.formula .fname{color:var(--accent);font-weight:700}
+.formula .fdesc{color:var(--text2);font-size:.85em;font-family:-apple-system,sans-serif}
+
+/* Calculator */
+.calc-overlay{position:fixed;bottom:20px;right:20px;width:280px;background:var(--card);border:2px solid var(--border);border-radius:var(--r);z-index:999;box-shadow:0 8px 32px rgba(0,0,0,.4);display:none}
+.calc-overlay.open{display:block}
+.calc-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)}
+.calc-header span{font-size:.85em;font-weight:600;color:var(--text2)}
+.calc-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.2em}
+.calc-display{background:var(--bg);margin:8px;border-radius:6px;padding:12px;font-family:monospace;font-size:1.3em;text-align:right;color:var(--text);min-height:44px;word-break:break-all}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 8px 8px}
+.calc-btn{padding:12px;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:monospace;font-size:1em;cursor:pointer;text-align:center}
+.calc-btn:hover{background:var(--border)}
+.calc-btn.op{color:var(--accent);font-weight:700}
+.calc-btn.eq{background:var(--accent);color:#fff;border-color:var(--accent)}
+.calc-btn.clr{color:var(--no)}
+
+/* FAB buttons */
+.fab-container{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:998}
+.fab{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2em;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:.2s}
+.fab:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.1)}
+
+/* Stats badge on start screen */
+.stats-history{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;text-align:center}
+.stats-history h3{font-size:.85em;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.stats-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.stat-item{min-width:80px}
+.stat-item .sv{font-size:1.4em;font-weight:700;font-family:monospace}
+.stat-item .sl{font-size:.68em;color:var(--text2);text-transform:uppercase}
+
+/* Weak spots mode button */
+.mb.weak{border-color:var(--no);background:rgba(248,113,113,.04)}
+.mb.weak:hover{border-color:var(--no);background:rgba(248,113,113,.08)}
+.mb.weak h3{color:var(--no)}
+
+/* Timed toggle */
+.timer-toggle{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:16px}
+.timer-toggle label{font-size:.85em;color:var(--text2)}
+.toggle-switch{position:relative;width:44px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;transition:.2s}
+.toggle-switch.on{background:var(--accent)}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s}
+.toggle-switch.on::after{left:23px}
+.timer-input{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:monospace;width:50px;text-align:center;font-size:.9em}
+
+@media(max-width:600px){.ref-overlay{width:100%;right:-100%}.fab-container{bottom:12px;right:12px}.calc-overlay{width:260px;right:12px;bottom:12px}}
+`;
+
+/* --- ENHANCEMENT JS --- */
+function initEnhancements(toolId) {
+  // Inject CSS
+  const style = document.createElement('style');
+  style.textContent = ENHANCE_CSS;
+  document.head.appendChild(style);
+
+  // === PERSISTENT STORAGE ===
+  const STORE_KEY = 'hvac_stats_' + toolId;
+  
+  function loadStats() {
+    try {
+      return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+    } catch(e) { return {}; }
+  }
+  
+  function saveStats(stats) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(stats)); } catch(e) {}
+  }
+  
+  function recordAnswer(qn, correct) {
+    const stats = loadStats();
+    if (!stats[qn]) stats[qn] = { right: 0, wrong: 0, last: 0 };
+    if (correct) stats[qn].right++;
+    else stats[qn].wrong++;
+    stats[qn].last = Date.now();
+    saveStats(stats);
+  }
+  
+  function getWeakQuestions() {
+    const stats = loadStats();
+    return Q.filter(q => {
+      const s = stats[q.n];
+      return s && s.wrong > 0 && (s.wrong >= s.right);
+    });
+  }
+  
+  function getOverallStats() {
+    const stats = loadStats();
+    let totalRight = 0, totalWrong = 0, attempted = 0;
+    for (const k in stats) {
+      totalRight += stats[k].right;
+      totalWrong += stats[k].wrong;
+      if (stats[k].right + stats[k].wrong > 0) attempted++;
+    }
+    return { totalRight, totalWrong, attempted, total: Q.length };
+  }
+  
+  // === SPACED REPETITION WEIGHTING ===
+  function spacedShuffle(questions) {
+    const stats = loadStats();
+    const weighted = [];
+    questions.forEach(q => {
+      const s = stats[q.n];
+      let weight = 1;
+      if (s) {
+        if (s.wrong > s.right) weight = 3;
+        else if (s.wrong > 0 && s.wrong === s.right) weight = 2;
+        else if (s.right > 3) weight = 0.5;
+        // Recency: if answered recently and correct, lower weight
+        const daysSince = (Date.now() - (s.last || 0)) / 86400000;
+        if (daysSince < 1 && s.right > s.wrong) weight *= 0.5;
+      } else {
+        weight = 1.5; // never seen = slightly boost
+      }
+      for (let i = 0; i < Math.ceil(weight); i++) weighted.push(q);
+    });
+    // Shuffle the weighted array then deduplicate keeping first occurrence
+    const shuffled = weighted.sort(() => Math.random() - 0.5);
+    const seen = new Set();
+    return shuffled.filter(q => { if (seen.has(q.n)) return false; seen.add(q.n); return true; });
+  }
+
+  // === TIMER ===
+  let timerInterval = null;
+  let timerSeconds = 0;
+  let timerEnabled = false;
+  let timerMinutes = 75; // default seconds per question
+  
+  function startTimer(questionCount) {
+    stopTimer();
+    timerSeconds = Math.ceil(questionCount * 1.25) * 60; // 1.25 min per question
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      updateTimerDisplay();
+      if (timerSeconds <= 0) {
+        stopTimer();
+        if (typeof submit === 'function') submit();
+      }
+    }, 1000);
+  }
+  
+  function stopTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  
+  function updateTimerDisplay() {
+    const el = document.getElementById('timer-display');
+    if (!el) return;
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    el.textContent = m + ':' + String(s).padStart(2, '0');
+    const bar = document.querySelector('.timer-bar');
+    if (bar) bar.className = 'timer-bar' + (timerSeconds < 120 ? ' warn' : '');
+  }
+  
+  function getTimerHTML() {
+    if (!timerEnabled || !timerInterval) return '';
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    return '<div class="timer-bar"><span class="timer-label">Time Left</span><span class="timer-display" id="timer-display">' + m + ':' + String(s).padStart(2, '0') + '</span></div>';
+  }
+
+  // === REFERENCE PANEL ===
+  function createRefPanel() {
+    if (document.getElementById('ref-panel')) return;
+    const div = document.createElement('div');
+    div.id = 'ref-panel';
+    div.className = 'ref-overlay';
+    div.innerHTML = '<button class="ref-close" onclick="toggleRef()">\u2715</button>' +
+      '<div class="ref-tabs">' +
+      '<button class="ref-tab active" onclick="showRefTab(\'pt\',this)">PT Charts</button>' +
+      '<button class="ref-tab" onclick="showRefTab(\'formulas\',this)">Formulas</button>' +
+      '</div>' +
+      '<div id="ref-pt" class="ref-content">' + getPTContent() + '</div>' +
+      '<div id="ref-formulas" class="ref-content" style="display:none">' + getFormulaContent() + '</div>';
+    document.body.appendChild(div);
+  }
+  
+  window.toggleRef = function() {
+    createRefPanel();
+    document.getElementById('ref-panel').classList.toggle('open');
+    // Close calc if open
+    const calc = document.getElementById('calc-panel');
+    if (calc) calc.classList.remove('open');
+  };
+  
+  window.showRefTab = function(tab, btn) {
+    document.getElementById('ref-pt').style.display = tab === 'pt' ? '' : 'none';
+    document.getElementById('ref-formulas').style.display = tab === 'formulas' ? '' : 'none';
+    document.querySelectorAll('.ref-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  };
+
+  function getPTContent() {
+    return '<h3>R-410A</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-20,20.7],[0,48.8],[10,65.5],[20,84.2],[25,94.3],[30,105],[35,116],[40,128],[44,138],[50,152],[60,179],[70,208],[80,241],[90,268],[95,283],[100,296],[105,314],[110,331],[115,349],[120,367],[130,406]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>R-22</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-40,-0.5],[0,24],[10,33],[20,43],[30,54.9],[40,68.5],[50,84],[60,102],[70,122],[80,143.6],[90,167.4],[100,196],[110,226],[120,260],[130,296],[140,335]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>R-134a</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-20,-2.4],[0,6.5],[10,12],[20,18.4],[25,22],[30,26],[35,30.4],[40,35.1],[45,40.2],[50,45.7],[55,51.6],[60,57.9],[70,71.4],[80,86.4],[90,103],[98,117],[100,120],[110,138],[120,158]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>Quick Reference</h3><div class="formula"><div class="fdesc">Water: 0.433 psi per foot of head</div><div class="fdesc">1 ton = 12,000 BTU/hr</div><div class="fdesc">Atmospheric: 14.7 psi = 29.92" Hg</div><div class="fdesc">1" Hg \u2248 0.491 psi</div><div class="fdesc">Water density: 62.4 lbs/ft\u00b3 = 8.33 lbs/gal</div><div class="fdesc">7.48 gallons per ft\u00b3</div></div>';
+  }
+  
+  function getFormulaContent() {
+    return '<h3>Heat Calculations</h3>' +
+      '<div class="formula"><div class="fname">BTU = SH \u00d7 W \u00d7 \u0394T</div><div class="fdesc">Sensible heat: Specific Heat \u00d7 Weight (lbs) \u00d7 Temp Difference</div></div>' +
+      '<div class="formula"><div class="fname">BTU = LH \u00d7 W</div><div class="fdesc">Latent heat: Latent Heat value \u00d7 Weight (lbs)</div><div class="fdesc">Ice: 144 BTU/lb &bull; Steam: 970.4 BTU/lb</div></div>' +
+      '<div class="formula"><div class="fname">1 Ton = 12,000 BTU/hr</div><div class="fdesc">Tons = Total BTU \u00f7 12,000 (per hour)</div></div>' +
+      '<h3>Pressure & Head</h3>' +
+      '<div class="formula"><div class="fname">P = H \u00d7 0.433</div><div class="fdesc">Pressure (psi) = Height of water (ft) \u00d7 0.433 psi/ft</div></div>' +
+      '<div class="formula"><div class="fname">PSIA = PSIG + 14.7</div><div class="fdesc">Absolute = Gauge + Atmospheric</div></div>' +
+      '<div class="formula"><div class="fname">Compression Ratio = Discharge (psia) \u00f7 Suction (psia)</div><div class="fdesc">Always convert to ABSOLUTE first!</div></div>' +
+      '<h3>Refrigeration</h3>' +
+      '<div class="formula"><div class="fname">Superheat = Actual Temp \u2212 Saturation Temp</div><div class="fdesc">Measured at suction line leaving evaporator</div></div>' +
+      '<div class="formula"><div class="fname">Subcooling = Saturation Temp \u2212 Actual Temp</div><div class="fdesc">Measured at liquid line leaving condenser</div></div>' +
+      '<div class="formula"><div class="fname">Net Oil Pressure = Oil Gauge \u2212 Suction Pressure</div><div class="fdesc">Actual lubrication pressure above crankcase</div></div>' +
+      '<div class="formula"><div class="fname">Water Flow: 3 GPM/ton</div><div class="fdesc">Standard for recirculated water-cooled condensers (10\u00b0F \u0394T)</div></div>' +
+      '<h3>Volume & Density</h3>' +
+      '<div class="formula"><div class="fname">V = \u03c0r\u00b2h</div><div class="fdesc">Cylinder volume (ft\u00b3) &bull; \u00d7 7.48 for gallons</div></div>' +
+      '<div class="formula"><div class="fname">D = W \u00f7 V</div><div class="fdesc">Density = Weight \u00f7 Volume &bull; Water = 62.4 lbs/ft\u00b3</div></div>' +
+      '<h3>Temperature</h3>' +
+      '<div class="formula"><div class="fname">\u00b0C = (\u00b0F \u2212 32) \u00d7 5/9</div><div class="fdesc">Fahrenheit to Celsius</div></div>' +
+      '<div class="formula"><div class="fname">\u00b0F = (\u00b0C \u00d7 9/5) + 32</div><div class="fdesc">Celsius to Fahrenheit</div></div>' +
+      '<h3>Expansion</h3>' +
+      '<div class="formula"><div class="fname">EL = L \u00d7 \u0394T \u00d7 COE</div><div class="fdesc">Expansion (ft) = Length \u00d7 Temp Diff \u00d7 Coefficient</div><div class="fdesc">Steel COE \u2248 0.0000067 per \u00b0F</div></div>' +
+      '<h3>Steam</h3>' +
+      '<div class="formula"><div class="fname">BTU released = (h<sub>steam</sub> \u2212 h<sub>water</sub>) \u00d7 lbs</div><div class="fdesc">Use steam tables for enthalpy values at operating pressure</div></div>' +
+      '<div class="formula"><div class="fname">Vacuum: 1" Hg \u2248 1 ft water lift</div><div class="fdesc">28" Hg vacuum \u2248 28 ft lift capacity</div></div>';
+  }
+
+  // === CALCULATOR ===
+  let calcDisplay = '0';
+  let calcPrev = null;
+  let calcOp = null;
+  let calcNew = true;
+  
+  function createCalc() {
+    if (document.getElementById('calc-panel')) return;
+    const div = document.createElement('div');
+    div.id = 'calc-panel';
+    div.className = 'calc-overlay';
+    const btns = ['C','(',')','/','7','8','9','*','4','5','6','-','1','2','3','+','0','.','±','='];
+    div.innerHTML = '<div class="calc-header"><span>🖩 Calculator</span><button class="calc-close" onclick="toggleCalc()">\u2715</button></div>' +
+      '<div class="calc-display" id="calc-disp">0</div>' +
+      '<div class="calc-grid">' + btns.map(b => {
+        let cls = 'calc-btn';
+        if ('/*-+'.includes(b)) cls += ' op';
+        if (b === '=') cls += ' eq';
+        if (b === 'C') cls += ' clr';
+        return '<button class="' + cls + '" onclick="calcPress(\'' + b.replace("'","\\'") + '\')">' + b + '</button>';
+      }).join('') + '</div>';
+    document.body.appendChild(div);
+  }
+  
+  window.toggleCalc = function() {
+    createCalc();
+    document.getElementById('calc-panel').classList.toggle('open');
+  };
+  
+  window.calcPress = function(key) {
+    const disp = document.getElementById('calc-disp');
+    if (key === 'C') { calcDisplay = '0'; calcPrev = null; calcOp = null; calcNew = true; }
+    else if (key === '±') { 
+      if (calcDisplay !== '0') calcDisplay = calcDisplay.startsWith('-') ? calcDisplay.slice(1) : '-' + calcDisplay;
+    }
+    else if (key === '=') {
+      try { calcDisplay = String(eval(calcDisplay.replace(/×/g,'*').replace(/÷/g,'/'))); } 
+      catch(e) { calcDisplay = 'Error'; }
+      calcNew = true;
+    }
+    else if ('+-*/'.includes(key)) { calcDisplay += key; calcNew = false; }
+    else if (key === '(' || key === ')') { calcDisplay = (calcNew && calcDisplay === '0' ? '' : calcDisplay) + key; calcNew = false; }
+    else {
+      if (calcNew && calcDisplay === '0') calcDisplay = key;
+      else if (calcNew) { calcDisplay = key; calcNew = false; }
+      else calcDisplay += key;
+      calcNew = false;
+    }
+    disp.textContent = calcDisplay;
+  };
+
+  // === FAB BUTTONS ===
+  function createFABs() {
+    if (document.getElementById('fab-btns')) return;
+    const div = document.createElement('div');
+    div.id = 'fab-btns';
+    div.className = 'fab-container';
+    div.innerHTML = '<button class="fab" onclick="toggleCalc()" title="Calculator">🖩</button>' +
+      '<button class="fab" onclick="toggleRef()" title="Reference">📖</button>';
+    document.body.appendChild(div);
+  }
+
+  // === HOOK INTO EXISTING FUNCTIONS ===
+  
+  // Override the check function to record stats
+  const origChk = window.chk;
+  window.chk = function(n) {
+    origChk(n);
+    // Find the question and record result
+    const allQ = typeof qs === 'function' ? qs() : Q;
+    const q = allQ.find(qq => qq.n === n);
+    if (q && q.a !== -1) {
+      recordAnswer(n, S.ans[n] === q.a);
+    }
+  };
+  
+  // Override submit to record all answers
+  const origSubmit = window.submit;
+  window.submit = function() {
+    const allQ = typeof qs === 'function' ? qs() : Q;
+    allQ.forEach(q => {
+      if (q.a !== -1 && S.ans[q.n] !== undefined) {
+        S.chk[q.n] = true;
+        recordAnswer(q.n, S.ans[q.n] === q.a);
+      }
+    });
+    S.graded = true;
+    if (typeof showR === 'function') showR();
+    stopTimer();
+  };
+  
+  // Override shuffle to use spaced repetition
+  const origShuffle = window.shuffle;
+  window.shuffle = function(arr) {
+    if (S.mode === 'shuffle') return spacedShuffle(arr);
+    return origShuffle(arr);
+  };
+  
+  // Add weak spots mode
+  window.startWeak = function() {
+    const weak = getWeakQuestions();
+    if (!weak.length) { alert('No weak spots yet! Take some quizzes first.'); return; }
+    if (typeof filteredQ === 'function') S.activeQ = weak;
+    else S.shuf = weak;
+    S.scr = 'quiz'; S.i = 0; S.ans = {}; S.txt = {}; S.chk = {}; S.graded = false;
+    S.mode = 'practice';
+    render(); scrollTo(0, 0);
+  };
+  
+  // Enhanced startQ with timer
+  const origStartQ = window.startQ;
+  window.startQ = function() {
+    origStartQ();
+    if (timerEnabled && S.scr === 'quiz') {
+      const count = typeof qs === 'function' ? qs().length : Q.length;
+      startTimer(count);
+    }
+  };
+  
+  // Override reset to stop timer  
+  const origReset = window.reset;
+  window.reset = function() {
+    stopTimer();
+    origReset();
+  };
+  
+  // Override render to add enhancements
+  const origRender = window.render;
+  window.render = function() {
+    origRender();
+    
+    // Add FABs if in quiz mode
+    if (S.scr === 'quiz') {
+      createFABs();
+      document.getElementById('fab-btns').style.display = '';
+      // Add timer if enabled
+      if (timerEnabled && timerInterval) {
+        const hdr = document.querySelector('.hdr');
+        if (hdr && !document.getElementById('timer-display')) {
+          hdr.insertAdjacentHTML('afterend', getTimerHTML());
+        }
+      }
+    } else {
+      const fabs = document.getElementById('fab-btns');
+      if (fabs) fabs.style.display = 'none';
+      // Close panels
+      const ref = document.getElementById('ref-panel');
+      if (ref) ref.classList.remove('open');
+      const calc = document.getElementById('calc-panel');
+      if (calc) calc.classList.remove('open');
+    }
+    
+    // Add stats + weak spots + timer toggle to start screen
+    if (S.scr === 'start') {
+      const stats = getOverallStats();
+      const weak = getWeakQuestions();
+      const startDiv = document.querySelector('.start');
+      if (startDiv && !document.getElementById('enhance-stats')) {
+        // Find the modes div and insert before it
+        const modesDiv = startDiv.querySelector('.modes');
+        if (modesDiv) {
+          // Stats history
+          let statsHTML = '';
+          if (stats.attempted > 0) {
+            const pct = stats.totalRight + stats.totalWrong > 0 ? Math.round(stats.totalRight / (stats.totalRight + stats.totalWrong) * 100) : 0;
+            statsHTML = '<div class="stats-history" id="enhance-stats"><h3>Your History</h3><div class="stats-row">' +
+              '<div class="stat-item"><div class="sv" style="color:var(--ok)">' + stats.totalRight + '</div><div class="sl">Correct</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:var(--no)">' + stats.totalWrong + '</div><div class="sl">Wrong</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:var(--accent)">' + stats.attempted + '/' + stats.total + '</div><div class="sl">Attempted</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:' + (pct >= 70 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : 'var(--no)') + '">' + pct + '%</div><div class="sl">Accuracy</div></div>' +
+              '</div></div>';
+          }
+          
+          // Weak spots button
+          let weakHTML = '';
+          if (weak.length > 0) {
+            weakHTML = '<div class="mb weak" onclick="startWeak()"><h3>\u26a0\ufe0f Weak Spots (' + weak.length + ')</h3><p>Practice questions you\'ve missed. Spaced repetition focuses on your weakest areas.</p></div>';
+          }
+          
+          // Timer toggle
+          const timerHTML = '<div class="timer-toggle" id="timer-toggle">' +
+            '<label>Timed Mode</label>' +
+            '<div class="toggle-switch' + (timerEnabled ? ' on' : '') + '" onclick="toggleTimer()"></div>' +
+            '</div>';
+          
+          modesDiv.insertAdjacentHTML('beforebegin', statsHTML);
+          modesDiv.insertAdjacentHTML('afterend', timerHTML);
+          if (weakHTML) {
+            // Insert weak spots button after the last mode button
+            modesDiv.insertAdjacentHTML('beforeend', weakHTML);
+          }
+        }
+      }
+    }
+  };
+  
+  window.toggleTimer = function() {
+    timerEnabled = !timerEnabled;
+    const sw = document.querySelector('.toggle-switch');
+    if (sw) sw.classList.toggle('on', timerEnabled);
+  };
+  
+  window.clearHistory = function() {
+    if (confirm('Clear all study history for this tool?')) {
+      localStorage.removeItem(STORE_KEY);
+      render();
+    }
+  };
+}
+
+initEnhancements("adv_refrig");
+</script>
+</body>
+</html>

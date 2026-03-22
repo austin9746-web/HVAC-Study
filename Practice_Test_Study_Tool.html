@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0c0e12">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
+<title>Practice Test — HVAC Fundamentals</title>
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--accent2:#2d7dd2;--ok:#34d399;--ok-bg:rgba(52,211,153,.08);--no:#f87171;--no-bg:rgba(248,113,113,.08);--warn:#fbbf24;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:880px;margin:0 auto;padding:16px}
+.start{text-align:center;padding:48px 16px}
+.start h1{font-size:2.2em;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.start .sub{color:var(--text2);margin-bottom:32px}
+.stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.sb{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 22px;min-width:110px}
+.sb .v{font-size:1.7em;font-weight:700;color:var(--accent)}
+.sb .l{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.modes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.mb{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px 20px;cursor:pointer;text-align:left;min-width:220px;transition:.2s}
+.mb:hover{border-color:var(--accent);background:var(--card2)}
+.mb.on{border-color:var(--accent);background:rgba(74,158,255,.06)}
+.mb h3{font-size:.95em;margin-bottom:2px}
+.mb p{font-size:.78em;color:var(--text2)}
+.go{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:12px 44px;font-size:1.05em;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;margin-top:8px}
+.go:hover{background:var(--accent2);transform:translateY(-1px)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;margin-bottom:0;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
+.hdr .t{font-size:.85em;font-weight:600;color:var(--text2)}
+.hdr .pi{font-size:.82em;color:var(--text2);font-family:monospace}
+
+/* === SCORE BAR === */
+.score-bar{display:flex;align-items:center;gap:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin:10px 0;overflow:hidden;min-height:48px}
+.score-bar .sc-section{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 16px;min-width:70px;border-right:1px solid var(--border)}
+.score-bar .sc-section:last-child{border-right:none}
+.score-bar .sc-val{font-size:1.2em;font-weight:700;font-family:monospace;line-height:1.2}
+.score-bar .sc-lbl{font-size:.62em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);line-height:1.2}
+.sc-pct-wrap{flex:1;padding:8px 16px;display:flex;align-items:center;gap:12px;min-width:120px}
+.sc-pct-bar{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;position:relative}
+.sc-pct-fill{height:100%;border-radius:4px;transition:width .4s,background .3s}
+.sc-pct-num{font-size:1.3em;font-weight:700;font-family:monospace;min-width:52px;text-align:right}
+.score-bar.exam-mode{opacity:.5;filter:blur(3px);pointer-events:none;user-select:none}
+.score-bar.no-data .sc-val{color:var(--text2)}
+@media(max-width:500px){.score-bar .sc-section{padding:6px 10px;min-width:54px}.score-bar .sc-val{font-size:1em}.sc-pct-wrap{padding:6px 10px}.sc-pct-num{font-size:1.1em;min-width:44px}}
+
+.pb{height:4px;background:var(--card2);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));border-radius:2px;transition:width .4s}
+.qc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:14px}
+.qm{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.qn{font-family:monospace;font-size:.8em;font-weight:600;color:var(--accent);background:rgba(74,158,255,.1);padding:3px 9px;border-radius:6px}
+.qt{font-size:.75em;color:var(--text2);background:var(--card2);padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+.qp{font-size:.75em;color:var(--warn);margin-left:auto;font-weight:600}
+.qq{font-size:1.05em;line-height:1.6;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.op{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--card2);border:2px solid transparent;border-radius:8px;cursor:pointer;transition:.15s;font-size:.92em;line-height:1.5}
+.op:hover{border-color:var(--border);background:#252a35}
+.op.sel{border-color:var(--accent);background:rgba(74,158,255,.05)}
+.op.cor{border-color:var(--ok);background:var(--ok-bg)}
+.op.wrg{border-color:var(--no);background:var(--no-bg)}
+.op.shw{border-color:var(--ok);background:var(--ok-bg)}
+.op.dis{cursor:default}
+.ol{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.75em;font-weight:600;color:var(--text2);transition:.15s}
+.op.sel .ol{background:var(--accent);color:#fff}
+.op.cor .ol{background:var(--ok);color:#000}
+.op.wrg .ol{background:var(--no);color:#fff}
+.op.shw .ol{background:var(--ok);color:#000}
+.ot{padding-top:2px;flex:1}
+.ex-box{margin-top:8px;padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5;color:var(--text)}
+.ex-box.ex-ok{border-left-color:var(--ok);background:var(--ok-bg)}
+.ex-box.ex-no{border-left-color:var(--no);background:var(--no-bg)}
+.ti{width:100%;background:var(--card2);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:.92em;resize:vertical;min-height:44px}
+.ti:focus{outline:none;border-color:var(--accent)}
+.hint{background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.2);border-radius:8px;padding:12px 14px;margin-top:10px}
+.hint .hl{font-size:.75em;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.hint .ht{font-size:.88em;line-height:1.5}
+.fill-exps{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fill-exp{padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5}
+.nav{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.nb{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 18px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;font-weight:500}
+.nb:hover{background:var(--card2);border-color:var(--text2)}
+.nb.pr{background:var(--accent);border-color:var(--accent);color:#fff}
+.nb.pr:hover{background:var(--accent2)}
+.nb:disabled{opacity:.3;cursor:not-allowed}
+.nc{display:flex;gap:6px;align-items:center}
+.ck{background:var(--warn);border:none;color:#000;font-weight:600}
+.ck:hover{background:#e5a900}
+.gt{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);cursor:pointer;font-size:.8em;font-family:inherit;transition:.15s}
+.gt:hover{border-color:var(--text2);color:var(--text)}
+.gp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:3px}
+.gd{width:100%;aspect-ratio:1;border-radius:5px;border:1px solid var(--border);background:var(--card2);cursor:pointer;font-size:.7em;font-weight:600;display:flex;align-items:center;justify-content:center;transition:.15s;color:var(--text2)}
+.gd:hover{border-color:var(--text2)}
+.gd.cur{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 2px rgba(74,158,255,.15)}
+.gd.ans{background:rgba(74,158,255,.12);border-color:var(--accent);color:var(--accent)}
+.gd.gc{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.gd.gw{background:var(--no-bg);border-color:var(--no);color:var(--no)}
+.res{text-align:center;padding:32px 16px}
+.res h2{font-size:1.8em;margin-bottom:6px}
+.sc{width:160px;height:160px;border-radius:50%;border:5px solid var(--ok);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px auto}
+.sc .pct{font-size:2.8em;font-weight:700}
+.sc .of{font-size:.82em;color:var(--text2)}
+.rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:20px 0}
+.rs{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.rs .rv{font-size:1.4em;font-weight:700}
+.rs .rl{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.ra{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.ft{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.fb{padding:5px 12px;border-radius:18px;border:1px solid var(--border);background:none;color:var(--text2);font-size:.8em;cursor:pointer;font-family:inherit;transition:.15s}
+.fb.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fb:hover{border-color:var(--text2)}
+.disclaimer{margin-top:12px;font-size:.75em;color:var(--text2);opacity:.7}
+@media(max-width:600px){.app{padding:8px}.qc{padding:16px}.start h1{font-size:1.5em}.mb{min-width:100%}.gr{grid-template-columns:repeat(auto-fill,minmax(30px,1fr))}}
+
+/* Back to hub button */
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;text-decoration:none;display:flex;align-items:center;gap:5px;transition:.2s}
+.back-btn:hover{border-color:var(--accent);color:var(--text);background:var(--card2)}
+/* Print results button */
+.print-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 22px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.print-btn:hover{border-color:var(--accent);background:var(--card2)}
+@media print{.back-btn,.fab-container,.calc-overlay,.ref-overlay,.nav,.hdr,.go,.modes,.timer-toggle,.stats-history,.print-btn,.nb{display:none!important}.app{padding:0}.qc{break-inside:avoid;border:1px solid #ccc;margin:8px 0}.start{display:none}.res,.opts,.qc{display:block!important}body{background:#fff;color:#000}.score-bar,.pb{display:none}:root{--card:#fff;--card2:#f5f5f5;--border:#ddd;--text:#000;--text2:#666;--ok:#22c55e;--no:#dc2626;--accent:#2563eb}}
+</style>
+</head>
+<body>
+<a href="index.html" class="back-btn">← Study Hub</a>
+<div class="app" id="app"></div>
+<script>
+const Q=[{n:1,p:2,t:'mc',q:'A cylindrical tank has a radius of 2.5 ft and height of 8 ft. What is it\'s volume in gallons?',o:['1,174.96 gallons','942.48 gallons','1,570.80 gallons','589.05 gallons'],a:0,ex:['CORRECT — V = πr²h = π × 2.5² × 8 = π × 6.25 × 8 = 157.08 ft³. Convert: 157.08 × 7.48 gal/ft³ = 1,174.96 gallons.','Incorrect. Check: V = πr²h = 157.08 ft³ × 7.48 = 1,174.96 gal.','Incorrect. π × 2.5² × 8 = 157.08, not 210 ft³.','Incorrect. Use V = πr²h, then multiply by 7.48 gal/ft³.']},
+{n:2,p:2,t:'mc',q:'A 75-foot column of water exerts what pressure at the bottom?',o:['32.475 psi','21.65 psi','75 psi','43.3 psi'],a:0,ex:['CORRECT — P = H × 0.433 psi/ft = 75 × 0.433 = 32.475 psi.','Incorrect. 21.65 would be 50 ft × 0.433.','Incorrect. Must multiply by 0.433, not use height directly.','Incorrect. 43.3 would be 100 ft × 0.433.']},
+{n:3,p:2,t:'mc',q:'Compound gauge reads 28" Hg barometric, 10" Hg vacuum. What is the actual pressure in psi?',o:['8.84 psi','13.76 psi','18.66 psi','4.91 psi'],a:0,ex:['CORRECT — Net = 28" - 10" = 18" Hg. P = 18 × 0.491 = 8.84 psi.','Incorrect. 28 × 0.491 = 13.76 but you must subtract vacuum first.','Incorrect. Check: (28-10) × 0.491 = 8.84.','Incorrect. 10 × 0.491 = 4.91 uses only the vacuum, not the net.']},
+{n:4,p:2,t:'mc',q:'34.7 PSIA — is this gauge or absolute pressure?',o:['Already absolute (PSIA)','Gauge — need to add 14.7','Vacuum pressure','Cannot determine'],a:0,ex:['CORRECT — PSIA = Pounds per Square Inch Absolute. Already includes atmospheric pressure.','Incorrect. PSIA is already absolute.','Incorrect. 34.7 PSIA is above atmospheric.','Incorrect. The A in PSIA identifies it as absolute.']},
+{n:5,p:2,t:'mc',q:'BTU to heat 50 lbs of steel (SH=0.032) from 75°F to 400°F?',o:['520 BTU','1,600 BTU','325 BTU','16,250 BTU'],a:0,ex:['CORRECT — BTU = SH × W × ΔT = 0.032 × 50 × (400-75) = 0.032 × 50 × 325 = 520 BTU.','Incorrect. 0.032 × 50 × 325 = 520.','Incorrect. 325 is ΔT, not BTU.','Incorrect. 16,250 uses SH=1.0 (water) instead of 0.032 (steel).']},
+{n:6,p:2,t:'mc',q:'200-ft steel pipe heated from 40°F to 353.1°F (COE=0.0000067). Expansion?',o:['About 5 inches (0.42 ft)','About 1 inch','About 2 inches','About 8 inches'],a:0,ex:['CORRECT — EL = L × ΔT × COE = 200 × 313.1 × 0.0000067 = 0.4196 ft ≈ 5.03 inches.','Incorrect. 200 × 313.1 × 0.0000067 = 0.42 ft ≈ 5 inches.','Incorrect. Expansion is about 5 inches for this length and temp rise.','Incorrect. 8 inches is too much — check your COE multiplication.']},
+{n:7,p:2,t:'mc',q:'Latent heat of vaporization for water at atmospheric pressure?',o:['970.4 BTU/lb','144 BTU/lb','180 BTU/lb','212 BTU/lb'],a:0,ex:['CORRECT — 970.4 BTU/lb to convert water at 212°F to steam at 212°F.','Incorrect. 144 is latent heat of FUSION (ice melting).','Incorrect. 180 BTU is sensible heat (32°F to 212°F).','Incorrect. 212°F is the boiling temperature, not latent heat.']},
+{n:8,p:2,t:'mc',q:'Box 24×24×18 inches, weighs 250 lbs. Density? Float in water?',o:['0.0241 lbs/in³ — floats (less dense than water at 0.0361)','0.0241 lbs/in³ — sinks','0.036 lbs/in³ — floats','0.048 lbs/in³ — sinks'],a:0,ex:['CORRECT — V=24×24×18=10,368 in³. D=250/10,368=0.0241. Water=0.0361. Since 0.0241 < 0.0361, it FLOATS.','Incorrect. Less dense than water = floats.','Incorrect. Density is 0.0241, not 0.036.','Incorrect. Density is 0.0241, not 0.048.']},
+{n:9,p:2,t:'mc',q:'Box 18×24×30 inches, weighs 350 lbs. Float or sink?',o:['Floats — density 0.027 < water 0.0361','Sinks — too heavy','Neutral buoyancy','Cannot determine'],a:0,ex:['CORRECT — V=18×24×30=12,960 in³. D=350/12,960=0.027 lbs/in³. Water=0.0361. 0.027<0.0361 → FLOATS.','Incorrect. Weight alone doesn\'t determine — density matters. 0.027 < 0.0361.','Incorrect. Density is clearly less than water.','Incorrect. We can calculate: D=W/V=0.027 < 0.0361.']},
+{n:10,p:2,t:'mc',q:'Convert 650°F to Celsius.',o:['342.95°C','310°C','361°C','282°C'],a:0,ex:['CORRECT — C = (F+40)×0.555−40 = 690×0.555−40 = 382.95−40 = 342.95°C.','Incorrect. (650+40)×0.555−40 = 342.95°C.','Incorrect. Check your conversion formula.','Incorrect. Use C=(F−32)×5/9 or (F+40)×0.555−40.']},
+{n:11,p:2,t:'mc',q:'Pump must supply 50 ft head + 4 psi safety factor. Total pressure needed?',o:['About 26 psi','21.65 psi','50 psi','54 psi'],a:0,ex:['CORRECT — P = 50×0.433 = 21.65 + 4 psi safety = 25.65 ≈ 26 psi.','Incorrect. Must add 4 psi safety factor: 21.65+4=25.65≈26.','Incorrect. Convert feet to psi: 50×0.433=21.65, then add safety.','Incorrect. 54 psi is 50+4 without converting feet to psi.']},
+{n:12,p:2,t:'mc',q:'Why not use 50-50 solder in high-temperature systems?',o:['Lower melting point = weaker joint at high temperatures','Too expensive','Cannot bond to copper','Contains illegal materials'],a:0,ex:['CORRECT — 50-50 solder melts at relatively low temps, making joints weak and prone to failure in high-temp applications. Use brazing instead.','Incorrect. Cost isn\'t the issue — it\'s structural integrity.','Incorrect. 50-50 bonds fine to copper; temp weakness is the problem.','Incorrect. The issue is melting point, not material composition.']},
+{n:13,p:2,t:'mc',q:'What is a compound gauge used for?',o:['Systems operating in both pressure and vacuum ranges','High-pressure steam only','Temperature measurement','Flow rate measurement'],a:0,ex:['CORRECT — Reads both positive pressure and vacuum on one dial. Example: low-pressure chiller evaporator operating in vacuum.','Incorrect. Standard gauges handle high-pressure. Compound gauges handle pressure+vacuum.','Incorrect. Compound gauges measure pressure/vacuum, not temperature.','Incorrect. Flow requires different instruments.']},
+{n:14,p:2,t:'mc',q:'Area of 5-inch radius circle? Force at 150 psi?',o:['78.54 in², 11,781 lbs','25 in², 3,750 lbs','31.42 in², 4,713 lbs','78.54 in², 7,854 lbs'],a:0,ex:['CORRECT — A=πr²=π×25=78.54 in². F=A×P=78.54×150=11,781 lbs.','Incorrect. Area = πr² = 78.54, not r²=25.','Incorrect. 31.42 is circumference (2πr), not area.','Incorrect. F=78.54×150=11,781 not 78.54×100.']},
+{n:15,p:2,t:'mc',q:'Total BTU to cool 50 lbs water from 150°F to 0°F (freeze and cool ice)?',o:['13,900 BTU','5,900 BTU','7,200 BTU','12,100 BTU'],a:0,ex:['CORRECT — Step 1: SH×W×ΔT=1×50×118=5,900 (cool to 32°F). Step 2: LH×W=144×50=7,200 (freeze). Step 3: SH×W×ΔT=0.5×50×32=800 (cool ice to 0°F). Total=5,900+7,200+800=13,900 BTU.','Incorrect. That\'s only Step 1. Need all 3 steps = 13,900.','Incorrect. That\'s only Step 2 (latent heat of fusion).','Incorrect. Missing one calculation step.']},
+{n:16,p:2,t:'mc',q:'How does an inverted bucket trap operate?',o:['Condensate enters → bucket sinks → valve opens; Steam enters → bucket floats → valve closes; Cycle repeats','Steam sinks the bucket; condensate floats it','Bucket spins to separate steam from condensate','Float rises with condensate level'],a:0,ex:['CORRECT — Bucket inverted and open at bottom. Condensate fills trap → bucket sinks → opens valve. Steam enters bucket → buoyancy → floats up → closes valve. Steam condenses → bucket falls → cycle repeats.','Incorrect. Steam provides buoyancy (closes); condensate removes it (opens).','Incorrect. No spinning — it\'s a buoyancy mechanism.','Incorrect. That\'s a float & thermostatic trap, not inverted bucket.']},
+{n:17,p:2,t:'mc',q:'Difference between saturated steam and superheated steam?',o:['Saturated = at boiling point for it\'s pressure; Superheated = heated above boiling point','Saturated = wet; Superheated = any dry steam','Saturated = high pressure; Superheated = low pressure','No practical difference'],a:0,ex:['CORRECT — Saturated steam is at the exact boiling temperature for it\'s pressure. Superheated steam has been heated beyond saturation — contains additional sensible heat.','Incorrect. Both can be dry; distinction is temperature vs saturation point.','Incorrect. Both exist at any pressure — it\'s about temp relative to saturation.','Incorrect. Major practical differences in heat content and behavior.']},
+{n:18,p:2,t:'mc',q:'Why is there no possibility of air entering a closed steam system?',o:['No air-water interface — system is sealed with no expansion tank open to atmosphere','Steam systems run at constant temperature','Pipes are airtight at all temperatures','Air is heavier than steam and sinks out'],a:0,ex:['CORRECT — Unlike hydronic systems with expansion tanks open to atmosphere, steam systems are closed. No air-water interface means no mechanism for air to enter the system.','Incorrect. Steam systems have varying temperatures.','Incorrect. While pipes are sealed, the key is no air entry point like an open expansion tank.','Incorrect. Air density isn\'t the reason — it\'s about system being sealed.']},
+{n:19,p:2,t:'mc',q:'What do low-water cutoffs do?',o:['Maintain safe water level; cut power to burner if water drops below minimum','Regulate steam pressure','Control feedwater pump speed','Measure water temperature'],a:0,ex:['CORRECT — Two safety functions: (1) monitor water level, (2) shut off burner if level drops too low — preventing dry-firing and potential catastrophic failure.','Incorrect. Pressure control is done by the pressuretrol.','Incorrect. Pump speed is a separate control.','Incorrect. Temperature is measured by thermometers/aquastats.']},
+{n:20,p:2,t:'mc',q:'Bernoullis principle: As velocity increases, pressure ___?',o:['Decreases (and vice versa)','Increases','Stays the same','Depends on fluid type'],a:0,ex:['CORRECT — Bernoullis: velocity UP = pressure DOWN, and vice versa. Fundamental to venturis, pump curves, and many HVAC components.','Incorrect. Velocity and static pressure are INVERSELY related.','Incorrect. Pressure definitely changes with velocity.','Incorrect. Applies to all fluids — always inverse relationship.']},
+{n:21,p:2,t:'mc',q:'What is relative humidity?',o:['(Present moisture / Maximum moisture air can hold) × 100%','Temperature where moisture condenses','Total weight of water in air','Difference between wet and dry bulb'],a:0,ex:['CORRECT — RH = (Present Moisture / Max Moisture) × 100. Warmer air holds more moisture, so same water vapor = lower RH at higher temps.','Incorrect. That\'s dew point temperature.','Incorrect. That\'s absolute/specific humidity.','Incorrect. Wet bulb depression relates to RH but isn\'t the definition.']},
+{n:22,p:2,t:'mc',q:'Why pitch refrigerant suction piping downward in flow direction?',o:['For oil return — gravity helps move oil toward the compressor','To increase velocity','To prevent liquid entering evaporator','To reduce noise'],a:0,ex:['CORRECT — Oil is heavier than refrigerant vapor. Downward pitch uses gravity to help move oil back to compressor with the vapor flow.','Incorrect. Pitch doesn\'t significantly affect velocity.','Incorrect. Suction line carries flow FROM evaporator.','Incorrect. Noise reduction isn\'t the purpose.']},
+{n:23,p:2,t:'mc',q:'Why does warm water rise in a hydronic system?',o:['Less dense — lighter molecules rise; cooler denser water falls (convection)','Higher pressure pushes it up','Pump forces it upward','It expands and overflows'],a:0,ex:['CORRECT — Heating expands water, reducing density. Lighter warm water rises, cooler dense water sinks — natural convection.','Incorrect. Warm water has LOWER pressure per unit height.','Incorrect. Natural circulation works without a pump.','Incorrect. Water circulates, it doesn\'t overflow.']},
+{n:24,p:2,t:'mc',q:'What is an air separator?',o:['Where high temp + low velocity allows dissolved air to release from water','A filter removing air','A manual bleed valve','A compressed air storage tank'],a:0,ex:['CORRECT — Installed where water is hottest and slowest (near boiler outlet). Hot water holds less dissolved air; slow velocity lets bubbles separate and rise for removal.','Incorrect. Not a filter — uses thermodynamic principles.','Incorrect. Manual vents are different from automatic air separators.','Incorrect. That\'s an expansion tank.']},
+{n:25,p:2,t:'mc',q:'Three methods of heat transfer?',o:['Conduction, Convection, Radiation','Conduction, Evaporation, Radiation','Sensible, Latent, Radiant','Convection, Compression, Condensation'],a:0,ex:['CORRECT — (1) Conduction: molecular contact. (2) Convection: fluid movement. (3) Radiation: electromagnetic energy rays.','Incorrect. Evaporation is phase change, not a transfer method.','Incorrect. Sensible/latent are heat types, not transfer methods.','Incorrect. Compression/condensation are processes, not transfer methods.']},
+{n:26,p:2,t:'mc',q:'How does a pop safety valve work?',o:['Opens at set pressure (2-3 psi above rated), modulates, recloses automatically','Opens gradually, must be manually reset','Bursts and must be replaced','Opens only on high temperature'],a:0,ex:['CORRECT — Opens quickly at set pressure, modulates (weeps) as it approaches set point, recloses when pressure drops. For hot water, a relief valve is used.','Incorrect. Pop valves reclose automatically.','Incorrect. That\'s a rupture disc.','Incorrect. Pop valves respond to PRESSURE, not temperature.']},
+{n:27,p:2,t:'mc',q:'What is a vacuum reading?',o:['Pressure below atmospheric (below barometric)','Any pressure above 14.7 psi','Compressor pressure','Sea level pressure'],a:0,ex:['CORRECT — Vacuum = pressure BELOW atmospheric. Measured in inches Hg below the barometric reading (~29.92" Hg at sea level).','Incorrect. Above 14.7 is positive gauge pressure.','Incorrect. Compressors typically operate above atmospheric.','Incorrect. Sea level pressure is the reference, not a vacuum.']},
+{n:28,p:2,t:'mc',q:'What is absolute pressure?',o:['Atmospheric + gauge pressure (or atmospheric − vacuum reading)','Same as gauge pressure','Only measured at sea level','Maximum system pressure'],a:0,ex:['CORRECT — PSIA = PSIG + 14.7. In vacuum: PSIA = atmospheric − vacuum reading. Always positive.','Incorrect. Gauge reads zero at atmospheric; absolute reads 14.7.','Incorrect. Can be measured anywhere.','Incorrect. Max pressure is a design spec, not absolute pressure.']},
+{n:29,p:2,t:'mc',q:'How does air leave a steam heating coil and return to the boiler?',o:['Through the trap → condensate piping → receiver → vented to atmosphere','Through a dedicated air return line','Absorbed into condensate','Exits through safety valve'],a:0,ex:['CORRECT — Air enters with steam, gets pushed ahead, passes through trap with condensate, travels to receiver, vented at the air gap.','Incorrect. No separate air line — air travels with condensate.','Incorrect. Air must be physically vented, not absorbed.','Incorrect. Safety valves are for overpressure, not air removal.']},
+{n:30,p:2,t:'mc',q:'How is pump flow controlled by throttling?',o:['Restricting flow at the pump discharge with a valve','Changing pump speed only','Adjusting impeller size','Adding more water'],a:0,ex:['CORRECT — Partially closing a discharge valve increases resistance and reduces flow. Traditional balancing method.','Incorrect. Variable speed is different from throttling.','Incorrect. Impeller trimming is permanent, not operational.','Incorrect. Adding water doesn\'t control flow rate.']},
+{n:31,p:2,t:'mc',q:'What does a cooling tower do?',o:['Cools water by evaporation — performance depends on wet bulb temperature','Refrigerates water with a compressor','Cools water through underground pipes','Mixes hot water with cold makeup'],a:0,ex:['CORRECT — Cooling towers cool water through EVAPORATION. Rate depends on WET BULB temp (not dry bulb). Can cool water to within a few degrees of wet bulb.','Incorrect. No mechanical refrigeration — evaporative cooling.','Incorrect. That\'s geothermal.','Incorrect. Mixing is not the cooling mechanism.']},
+{n:32,p:2,t:'mc',q:'Three purposes of evacuation on a refrigeration system?',o:['1) Verify no leaks, 2) Remove moisture, 3) Remove non-condensables from oil','1) Cool system, 2) Test components, 3) Remove refrigerant','1) Clean piping, 2) Remove oil, 3) Test compressor','1) Pressurize, 2) Check valves, 3) Dry filter'],a:0,ex:['CORRECT — (1) Leak verification (holds vacuum). (2) Moisture removal (lowers waters boiling point). (3) Removes air, non-condensables, and dissolved gases from oil.','Incorrect. Evacuation doesn\'t cool or remove refrigerant.','Incorrect. Removes moisture/gas, not oil or physical debris.','Incorrect. Evacuation pulls vacuum, not positive pressure.']},
+{n:33,p:2,t:'mc',q:'What is a sub-cooled liquid?',o:['Liquid below condensing temperature for it\'s pressure','Liquid at it\'s boiling point','Liquid above saturation','Liquid-vapor mixture'],a:0,ex:['CORRECT — Below saturation temp at it\'s pressure. 100% liquid, no vapor. Example: liquid line refrigerant cooled below condensing temp.','Incorrect. At boiling point = saturated.','Incorrect. Above saturation = vaporizing.','Incorrect. Liquid-vapor mix = saturated mixture.']},
+{n:34,p:2,t:'mc',q:'What is a refrigerant?',o:['Heat-absorbing fluid that changes state by boiling/evaporation','Any cold liquid','A gas that can\'t be compressed','A chemical that only absorbs heat'],a:0,ex:['CORRECT — Designed to absorb heat by evaporating at low temp/pressure and reject heat by condensing at higher temp/pressure. Phase change is key.','Incorrect. Many cold liquids arent refrigerants — phase change is the key.','Incorrect. Refrigerants ARE compressible — that\'s how compressors work.','Incorrect. Refrigerants both absorb AND reject heat.']},
+{n:35,p:2,t:'mc',q:'What is a backflow preventer in a boiler system for?',o:['Prevents water from backing out due to pressure differences; maintains safe level','Increases flow rate','Filters debris','Regulates steam pressure'],a:0,ex:['CORRECT — Prevents boiler water from flowing backward due to pressure differences or leaks. Maintains safe water level.','Incorrect. Check valves prevent reverse flow, they don\'t increase forward flow.','Incorrect. Strainers filter debris.','Incorrect. Pressure controls regulate pressure.']},
+{n:36,p:2,t:'mc',q:'Low-pressure boiler fittings: ASME pressure rating for steam? For water/oil/gas?',o:['125 psi steam, 200 psi water/oil/gas','15 psi steam, 30 psi water','250 psi steam, 500 psi water','50 psi steam, 100 psi water'],a:0,ex:['CORRECT — Standard ASME: 125 psi for steam, 200 psi for water/oil/gas.','Incorrect. 15 psi is max OPERATING pressure, not fitting rating.','Incorrect. 250 psi is high-pressure rating.','Incorrect. Not standard ASME values.']},
+{n:37,p:2,t:'mc',q:'Mixing valve vs diverting valve?',o:['Mixing: 2 in, 1 out (blends). Diverting: 1 in, 2 out (splits).','They are identical','Mixing is for gas; diverting for liquid','Mixing is larger than diverting'],a:0,ex:['CORRECT — MIXING: 2 inlets + 1 outlet, blends hot+cold. DIVERTING: 1 inlet + 2 outlets, splits flow between paths.','Incorrect. Very different port configurations and functions.','Incorrect. Both are for hydronic water systems.','Incorrect. Size depends on pipe, not valve type.']},
+{n:38,p:2,t:'mc',q:'What determines static pressure in a hydronic system?',o:['Water HEIGHT: P = H × 0.433 psi/ft','Pump speed','Water temperature only','Pipe diameter'],a:0,ex:['CORRECT — Static pressure = height of water column × 0.433 psi/ft. A 100-ft building has 43.3 psi at the bottom.','Incorrect. Pump speed affects dynamic/flow pressure, not static.','Incorrect. Temp affects density slightly but height is primary.','Incorrect. Pipe diameter affects velocity and friction, not static head.']},
+{n:39,p:2,t:'mc',q:'What is a vacuum breaker?',o:['Opens to admit air when steam collapse creates vacuum','Creates vacuum in the system','Prevents overpressure','Removes air from system'],a:0,ex:['CORRECT — When steam condenses rapidly, volume reduction creates vacuum. Vacuum breaker admits air to prevent pipe collapse and allow proper drainage.','Incorrect. It RELIEVES vacuum, doesn\'t create it.','Incorrect. Safety/relief valves handle overpressure.','Incorrect. Air vents and traps remove air.']},
+{n:40,p:2,t:'mc',q:'When hot high-pressure condensate enters a lower pressure area, what happens?',o:['Some flashes to steam — temperature drops to new boiling point','Condensate freezes','Nothing changes','Temperature increases'],a:0,ex:['CORRECT — Excess heat above the new saturation temp causes some condensate to re-evaporate (flash steam). Temp drops to the new lower boiling point.','Incorrect. Condensate is far too hot to freeze.','Incorrect. Pressure drop causes flash steam — significan\'t change.','Incorrect. Temp DROPS to new saturation temperature.']},
+{n:41,p:2,t:'mc',q:'Globe valve vs gate valve?',o:['Globe: throttles flow, high ΔP. Gate: fully open/closed, low ΔP.','Identical in function','Globe for gas only; gate for liquid','Globe is bigger than gate'],a:0,ex:['CORRECT — Globe valves THROTTLE (modulate) flow with high pressure drop. Gate valves are for ISOLATION (full open/closed) with minimal ΔP. Never throttle a gate valve.','Incorrect. Very different functions and designs.','Incorrect. Both handle gas and liquid.','Incorrect. Size depends on pipe.']},
+{n:42,p:2,t:'mc',q:'Why use eccentric reducer (flat on top) in steam piping?',o:['Keeps bottom flat to prevent condensate pockets and water hammer','Reduces cost','Easier to install','Creates higher velocity'],a:0,ex:['CORRECT — Flat side on TOP keeps bottom of pipe level, preventing condensate pooling in pockets that cause dangerous water hammer. Also helps air pockets rise for removal.','Incorrect. Safety (preventing water hammer) is the reason.','Incorrect. Installation ease isn\'t the primary concern.','Incorrect. Purpose is drainage, not velocity.']},
+{n:43,p:2,t:'mc',q:'Three purposes of a steam trap?',o:['1) Remove condensate, 2) Remove non-condensables (air), 3) Hold back live steam','1) Create vacuum, 2) Filter steam, 3) Regulate pressure','1) Remove oil, 2) Control temp, 3) Measure flow','1) Stop leaks, 2) Reduce noise, 3) Control pressure'],a:0,ex:['CORRECT — (1) Discharge condensate promptly. (2) Remove air/non-condensables quickly (they insulate and cause corrosion). (3) Prevent live steam from escaping the system.','Incorrect. Traps don\'t create vacuum, filter, or regulate pressure.','Incorrect. Traps handle condensate/air/steam.','Incorrect. Traps manage condensate/air/steam, not leaks/noise/pressure.']},
+{n:44,p:2,t:'mc',q:'Why must condensate be at atmospheric pressure to enter a gravity-return boiler?',o:['Must overcome boiler pressure — if boiler pressure is higher, condensate backs up','Condensate must be cooled first','Pump requires atmospheric pressure','Boiler operates at vacuum'],a:0,ex:['CORRECT — In gravity return, condensate must have equal or higher pressure than boiler to flow in. If boiler steam pressure exceeds return pressure, condensate backs up.','Incorrect. Temperature isn\'t the issue — pressure differential is.','Incorrect. Gravity systems may not have a pump.','Incorrect. Low-pressure boilers operate ABOVE atmospheric.']},
+{n:45,p:2,t:'mc',q:'What is a blowdown tank for?',o:['Receives hot blowdown water so temp/pressure can reduce before draining','Stores clean water','Collects steam for recovery','Measures water quality'],a:0,ex:['CORRECT — Receives high-temp/pressure blowdown, allows safe reduction before discharge to drain. Prevents damage to drainage system.','Incorrect. Clean water storage is the feedwater tank.','Incorrect. Primary purpose is safe temp/pressure reduction.','Incorrect. Water quality testing is done by chemical analysis.']},
+{n:46,p:2,t:'mc',q:'What does a backflow preventer do on a boiler?',o:['Prevents boiler water from backing out; maintains safe water level in condensate piping','Increases water flow','Filters the water','Regulates pressure'],a:0,ex:['CORRECT — Prevents boiler water from backing into return piping due to pressure differences or leaks. Maintains safe water level.','Incorrect. Check valves prevent reverse flow, not increase forward flow.','Incorrect. Filtration is done by strainers.','Incorrect. Pressure regulation is a separate function.']},
+{n:47,p:2,t:'mc',q:'ASME fitting rating: low-pressure boiler fittings are rated for what?',o:['125 psi steam or 200 psi water, oil, gas','15 psi steam or 30 psi water','250 psi steam or 500 psi water','50 psi or 100 psi'],a:0,ex:['CORRECT — Standard ASME rated: 125 psi steam service, 200 psi water/oil/gas service.','Incorrect. 15 psi is the OPERATING limit, not the fitting rating.','Incorrect. Those are high-pressure ratings.','Incorrect. Not standard ASME values.']},
+{n:48,p:2,t:'mc',q:'What does feedwater treatment do?',o:['Removes air and impurities to prevent corrosion and scale','Heats feedwater to boiling','Increases pressure','Adds fragrance to steam'],a:0,ex:['CORRECT — Removes dissolved oxygen (pitting), minerals (scale), CO₂ (carbonic acid), and impurities that damage the boiler.','Incorrect. Heating is done by deaerator/economizer.','Incorrect. Pressure is increased by the feedwater pump.','Incorrect. Treatment prevents corrosion/scale.']},
+{n:49,p:2,t:'mc',q:'Steam at 10 psi has enthalpy 1,160.4 BTU/lb, water enthalpy 148 BTU. BTU released when 20 lbs condenses and cools?',o:['20,248 BTU','23,208 BTU','14,800 BTU','1,012 BTU'],a:0,ex:['CORRECT — Per lb: 1,160.4 − 148.0 = 1,012.4 BTU/lb. For 20 lbs: 1,012.4 × 20 = 20,248 BTU.','Incorrect. (1160.4−148)×20 = 1012.4×20 = 20,248.','Incorrect. 148×100 is not the correct formula.','Incorrect. 1,012.4 is per POUND — multiply by 20.']},
+{n:50,p:2,t:'mc',q:'How does a manometer work?',o:['U-tube with water — gas pushes one column down, height difference = pressure in inches W.C.','Spinning wheel measures flow','Mercury expansion measures temp','Wet wick measures humidity'],a:0,ex:['CORRECT — U-tube partially filled with water. Gas pushes water down on one side and up on the other. Height difference in inches = gas pressure in inches water column (W.C.).','Incorrect. That\'s a flow meter.','Incorrect. That\'s a thermometer.','Incorrect. That\'s a psychrometer.']},
+{n:51,p:2,t:'mc',q:'Three functions of the compressor?',o:['1) Creates pressurized flow, 2) Raises saturation temp above condensing medium, 3) Lowers evaporator pressure','1) Cools refrigerant, 2) Filters oil, 3) Measures pressure','1) Creates vacuum, 2) Heats condenser, 3) Stores refrigerant','1) Pumps liquid, 2) Removes moisture, 3) Controls superheat'],a:0,ex:['CORRECT — (1) Vapor pump creating flow. (2) Raises discharge saturation temp above condenser medium so heat can be rejected. (3) Keeps evaporator pressure low for cold temps.','Incorrect. Compressor doesn\'t cool, filter, or measure.','Incorrect. Compressor doesn\'t create vacuum, directly heat condenser, or store refrigerant.','Incorrect. Pumps VAPOR not liquid, doesn\'t remove moisture or control superheat.']},
+{n:52,p:2,t:'mc',q:'Three functions of the condenser?',o:['1) Rejects superheat, 2) Condenses vapor to liquid, 3) Sub-cools liquid','1) Absorbs heat, 2) Evaporates, 3) Superheats','1) Compresses, 2) Filters, 3) Stores','1) Meters, 2) Pressure drop, 3) Removes moisture'],a:0,ex:['CORRECT — (1) Desuperheats hot discharge gas. (2) Condenses saturated vapor to liquid (rejects latent heat). (3) Further cools liquid below saturation (subcooling).','Incorrect. Those are evaporator functions.','Incorrect. Compressor functions.','Incorrect. Metering device functions.']},
+{n:53,p:2,t:'mc',q:'Three functions of the metering device?',o:['1) Pressure drop to lower temp, 2) Separates high/low side, 3) Controls refrigerant flow to evaporator','1) Compresses, 2) Rejects heat, 3) Stores liquid','1) Absorbs heat, 2) Superheats, 3) Returns oil','1) Removes air, 2) Filters moisture, 3) Measures flow'],a:0,ex:['CORRECT — (1) Creates pressure drop lowering refrigerant to evaporator temp. (2) Dividing point between high and low pressure sides. (3) Controls refrigerant quantity to the evaporator.','Incorrect. Compressor and condenser functions.','Incorrect. Evaporator functions.','Incorrect. Evacuation and filter drier functions.']},
+{n:54,p:2,t:'mc',q:'Three functions of the evaporator?',o:['1) Absorbs heat from space, 2) Boils refrigerant liquid to vapor, 3) Superheats vapor for compressor protection','1) Rejects heat, 2) Condenses, 3) Sub-cools','1) Compresses, 2) Creates flow, 3) Raises pressure','1) Meters, 2) Pressure drop, 3) Separates sides'],a:0,ex:['CORRECT — (1) Absorbs heat from conditioned space. (2) Provides surface for refrigerant to boil (latent heat absorption). (3) Adds superheat ensuring no liquid returns to compressor.','Incorrect. Condenser functions.','Incorrect. Compressor functions.','Incorrect. Metering device functions.']},
+{n:55,p:2,t:'mc',q:'What is gauge pressure?',o:['Pressure read on gauge — does NOT include atmospheric','Absolute pressure including atmospheric','Vacuum only','Maximum rated pressure'],a:0,ex:['CORRECT — PSIG reads ZERO at atmospheric. Does NOT include 14.7 psi atmospheric. PSIA = PSIG + 14.7.','Incorrect. Including atmospheric = absolute (PSIA).','Incorrect. Gauge can be positive or vacuum.','Incorrect. Max rated pressure is a design spec.']},
+{n:56,p:2,t:'mc',q:'What is latent heat?',o:['Heat causing change of STATE without temperature change','Heat causing temperature change','Heat from friction','Heat stored in solids'],a:0,ex:['CORRECT — Hidden heat absorbed/released during phase change (melting, boiling, condensing, freezing) with NO temperature change. Example: 970.4 BTU/lb to boil water at 212°F.','Incorrect. Temp change = sensible heat.','Incorrect. Friction creates sensible heat.','Incorrect. Stored heat in solids = sensible heat content.']},
+{n:57,p:2,t:'mc',q:'What is sensible heat?',o:['Heat causing TEMPERATURE change — measurable with thermometer','Heat causing phase change','Unmeasurable heat','Heat only in gases'],a:0,ex:['CORRECT — Causes measurable temperature change you can sense/detect. Example: heating water 50°F→200°F. No phase change.','Incorrect. Phase change heat = latent.','Incorrect. Sensible IS measurable — that\'s what sensible means.','Incorrect. Applies to solids, liquids, and gases.']},
+{n:58,p:2,t:'mc',q:'Low suction pressure causes?',o:['Low load, low airflow (belt/motor/coil), or metering device starving evaporator','Too much refrigerant','High ambient outside','Clogged condenser'],a:0,ex:['CORRECT — Low suction = evaporator not absorbing enough heat. Causes: low load, low airflow (broken belt, bad motor, dirty/iced coil), or starving metering device.','Incorrect. Too much refrigerant = HIGH suction.','Incorrect. High ambient affects condenser (high side).','Incorrect. Clogged condenser = high HEAD pressure, not low suction.']},
+{n:59,p:2,t:'mc',q:'High condensing temperature causes?',o:['Low condenser airflow, dirty condenser, non-condensables, or overcharge','Low refrigerant charge','Malfunctioning TXV','Low ambient temperature'],a:0,ex:['CORRECT — Condenser can\'t reject heat: dirty coil, bad fan, air in system, or excess refrigerant flooding condenser.','Incorrect. Low charge = LOW condensing temp.','Incorrect. TXV affects evaporator side.','Incorrect. Low ambient = LOW condensing temp.']},
+{n:60,p:2,t:'mc',q:'Mixing valve vs diverting valve?',o:['Mixing: 2 in + 1 out. Diverting: 1 in + 2 out.','Same thing','Mixing for steam; diverting for water','Mixing is bigger'],a:0,ex:['CORRECT — MIXING = 2 inlets, 1 outlet (blends streams). DIVERTING = 1 inlet, 2 outlets (splits flow).','Incorrect. Different port configs and functions.','Incorrect. Both for hydronic water.','Incorrect. Size depends on pipe.']},
+{n:61,p:2,t:'mc',q:'What is a BTU?',o:['Heat to raise 1 lb of water 1°F','Heat to boil 1 lb of water','Heat to melt 1 lb of ice','Heat in 1 gallon of fuel'],a:0,ex:['CORRECT — BTU = heat energy to raise 1 pound of water by 1 degree Fahrenheit. The fundamental HVAC heat unit.','Incorrect. Boiling 1 lb = 970.4 BTU (latent heat of vaporization).','Incorrect. Melting 1 lb ice = 144 BTU (latent heat of fusion).','Incorrect. Fuel heat content varies by type.']}];
+
+const L='ABCDEFGHIJ',TL={mc:'Multiple Choice',tf:'True / False',fill:'Fill in the Blank',short:'Short Answer',essay:'Essay',num:'Numerical'};
+const TP=Q.reduce((s,q)=>s+q.p,0);
+let S={scr:'start',mode:'practice',i:0,ans:{},txt:{},chk:{},sg:false,graded:false,flt:'all',shuf:null};
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function qs(){return S.shuf||Q;}
+
+// Calculate running score
+function calcScore(){
+const all=qs();
+let cor=0,wrg=0,pts=0,maxPts=0,checked=0;
+all.forEach(q=>{
+if(!S.chk[q.n]) return;
+if(q.a===-1) return; // skip non-gradable
+checked++;
+maxPts+=q.p;
+if(S.ans[q.n]===q.a){cor++;pts+=q.p;}
+else if(S.ans[q.n]!==undefined){wrg++;}
+});
+const gradable=all.filter(q=>q.a!==-1).length;
+const totalGradablePts=all.filter(q=>q.a!==-1).reduce((s,q)=>s+q.p,0);
+const pct=maxPts>0?Math.round((pts/maxPts)*100):0;
+return {cor,wrg,pts,maxPts,checked,pct,gradable,totalGradablePts};
+}
+
+function scoreBarHTML(){
+const sc=calcScore();
+const isExam=S.mode==='exam'&&!S.graded;
+const noData=sc.checked===0;
+const pctColor=sc.pct>=70?'var(--ok)':sc.pct>=50?'var(--warn)':'var(--no)';
+const barColor=sc.pct>=70?'var(--ok)':sc.pct>=50?'var(--warn)':'var(--no)';
+
+return `<div class="score-bar${isExam?' exam-mode':''}${noData?' no-data':''}">
+<div class="sc-section">
+<div class="sc-val" style="color:var(--ok)">${sc.cor}</div>
+<div class="sc-lbl">Correct</div>
+</div>
+<div class="sc-section">
+<div class="sc-val" style="color:var(--no)">${sc.wrg}</div>
+<div class="sc-lbl">Wrong</div>
+</div>
+<div class="sc-section">
+<div class="sc-val" style="color:var(--accent)">${sc.pts}<span style="font-size:.65em;color:var(--text2)">/${sc.checked>0?sc.maxPts:sc.totalGradablePts}</span></div>
+<div class="sc-lbl">Points</div>
+</div>
+<div class="sc-pct-wrap">
+<div class="sc-pct-bar"><div class="sc-pct-fill" style="width:${noData?0:sc.pct}%;background:${barColor}"></div></div>
+<div class="sc-pct-num" style="color:${noData?'var(--text2)':pctColor}">${noData?'—':sc.pct+'%'}</div>
+</div>
+</div>`;
+}
+
+function render(){
+const el=document.getElementById('app');
+if(S.scr==='start')return rStart(el);
+if(S.scr==='quiz')return rQuiz(el);
+if(S.scr==='results')return rResults(el);
+}
+
+function rStart(el){
+el.innerHTML=`<div class="start">
+<h1>📐 Practice Test</h1>
+<p class="sub">61 Questions — HVAC Fundamentals, Calculations & Systems</p>
+<div class="stats">
+<div class="sb"><div class="v">61</div><div class="l">Questions</div></div>
+<div class="sb"><div class="v">${TP}</div><div class="l">Total Points</div></div>
+<div class="sb"><div class="v">244</div><div class="l">Explanations</div></div>
+</div>
+<div class="modes">
+<div class="mb ${S.mode==='practice'?'on':''}" onclick="setM('practice')"><h3>✅ Practice</h3><p>Check answers as you go with full explanations for every choice.</p></div>
+<div class="mb ${S.mode==='exam'?'on':''}" onclick="setM('exam')"><h3>📝 Exam</h3><p>No feedback until submit. Simulates real test conditions.</p></div>
+<div class="mb ${S.mode==='shuffle'?'on':''}" onclick="setM('shuffle')"><h3>🔀 Shuffle</h3><p>Randomized order with instant explanations. Great for review.</p></div>
+</div>
+<button class="go" onclick="startQ()">Start Exam</button>
+<p class="disclaimer">Answer key based on engineering principles. Verify with your course materials.</p>
+</div>`;}
+
+function rQuiz(el){
+const all=qs(),q=all[S.i],done=S.ans[q.n]!==undefined,checked=S.chk[q.n],isT=q.o.length===0;
+const prog=Object.keys(S.ans).length+Object.keys(S.txt).filter(k=>S.txt[k]).length;
+let grid='';
+if(S.sg){grid=`<div class="gp"><div class="gr">${all.map((qq,i)=>{
+let c='gd';if(i===S.i)c+=' cur';
+if(S.ans[qq.n]!==undefined||S.txt[qq.n])c+=' ans';
+if(S.chk[qq.n]&&S.ans[qq.n]===qq.a)c+=' gc';
+if(S.chk[qq.n]&&S.ans[qq.n]!==undefined&&S.ans[qq.n]!==qq.a)c+=' gw';
+return`<div class="${c}" onclick="go(${i})">${qq.n}</div>`;}).join('')}</div></div>`;}
+
+let opts='';
+if(!isT){
+opts=`<div class="opts">${q.o.map((o,i)=>{
+let c='op';
+if(S.ans[q.n]===i)c+=' sel';
+if(checked){c+=' dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a){c='op cor dis';}}
+let exH='';
+if(checked&&q.ex&&q.ex[i]){
+const isC=i===q.a;
+exH=`<div class="ex-box ${isC?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}" onclick="sel(${q.n},${i})"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('')}</div>`;
+}else{
+const v=S.txt[q.n]||'';const rows=q.t==='essay'?5:2;
+opts=`<textarea class="ti" rows="${rows}" placeholder="Type your answer..." oninput="setT(${q.n},this.value)"${checked?' disabled':''}>${esc(v)}</textarea>`;
+if(checked){
+if(q.h)opts+=`<div class="hint"><div class="hl">Suggested Answer</div><div class="ht">${esc(q.h)}</div></div>`;
+if(q.ex&&q.ex.length)opts+=`<div class="fill-exps">${q.ex.map(e=>`<div class="fill-exp">${esc(e)}</div>`).join('')}</div>`;
+}}
+
+const canChk=S.mode!=='exam'&&!checked&&(done||(isT&&S.txt[q.n]));
+el.innerHTML=`<div class="hdr">
+<span class="t">📐 Practice Test</span>
+<span class="pi">${prog}/${all.length} answered</span>
+<button class="gt" onclick="tg()">${S.sg?'Hide':'Show'} Map</button>
+</div>
+${scoreBarHTML()}
+<div class="pb"><div class="pf" style="width:${(prog/all.length)*100}%"></div></div>
+${grid}
+<div class="qc">
+<div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]||q.t}</span><span class="qp">${q.p} pts</span></div>
+<div class="qq">${esc(q.q)}</div>
+${opts}
+</div>
+<div class="nav">
+<button class="nb" onclick="go(${S.i-1})" ${S.i===0?'disabled':''}>← Prev</button>
+<div class="nc">
+${canChk?`<button class="nb ck" onclick="chk(${q.n})">Check Answer</button>`:''}
+${S.mode==='exam'&&!S.graded?`<button class="nb pr" onclick="submit()" style="background:#f59e0b;border-color:#f59e0b">Submit Exam</button>`:''}
+</div>
+<button class="nb${S.i===all.length-1?' pr':''}" onclick="${S.i===all.length-1?(S.mode==='exam'?'submit()':'showR()'):`go(${S.i+1})`}">${S.i===all.length-1?(S.mode==='exam'?'Submit':'Results'):'Next →'}</button>
+</div>`;}
+
+function rResults(el){
+const all=qs();let cor=0,wrg=0,skip=0,ep=0;
+all.forEach(q=>{if(q.a===-1){skip++;return;}if(S.ans[q.n]===q.a){cor++;ep+=q.p;}else if(S.ans[q.n]!==undefined)wrg++;else skip++;});
+const grd=all.filter(q=>q.a!==-1).length,pct=grd?Math.round(cor/grd*100):0;
+const mp=all.filter(q=>q.a!==-1).reduce((s,q)=>s+q.p,0);
+const cc=pct>=70?'var(--ok)':pct>=50?'var(--warn)':'var(--no)';
+let filt=all;
+if(S.flt==='wrong')filt=all.filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);
+if(S.flt==='correct')filt=all.filter(q=>S.ans[q.n]===q.a);
+if(S.flt==='skipped')filt=all.filter(q=>S.ans[q.n]===undefined&&q.a!==-1);
+if(S.flt==='text')filt=all.filter(q=>q.a===-1);
+
+const rev=filt.map(q=>{
+const isT=q.o.length===0;let os='';
+if(!isT){os=q.o.map((o,i)=>{
+let c='op dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a)c='op cor dis';
+let exH='';if(q.ex&&q.ex[i]){const ic=i===q.a;exH=`<div class="ex-box ${ic?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('');}
+else{
+const v=S.txt[q.n]||'<em style="color:var(--text2)">No answer</em>';
+os=`<div style="padding:8px 12px;background:var(--card2);border-radius:8px;font-size:.88em">${v}</div>`;
+if(q.h)os+=`<div class="hint"><div class="hl">Suggested Answer</div><div class="ht">${esc(q.h)}</div></div>`;
+if(q.ex&&q.ex.length)os+=`<div class="fill-exps">${q.ex.map(e=>`<div class="fill-exp">${esc(e)}</div>`).join('')}</div>`;}
+return`<div class="qc"><div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]}</span><span class="qp">${q.p} pts</span></div><div class="qq">${esc(q.q)}</div><div class="opts">${os}</div></div>`;}).join('');
+
+el.innerHTML=`<div class="res">
+<h2>Exam Results</h2>
+<div class="sc" style="border-color:${cc}"><div class="pct" style="color:${cc}">${pct}%</div><div class="of">${cor} / ${grd}</div></div>
+<div class="rg">
+<div class="rs"><div class="rv" style="color:var(--ok)">${cor}</div><div class="rl">Correct</div></div>
+<div class="rs"><div class="rv" style="color:var(--no)">${wrg}</div><div class="rl">Wrong</div></div>
+<div class="rs"><div class="rv" style="color:var(--text2)">${skip}</div><div class="rl">Skipped</div></div>
+<div class="rs"><div class="rv" style="color:var(--accent)">${ep}/${mp}</div><div class="rl">Points</div></div>
+</div>
+<div class="ra">
+<button class="nb" onclick="reset()">← Start Over</button>
+<button class="nb pr" onclick="retry()">Retry Wrong</button></div><div style="text-align:center;margin-top:10px"><button class="print-btn" onclick="window.print()">🖶 Print Results</button>
+</div>
+</div>
+<div style="padding:0 4px">
+<div class="ft">
+<button class="fb ${S.flt==='all'?'on':''}" onclick="setF('all')">All (${all.length})</button>
+<button class="fb ${S.flt==='wrong'?'on':''}" onclick="setF('wrong')">Wrong (${wrg})</button>
+<button class="fb ${S.flt==='correct'?'on':''}" onclick="setF('correct')">Correct (${cor})</button>
+<button class="fb ${S.flt==='skipped'?'on':''}" onclick="setF('skipped')">Skipped (${skip})</button>
+<button class="fb ${S.flt==='text'?'on':''}" onclick="setF('text')">Written (${all.filter(q=>q.a===-1).length})</button>
+</div>
+${rev}
+</div>`;}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function setM(m){S.mode=m;render();}
+function startQ(){S.scr='quiz';S.i=0;S.ans={};S.txt={};S.chk={};S.graded=false;S.shuf=S.mode==='shuffle'?shuffle(Q):null;render();scrollTo(0,0);}
+function sel(n,i){if(S.chk[n])return;S.ans[n]=i;render();}
+function setT(n,v){S.txt[n]=v;}
+function chk(n){S.chk[n]=true;render();}
+function go(i){const a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
+function tg(){S.sg=!S.sg;render();}
+function submit(){qs().forEach(q=>{S.chk[q.n]=true;});S.graded=true;showR();}
+function showR(){S.scr='results';S.flt='all';render();scrollTo(0,0);}
+function reset(){S.scr='start';S.mode='practice';render();scrollTo(0,0);}
+function setF(f){S.flt=f;render();}
+function retry(){const a=qs().filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);if(!a.length){alert('No wrong answers to retry!');return;}S.shuf=a;S.ans={};S.chk={};S.txt={};S.graded=false;S.scr='quiz';S.i=0;S.mode='practice';render();scrollTo(0,0);}
+document.addEventListener('keydown',e=>{if(S.scr!=='quiz')return;if(e.key==='ArrowRight'){e.preventDefault();go(S.i+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(S.i-1);}const a=qs(),q=a[S.i];if(q.o.length>0&&!S.chk[q.n]){const k='ABCDEFGHIJ'.indexOf(e.key.toUpperCase());if(k>=0&&k<q.o.length)sel(q.n,k);}});
+render();
+
+/* === ENHANCEMENTS === */
+/* === HVAC STUDY TOOL ENHANCEMENTS === */
+
+/* --- ENHANCEMENT CSS --- */
+const ENHANCE_CSS = `
+/* Timer bar */
+.timer-bar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:8px 16px;margin-bottom:10px}
+.timer-display{font-family:monospace;font-size:1.3em;font-weight:700;min-width:70px}
+.timer-bar .timer-label{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.timer-bar.warn .timer-display{color:var(--no);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Reference panel */
+.ref-overlay{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:var(--bg);border-left:2px solid var(--border);z-index:1000;transition:right .3s;overflow-y:auto;padding:20px;box-shadow:-8px 0 32px rgba(0,0,0,.4)}
+.ref-overlay.open{right:0}
+.ref-close{position:absolute;top:12px;right:12px;background:var(--card2);border:1px solid var(--border);border-radius:6px;color:var(--text);width:32px;height:32px;cursor:pointer;font-size:1.1em;display:flex;align-items:center;justify-content:center}
+.ref-tabs{display:flex;gap:4px;margin-bottom:16px}
+.ref-tab{flex:1;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;font-size:.8em;text-align:center;font-family:inherit;font-weight:600}
+.ref-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.ref-content{font-size:.85em;line-height:1.6}
+.ref-content h3{color:var(--accent);font-size:1em;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.ref-content h3:first-child{margin-top:0}
+.ref-content table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.88em}
+.ref-content th{background:var(--card2);color:var(--accent);padding:6px 8px;text-align:left;font-size:.75em;text-transform:uppercase;letter-spacing:.03em}
+.ref-content td{padding:5px 8px;border-bottom:1px solid var(--border);font-family:monospace;font-size:.92em}
+.ref-content tr:hover td{background:var(--card2)}
+.formula{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin:8px 0;font-family:monospace;font-size:.95em;line-height:1.8}
+.formula .fname{color:var(--accent);font-weight:700}
+.formula .fdesc{color:var(--text2);font-size:.85em;font-family:-apple-system,sans-serif}
+
+/* Calculator */
+.calc-overlay{position:fixed;bottom:20px;right:20px;width:280px;background:var(--card);border:2px solid var(--border);border-radius:var(--r);z-index:999;box-shadow:0 8px 32px rgba(0,0,0,.4);display:none}
+.calc-overlay.open{display:block}
+.calc-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)}
+.calc-header span{font-size:.85em;font-weight:600;color:var(--text2)}
+.calc-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.2em}
+.calc-display{background:var(--bg);margin:8px;border-radius:6px;padding:12px;font-family:monospace;font-size:1.3em;text-align:right;color:var(--text);min-height:44px;word-break:break-all}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 8px 8px}
+.calc-btn{padding:12px;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:monospace;font-size:1em;cursor:pointer;text-align:center}
+.calc-btn:hover{background:var(--border)}
+.calc-btn.op{color:var(--accent);font-weight:700}
+.calc-btn.eq{background:var(--accent);color:#fff;border-color:var(--accent)}
+.calc-btn.clr{color:var(--no)}
+
+/* FAB buttons */
+.fab-container{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:998}
+.fab{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2em;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:.2s}
+.fab:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.1)}
+
+/* Stats badge on start screen */
+.stats-history{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;text-align:center}
+.stats-history h3{font-size:.85em;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.stats-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.stat-item{min-width:80px}
+.stat-item .sv{font-size:1.4em;font-weight:700;font-family:monospace}
+.stat-item .sl{font-size:.68em;color:var(--text2);text-transform:uppercase}
+
+/* Weak spots mode button */
+.mb.weak{border-color:var(--no);background:rgba(248,113,113,.04)}
+.mb.weak:hover{border-color:var(--no);background:rgba(248,113,113,.08)}
+.mb.weak h3{color:var(--no)}
+
+/* Timed toggle */
+.timer-toggle{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:16px}
+.timer-toggle label{font-size:.85em;color:var(--text2)}
+.toggle-switch{position:relative;width:44px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;transition:.2s}
+.toggle-switch.on{background:var(--accent)}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s}
+.toggle-switch.on::after{left:23px}
+.timer-input{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:monospace;width:50px;text-align:center;font-size:.9em}
+
+@media(max-width:600px){.ref-overlay{width:100%;right:-100%}.fab-container{bottom:12px;right:12px}.calc-overlay{width:260px;right:12px;bottom:12px}}
+`;
+
+/* --- ENHANCEMENT JS --- */
+function initEnhancements(toolId) {
+  // Inject CSS
+  const style = document.createElement('style');
+  style.textContent = ENHANCE_CSS;
+  document.head.appendChild(style);
+
+  // === PERSISTENT STORAGE ===
+  const STORE_KEY = 'hvac_stats_' + toolId;
+  
+  function loadStats() {
+    try {
+      return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+    } catch(e) { return {}; }
+  }
+  
+  function saveStats(stats) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(stats)); } catch(e) {}
+  }
+  
+  function recordAnswer(qn, correct) {
+    const stats = loadStats();
+    if (!stats[qn]) stats[qn] = { right: 0, wrong: 0, last: 0 };
+    if (correct) stats[qn].right++;
+    else stats[qn].wrong++;
+    stats[qn].last = Date.now();
+    saveStats(stats);
+  }
+  
+  function getWeakQuestions() {
+    const stats = loadStats();
+    return Q.filter(q => {
+      const s = stats[q.n];
+      return s && s.wrong > 0 && (s.wrong >= s.right);
+    });
+  }
+  
+  function getOverallStats() {
+    const stats = loadStats();
+    let totalRight = 0, totalWrong = 0, attempted = 0;
+    for (const k in stats) {
+      totalRight += stats[k].right;
+      totalWrong += stats[k].wrong;
+      if (stats[k].right + stats[k].wrong > 0) attempted++;
+    }
+    return { totalRight, totalWrong, attempted, total: Q.length };
+  }
+  
+  // === SPACED REPETITION WEIGHTING ===
+  function spacedShuffle(questions) {
+    const stats = loadStats();
+    const weighted = [];
+    questions.forEach(q => {
+      const s = stats[q.n];
+      let weight = 1;
+      if (s) {
+        if (s.wrong > s.right) weight = 3;
+        else if (s.wrong > 0 && s.wrong === s.right) weight = 2;
+        else if (s.right > 3) weight = 0.5;
+        // Recency: if answered recently and correct, lower weight
+        const daysSince = (Date.now() - (s.last || 0)) / 86400000;
+        if (daysSince < 1 && s.right > s.wrong) weight *= 0.5;
+      } else {
+        weight = 1.5; // never seen = slightly boost
+      }
+      for (let i = 0; i < Math.ceil(weight); i++) weighted.push(q);
+    });
+    // Shuffle the weighted array then deduplicate keeping first occurrence
+    const shuffled = weighted.sort(() => Math.random() - 0.5);
+    const seen = new Set();
+    return shuffled.filter(q => { if (seen.has(q.n)) return false; seen.add(q.n); return true; });
+  }
+
+  // === TIMER ===
+  let timerInterval = null;
+  let timerSeconds = 0;
+  let timerEnabled = false;
+  let timerMinutes = 75; // default seconds per question
+  
+  function startTimer(questionCount) {
+    stopTimer();
+    timerSeconds = Math.ceil(questionCount * 1.25) * 60; // 1.25 min per question
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      updateTimerDisplay();
+      if (timerSeconds <= 0) {
+        stopTimer();
+        if (typeof submit === 'function') submit();
+      }
+    }, 1000);
+  }
+  
+  function stopTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  
+  function updateTimerDisplay() {
+    const el = document.getElementById('timer-display');
+    if (!el) return;
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    el.textContent = m + ':' + String(s).padStart(2, '0');
+    const bar = document.querySelector('.timer-bar');
+    if (bar) bar.className = 'timer-bar' + (timerSeconds < 120 ? ' warn' : '');
+  }
+  
+  function getTimerHTML() {
+    if (!timerEnabled || !timerInterval) return '';
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    return '<div class="timer-bar"><span class="timer-label">Time Left</span><span class="timer-display" id="timer-display">' + m + ':' + String(s).padStart(2, '0') + '</span></div>';
+  }
+
+  // === REFERENCE PANEL ===
+  function createRefPanel() {
+    if (document.getElementById('ref-panel')) return;
+    const div = document.createElement('div');
+    div.id = 'ref-panel';
+    div.className = 'ref-overlay';
+    div.innerHTML = '<button class="ref-close" onclick="toggleRef()">\u2715</button>' +
+      '<div class="ref-tabs">' +
+      '<button class="ref-tab active" onclick="showRefTab(\'pt\',this)">PT Charts</button>' +
+      '<button class="ref-tab" onclick="showRefTab(\'formulas\',this)">Formulas</button>' +
+      '</div>' +
+      '<div id="ref-pt" class="ref-content">' + getPTContent() + '</div>' +
+      '<div id="ref-formulas" class="ref-content" style="display:none">' + getFormulaContent() + '</div>';
+    document.body.appendChild(div);
+  }
+  
+  window.toggleRef = function() {
+    createRefPanel();
+    document.getElementById('ref-panel').classList.toggle('open');
+    // Close calc if open
+    const calc = document.getElementById('calc-panel');
+    if (calc) calc.classList.remove('open');
+  };
+  
+  window.showRefTab = function(tab, btn) {
+    document.getElementById('ref-pt').style.display = tab === 'pt' ? '' : 'none';
+    document.getElementById('ref-formulas').style.display = tab === 'formulas' ? '' : 'none';
+    document.querySelectorAll('.ref-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  };
+
+  function getPTContent() {
+    return '<h3>R-410A</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-20,20.7],[0,48.8],[10,65.5],[20,84.2],[25,94.3],[30,105],[35,116],[40,128],[44,138],[50,152],[60,179],[70,208],[80,241],[90,268],[95,283],[100,296],[105,314],[110,331],[115,349],[120,367],[130,406]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>R-22</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-40,-0.5],[0,24],[10,33],[20,43],[30,54.9],[40,68.5],[50,84],[60,102],[70,122],[80,143.6],[90,167.4],[100,196],[110,226],[120,260],[130,296],[140,335]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>R-134a</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-20,-2.4],[0,6.5],[10,12],[20,18.4],[25,22],[30,26],[35,30.4],[40,35.1],[45,40.2],[50,45.7],[55,51.6],[60,57.9],[70,71.4],[80,86.4],[90,103],[98,117],[100,120],[110,138],[120,158]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>Quick Reference</h3><div class="formula"><div class="fdesc">Water: 0.433 psi per foot of head</div><div class="fdesc">1 ton = 12,000 BTU/hr</div><div class="fdesc">Atmospheric: 14.7 psi = 29.92" Hg</div><div class="fdesc">1" Hg \u2248 0.491 psi</div><div class="fdesc">Water density: 62.4 lbs/ft\u00b3 = 8.33 lbs/gal</div><div class="fdesc">7.48 gallons per ft\u00b3</div></div>';
+  }
+  
+  function getFormulaContent() {
+    return '<h3>Heat Calculations</h3>' +
+      '<div class="formula"><div class="fname">BTU = SH \u00d7 W \u00d7 \u0394T</div><div class="fdesc">Sensible heat: Specific Heat \u00d7 Weight (lbs) \u00d7 Temp Difference</div></div>' +
+      '<div class="formula"><div class="fname">BTU = LH \u00d7 W</div><div class="fdesc">Latent heat: Latent Heat value \u00d7 Weight (lbs)</div><div class="fdesc">Ice: 144 BTU/lb &bull; Steam: 970.4 BTU/lb</div></div>' +
+      '<div class="formula"><div class="fname">1 Ton = 12,000 BTU/hr</div><div class="fdesc">Tons = Total BTU \u00f7 12,000 (per hour)</div></div>' +
+      '<h3>Pressure & Head</h3>' +
+      '<div class="formula"><div class="fname">P = H \u00d7 0.433</div><div class="fdesc">Pressure (psi) = Height of water (ft) \u00d7 0.433 psi/ft</div></div>' +
+      '<div class="formula"><div class="fname">PSIA = PSIG + 14.7</div><div class="fdesc">Absolute = Gauge + Atmospheric</div></div>' +
+      '<div class="formula"><div class="fname">Compression Ratio = Discharge (psia) \u00f7 Suction (psia)</div><div class="fdesc">Always convert to ABSOLUTE first!</div></div>' +
+      '<h3>Refrigeration</h3>' +
+      '<div class="formula"><div class="fname">Superheat = Actual Temp \u2212 Saturation Temp</div><div class="fdesc">Measured at suction line leaving evaporator</div></div>' +
+      '<div class="formula"><div class="fname">Subcooling = Saturation Temp \u2212 Actual Temp</div><div class="fdesc">Measured at liquid line leaving condenser</div></div>' +
+      '<div class="formula"><div class="fname">Net Oil Pressure = Oil Gauge \u2212 Suction Pressure</div><div class="fdesc">Actual lubrication pressure above crankcase</div></div>' +
+      '<div class="formula"><div class="fname">Water Flow: 3 GPM/ton</div><div class="fdesc">Standard for recirculated water-cooled condensers (10\u00b0F \u0394T)</div></div>' +
+      '<h3>Volume & Density</h3>' +
+      '<div class="formula"><div class="fname">V = \u03c0r\u00b2h</div><div class="fdesc">Cylinder volume (ft\u00b3) &bull; \u00d7 7.48 for gallons</div></div>' +
+      '<div class="formula"><div class="fname">D = W \u00f7 V</div><div class="fdesc">Density = Weight \u00f7 Volume &bull; Water = 62.4 lbs/ft\u00b3</div></div>' +
+      '<h3>Temperature</h3>' +
+      '<div class="formula"><div class="fname">\u00b0C = (\u00b0F \u2212 32) \u00d7 5/9</div><div class="fdesc">Fahrenheit to Celsius</div></div>' +
+      '<div class="formula"><div class="fname">\u00b0F = (\u00b0C \u00d7 9/5) + 32</div><div class="fdesc">Celsius to Fahrenheit</div></div>' +
+      '<h3>Expansion</h3>' +
+      '<div class="formula"><div class="fname">EL = L \u00d7 \u0394T \u00d7 COE</div><div class="fdesc">Expansion (ft) = Length \u00d7 Temp Diff \u00d7 Coefficient</div><div class="fdesc">Steel COE \u2248 0.0000067 per \u00b0F</div></div>' +
+      '<h3>Steam</h3>' +
+      '<div class="formula"><div class="fname">BTU released = (h<sub>steam</sub> \u2212 h<sub>water</sub>) \u00d7 lbs</div><div class="fdesc">Use steam tables for enthalpy values at operating pressure</div></div>' +
+      '<div class="formula"><div class="fname">Vacuum: 1" Hg \u2248 1 ft water lift</div><div class="fdesc">28" Hg vacuum \u2248 28 ft lift capacity</div></div>';
+  }
+
+  // === CALCULATOR ===
+  let calcDisplay = '0';
+  let calcPrev = null;
+  let calcOp = null;
+  let calcNew = true;
+  
+  function createCalc() {
+    if (document.getElementById('calc-panel')) return;
+    const div = document.createElement('div');
+    div.id = 'calc-panel';
+    div.className = 'calc-overlay';
+    const btns = ['C','(',')','/','7','8','9','*','4','5','6','-','1','2','3','+','0','.','±','='];
+    div.innerHTML = '<div class="calc-header"><span>🖩 Calculator</span><button class="calc-close" onclick="toggleCalc()">\u2715</button></div>' +
+      '<div class="calc-display" id="calc-disp">0</div>' +
+      '<div class="calc-grid">' + btns.map(b => {
+        let cls = 'calc-btn';
+        if ('/*-+'.includes(b)) cls += ' op';
+        if (b === '=') cls += ' eq';
+        if (b === 'C') cls += ' clr';
+        return '<button class="' + cls + '" onclick="calcPress(\'' + b.replace("'","\\'") + '\')">' + b + '</button>';
+      }).join('') + '</div>';
+    document.body.appendChild(div);
+  }
+  
+  window.toggleCalc = function() {
+    createCalc();
+    document.getElementById('calc-panel').classList.toggle('open');
+  };
+  
+  window.calcPress = function(key) {
+    const disp = document.getElementById('calc-disp');
+    if (key === 'C') { calcDisplay = '0'; calcPrev = null; calcOp = null; calcNew = true; }
+    else if (key === '±') { 
+      if (calcDisplay !== '0') calcDisplay = calcDisplay.startsWith('-') ? calcDisplay.slice(1) : '-' + calcDisplay;
+    }
+    else if (key === '=') {
+      try { calcDisplay = String(eval(calcDisplay.replace(/×/g,'*').replace(/÷/g,'/'))); } 
+      catch(e) { calcDisplay = 'Error'; }
+      calcNew = true;
+    }
+    else if ('+-*/'.includes(key)) { calcDisplay += key; calcNew = false; }
+    else if (key === '(' || key === ')') { calcDisplay = (calcNew && calcDisplay === '0' ? '' : calcDisplay) + key; calcNew = false; }
+    else {
+      if (calcNew && calcDisplay === '0') calcDisplay = key;
+      else if (calcNew) { calcDisplay = key; calcNew = false; }
+      else calcDisplay += key;
+      calcNew = false;
+    }
+    disp.textContent = calcDisplay;
+  };
+
+  // === FAB BUTTONS ===
+  function createFABs() {
+    if (document.getElementById('fab-btns')) return;
+    const div = document.createElement('div');
+    div.id = 'fab-btns';
+    div.className = 'fab-container';
+    div.innerHTML = '<button class="fab" onclick="toggleCalc()" title="Calculator">🖩</button>' +
+      '<button class="fab" onclick="toggleRef()" title="Reference">📖</button>';
+    document.body.appendChild(div);
+  }
+
+  // === HOOK INTO EXISTING FUNCTIONS ===
+  
+  // Override the check function to record stats
+  const origChk = window.chk;
+  window.chk = function(n) {
+    origChk(n);
+    // Find the question and record result
+    const allQ = typeof qs === 'function' ? qs() : Q;
+    const q = allQ.find(qq => qq.n === n);
+    if (q && q.a !== -1) {
+      recordAnswer(n, S.ans[n] === q.a);
+    }
+  };
+  
+  // Override submit to record all answers
+  const origSubmit = window.submit;
+  window.submit = function() {
+    const allQ = typeof qs === 'function' ? qs() : Q;
+    allQ.forEach(q => {
+      if (q.a !== -1 && S.ans[q.n] !== undefined) {
+        S.chk[q.n] = true;
+        recordAnswer(q.n, S.ans[q.n] === q.a);
+      }
+    });
+    S.graded = true;
+    if (typeof showR === 'function') showR();
+    stopTimer();
+  };
+  
+  // Override shuffle to use spaced repetition
+  const origShuffle = window.shuffle;
+  window.shuffle = function(arr) {
+    if (S.mode === 'shuffle') return spacedShuffle(arr);
+    return origShuffle(arr);
+  };
+  
+  // Add weak spots mode
+  window.startWeak = function() {
+    const weak = getWeakQuestions();
+    if (!weak.length) { alert('No weak spots yet! Take some quizzes first.'); return; }
+    if (typeof filteredQ === 'function') S.activeQ = weak;
+    else S.shuf = weak;
+    S.scr = 'quiz'; S.i = 0; S.ans = {}; S.txt = {}; S.chk = {}; S.graded = false;
+    S.mode = 'practice';
+    render(); scrollTo(0, 0);
+  };
+  
+  // Enhanced startQ with timer
+  const origStartQ = window.startQ;
+  window.startQ = function() {
+    origStartQ();
+    if (timerEnabled && S.scr === 'quiz') {
+      const count = typeof qs === 'function' ? qs().length : Q.length;
+      startTimer(count);
+    }
+  };
+  
+  // Override reset to stop timer  
+  const origReset = window.reset;
+  window.reset = function() {
+    stopTimer();
+    origReset();
+  };
+  
+  // Override render to add enhancements
+  const origRender = window.render;
+  window.render = function() {
+    origRender();
+    
+    // Add FABs if in quiz mode
+    if (S.scr === 'quiz') {
+      createFABs();
+      document.getElementById('fab-btns').style.display = '';
+      // Add timer if enabled
+      if (timerEnabled && timerInterval) {
+        const hdr = document.querySelector('.hdr');
+        if (hdr && !document.getElementById('timer-display')) {
+          hdr.insertAdjacentHTML('afterend', getTimerHTML());
+        }
+      }
+    } else {
+      const fabs = document.getElementById('fab-btns');
+      if (fabs) fabs.style.display = 'none';
+      // Close panels
+      const ref = document.getElementById('ref-panel');
+      if (ref) ref.classList.remove('open');
+      const calc = document.getElementById('calc-panel');
+      if (calc) calc.classList.remove('open');
+    }
+    
+    // Add stats + weak spots + timer toggle to start screen
+    if (S.scr === 'start') {
+      const stats = getOverallStats();
+      const weak = getWeakQuestions();
+      const startDiv = document.querySelector('.start');
+      if (startDiv && !document.getElementById('enhance-stats')) {
+        // Find the modes div and insert before it
+        const modesDiv = startDiv.querySelector('.modes');
+        if (modesDiv) {
+          // Stats history
+          let statsHTML = '';
+          if (stats.attempted > 0) {
+            const pct = stats.totalRight + stats.totalWrong > 0 ? Math.round(stats.totalRight / (stats.totalRight + stats.totalWrong) * 100) : 0;
+            statsHTML = '<div class="stats-history" id="enhance-stats"><h3>Your History</h3><div class="stats-row">' +
+              '<div class="stat-item"><div class="sv" style="color:var(--ok)">' + stats.totalRight + '</div><div class="sl">Correct</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:var(--no)">' + stats.totalWrong + '</div><div class="sl">Wrong</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:var(--accent)">' + stats.attempted + '/' + stats.total + '</div><div class="sl">Attempted</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:' + (pct >= 70 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : 'var(--no)') + '">' + pct + '%</div><div class="sl">Accuracy</div></div>' +
+              '</div></div>';
+          }
+          
+          // Weak spots button
+          let weakHTML = '';
+          if (weak.length > 0) {
+            weakHTML = '<div class="mb weak" onclick="startWeak()"><h3>\u26a0\ufe0f Weak Spots (' + weak.length + ')</h3><p>Practice questions you\'ve missed. Spaced repetition focuses on your weakest areas.</p></div>';
+          }
+          
+          // Timer toggle
+          const timerHTML = '<div class="timer-toggle" id="timer-toggle">' +
+            '<label>Timed Mode</label>' +
+            '<div class="toggle-switch' + (timerEnabled ? ' on' : '') + '" onclick="toggleTimer()"></div>' +
+            '</div>';
+          
+          modesDiv.insertAdjacentHTML('beforebegin', statsHTML);
+          modesDiv.insertAdjacentHTML('afterend', timerHTML);
+          if (weakHTML) {
+            // Insert weak spots button after the last mode button
+            modesDiv.insertAdjacentHTML('beforeend', weakHTML);
+          }
+        }
+      }
+    }
+  };
+  
+  window.toggleTimer = function() {
+    timerEnabled = !timerEnabled;
+    const sw = document.querySelector('.toggle-switch');
+    if (sw) sw.classList.toggle('on', timerEnabled);
+  };
+  
+  window.clearHistory = function() {
+    if (confirm('Clear all study history for this tool?')) {
+      localStorage.removeItem(STORE_KEY);
+      render();
+    }
+  };
+}
+
+initEnhancements("practice");
+</script>
+</body>
+</html>

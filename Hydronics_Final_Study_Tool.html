@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0c0e12">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
+<title>Hydronics HVAC Final — Study Tool</title>
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--accent2:#2d7dd2;--ok:#34d399;--ok-bg:rgba(52,211,153,.08);--no:#f87171;--no-bg:rgba(248,113,113,.08);--warn:#fbbf24;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:880px;margin:0 auto;padding:16px}
+.start{text-align:center;padding:48px 16px}
+.start h1{font-size:2.2em;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.start .sub{color:var(--text2);margin-bottom:32px}
+.stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.sb{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 22px;min-width:110px}
+.sb .v{font-size:1.7em;font-weight:700;color:var(--accent)}
+.sb .l{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.modes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.mb{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px 20px;cursor:pointer;text-align:left;min-width:220px;transition:.2s}
+.mb:hover{border-color:var(--accent);background:var(--card2)}
+.mb.on{border-color:var(--accent);background:rgba(74,158,255,.06)}
+.mb h3{font-size:.95em;margin-bottom:2px}
+.mb p{font-size:.78em;color:var(--text2)}
+.go{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:12px 44px;font-size:1.05em;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;margin-top:8px}
+.go:hover{background:var(--accent2);transform:translateY(-1px)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;margin-bottom:0;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
+.hdr .t{font-size:.85em;font-weight:600;color:var(--text2)}
+.hdr .pi{font-size:.82em;color:var(--text2);font-family:monospace}
+
+/* === SCORE BAR === */
+.score-bar{display:flex;align-items:center;gap:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin:10px 0;overflow:hidden;min-height:48px}
+.score-bar .sc-section{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 16px;min-width:70px;border-right:1px solid var(--border)}
+.score-bar .sc-section:last-child{border-right:none}
+.score-bar .sc-val{font-size:1.2em;font-weight:700;font-family:monospace;line-height:1.2}
+.score-bar .sc-lbl{font-size:.62em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);line-height:1.2}
+.sc-pct-wrap{flex:1;padding:8px 16px;display:flex;align-items:center;gap:12px;min-width:120px}
+.sc-pct-bar{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;position:relative}
+.sc-pct-fill{height:100%;border-radius:4px;transition:width .4s,background .3s}
+.sc-pct-num{font-size:1.3em;font-weight:700;font-family:monospace;min-width:52px;text-align:right}
+.score-bar.exam-mode{opacity:.5;filter:blur(3px);pointer-events:none;user-select:none}
+.score-bar.no-data .sc-val{color:var(--text2)}
+@media(max-width:500px){.score-bar .sc-section{padding:6px 10px;min-width:54px}.score-bar .sc-val{font-size:1em}.sc-pct-wrap{padding:6px 10px}.sc-pct-num{font-size:1.1em;min-width:44px}}
+
+.pb{height:4px;background:var(--card2);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));border-radius:2px;transition:width .4s}
+.qc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:14px}
+.qm{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.qn{font-family:monospace;font-size:.8em;font-weight:600;color:var(--accent);background:rgba(74,158,255,.1);padding:3px 9px;border-radius:6px}
+.qt{font-size:.75em;color:var(--text2);background:var(--card2);padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+.qp{font-size:.75em;color:var(--warn);margin-left:auto;font-weight:600}
+.qq{font-size:1.05em;line-height:1.6;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.op{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--card2);border:2px solid transparent;border-radius:8px;cursor:pointer;transition:.15s;font-size:.92em;line-height:1.5}
+.op:hover{border-color:var(--border);background:#252a35}
+.op.sel{border-color:var(--accent);background:rgba(74,158,255,.05)}
+.op.cor{border-color:var(--ok);background:var(--ok-bg)}
+.op.wrg{border-color:var(--no);background:var(--no-bg)}
+.op.shw{border-color:var(--ok);background:var(--ok-bg)}
+.op.dis{cursor:default}
+.ol{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.75em;font-weight:600;color:var(--text2);transition:.15s}
+.op.sel .ol{background:var(--accent);color:#fff}
+.op.cor .ol{background:var(--ok);color:#000}
+.op.wrg .ol{background:var(--no);color:#fff}
+.op.shw .ol{background:var(--ok);color:#000}
+.ot{padding-top:2px;flex:1}
+.ex-box{margin-top:8px;padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5;color:var(--text)}
+.ex-box.ex-ok{border-left-color:var(--ok);background:var(--ok-bg)}
+.ex-box.ex-no{border-left-color:var(--no);background:var(--no-bg)}
+.ti{width:100%;background:var(--card2);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:.92em;resize:vertical;min-height:44px}
+.ti:focus{outline:none;border-color:var(--accent)}
+.hint{background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.2);border-radius:8px;padding:12px 14px;margin-top:10px}
+.hint .hl{font-size:.75em;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.hint .ht{font-size:.88em;line-height:1.5}
+.fill-exps{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fill-exp{padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5}
+.nav{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.nb{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 18px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;font-weight:500}
+.nb:hover{background:var(--card2);border-color:var(--text2)}
+.nb.pr{background:var(--accent);border-color:var(--accent);color:#fff}
+.nb.pr:hover{background:var(--accent2)}
+.nb:disabled{opacity:.3;cursor:not-allowed}
+.nc{display:flex;gap:6px;align-items:center}
+.ck{background:var(--warn);border:none;color:#000;font-weight:600}
+.ck:hover{background:#e5a900}
+.gt{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);cursor:pointer;font-size:.8em;font-family:inherit;transition:.15s}
+.gt:hover{border-color:var(--text2);color:var(--text)}
+.gp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:3px}
+.gd{width:100%;aspect-ratio:1;border-radius:5px;border:1px solid var(--border);background:var(--card2);cursor:pointer;font-size:.7em;font-weight:600;display:flex;align-items:center;justify-content:center;transition:.15s;color:var(--text2)}
+.gd:hover{border-color:var(--text2)}
+.gd.cur{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 2px rgba(74,158,255,.15)}
+.gd.ans{background:rgba(74,158,255,.12);border-color:var(--accent);color:var(--accent)}
+.gd.gc{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.gd.gw{background:var(--no-bg);border-color:var(--no);color:var(--no)}
+.res{text-align:center;padding:32px 16px}
+.res h2{font-size:1.8em;margin-bottom:6px}
+.sc{width:160px;height:160px;border-radius:50%;border:5px solid var(--ok);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px auto}
+.sc .pct{font-size:2.8em;font-weight:700}
+.sc .of{font-size:.82em;color:var(--text2)}
+.rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:20px 0}
+.rs{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.rs .rv{font-size:1.4em;font-weight:700}
+.rs .rl{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.ra{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.ft{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.fb{padding:5px 12px;border-radius:18px;border:1px solid var(--border);background:none;color:var(--text2);font-size:.8em;cursor:pointer;font-family:inherit;transition:.15s}
+.fb.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fb:hover{border-color:var(--text2)}
+.disclaimer{margin-top:12px;font-size:.75em;color:var(--text2);opacity:.7}
+@media(max-width:600px){.app{padding:8px}.qc{padding:16px}.start h1{font-size:1.5em}.mb{min-width:100%}.gr{grid-template-columns:repeat(auto-fill,minmax(30px,1fr))}}
+
+/* Back to hub button */
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;text-decoration:none;display:flex;align-items:center;gap:5px;transition:.2s}
+.back-btn:hover{border-color:var(--accent);color:var(--text);background:var(--card2)}
+/* Print results button */
+.print-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 22px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.print-btn:hover{border-color:var(--accent);background:var(--card2)}
+@media print{.back-btn,.fab-container,.calc-overlay,.ref-overlay,.nav,.hdr,.go,.modes,.timer-toggle,.stats-history,.print-btn,.nb{display:none!important}.app{padding:0}.qc{break-inside:avoid;border:1px solid #ccc;margin:8px 0}.start{display:none}.res,.opts,.qc{display:block!important}body{background:#fff;color:#000}.score-bar,.pb{display:none}:root{--card:#fff;--card2:#f5f5f5;--border:#ddd;--text:#000;--text2:#666;--ok:#22c55e;--no:#dc2626;--accent:#2563eb}}
+</style>
+</head>
+<body>
+<a href="index.html" class="back-btn">← Study Hub</a>
+<div class="app" id="app"></div>
+<script>
+const Q=[{n:1,p:1,t:'mc',q:'Hydronic heating and cooling is efficient because the ___ of water circulating through the system is automatically increased or decreased to meet varying weather conditions.',o:['temperature','amount','pressure','speed'],a:0,ex:['CORRECT — Hydronic systems adjust WATER TEMPERATURE to match heating/cooling demand. As outdoor temps change, supply water temp is automatically raised or lowered via reset controls for optimal efficiency.','The volume of water stays relatively constant in a closed system. Flow rate may vary with zone valves, but \'amount\' isn\'t the primary efficiency mechanism.','System pressure stays relatively constant via the expansion tank and PRV. Pressure isn\'t varied to meet weather conditions.','While flow velocity may change with variable-speed pumps, the key efficiency feature is temperature adjustment of the circulating water.'],h:'temperature'},
+{n:2,p:1,t:'mc',q:'Since the greatest amount of body heat is lost by ___, it is logical that the system that most satisfactorily controls this loss is best able to create a comfort condition.',o:['conduction','convection','zoning','radiation'],a:3,ex:['Conduction requires direct contact between objects — accounts for a small fraction of body heat loss in typical indoor environments.','Convection (air movement) accounts for some heat loss but is secondary to radiation in typical comfort conditions.','Zoning is a system design strategy, not a method of body heat transfer.','CORRECT — The body loses the greatest amount of heat through RADIATION (infrared energy exchange with surrounding surfaces). Hydronic radiant systems directly address this by warming room surfaces, making them the most comfortable heating method.'],h:'radiation'},
+{n:3,p:1,t:'mc',q:'A(n) ___ thermometer is an instrument designed to measure temperature using a circular scale and pointer.',o:['liquid-in-glass','infrared','dial','thermistor'],a:2,ex:['Liquid-in-glass thermometers use a tube with expanding liquid (mercury/alcohol) and a linear scale, not a circular one.','Infrared thermometers measure surface temperature remotely using infrared radiation — no circular scale/pointer.','CORRECT — A DIAL thermometer uses a bimetallic strip or Bourdon tube mechanism connected to a circular scale with a pointer to indicate temperature. Common on boilers and piping.','Thermistors are electronic resistance-based temperature sensors — they output electrical signals, not mechanical pointer readings.'],h:'dial'},
+{n:4,p:1,t:'tf',q:'Comfort is achieved by controlling the rate and manner in which heat is transferred from the body.',o:['True','False'],a:0,ex:['CORRECT — Comfort IS achieved by controlling heat transfer rate and method. The body generates heat constantly; comfort depends on how efficiently and evenly that heat dissipates through radiation, convection, and conduction.','The statement is accurate — this is a fundamental HVAC comfort principle.'],h:'True'},
+{n:5,p:1,t:'mc',q:'Heat that causes changes in temperature that can be measured is ___ heat.',o:['specific','latent','vaporized','sensible'],a:3,ex:['Specific heat is a property of a substance (BTU to raise 1 lb by 1°F), not a category of heat itself.','Latent heat causes phase changes (liquid→gas) WITHOUT temperature change — it can\'t be measured with a thermometer.','Not a standard thermodynamic term for a heat category.','CORRECT — SENSIBLE heat causes measurable temperature changes. When you heat water from 50°F to 180°F, the temperature rise represents sensible heat addition. \'Sensible\' = you can sense/measure it.'],h:'sensible'},
+{n:6,p:1,t:'mc',q:'Heat transfer is the flow of heat from one object or substance to another, and it occurs because of a difference in ___.',o:['speed','pressure','volume','temperature'],a:3,ex:['Speed doesn\'t drive heat transfer between objects.','Pressure differences don\'t cause heat transfer between objects.','Volume differences don\'t cause heat transfer.','CORRECT — Heat flows from higher temperature to lower temperature. A TEMPERATURE DIFFERENCE between two objects or substances is the driving force for all heat transfer (conduction, convection, radiation).'],h:'temperature'},
+{n:7,p:1,t:'tf',q:'Liquids at rest exert pressure in all directions, downward, sideways, and upward.',o:['True','False'],a:0,ex:['CORRECT — Pascal\'s principle: liquids at rest exert pressure equally in ALL directions — down, sideways, and up. This is why static pressure exists at every point in a closed hydronic system, regardless of elevation.','This is a fundamental principle of fluid mechanics (Pascal\'s Law).'],h:'True'},
+{n:8,p:1,t:'short',q:'Pressure drop is the term used to describe ____________________ that is consumed in moving liquids through pipes, terminal units, fittings, and other system components.',o:[],a:-1,ex:['The correct answer is: friction'],h:'friction'},
+{n:9,p:1,t:'mc',q:'Static pressure in a closed hydronic system ___ pump capacity.',o:['has no effect on','increases','balances','decreases'],a:0,ex:['CORRECT — Static pressure in a closed loop has NO EFFECT on pump capacity. The pump only needs to overcome friction losses (dynamic pressure drop). Static pressure is balanced — the column of water going up equals the column coming down. This is a critical concept in hydronic design.','Static pressure doesn\'t increase pump requirements in a closed system.','Static pressure doesn\'t \'balance\' pump capacity in any meaningful way.','Static pressure doesn\'t decrease pump capacity either.'],h:'has no effect on'},
+{n:10,p:1,t:'short',q:'The ____________________, which in hydronic system design occurs in fairly large, whole numbers, eliminates the need for fractional values in calculations.',o:[],a:-1,ex:[]},
+{n:11,p:1,t:'tf',q:'The amount of heat in British thermal units required to change the temperature of one pound of a substance one degree Fahrenheit is called the specific heat of that substance.',o:['True','False'],a:0,ex:['CORRECT — This defines SPECIFIC HEAT: the BTUs required to change 1 lb of a substance by 1°F. Water\'s specific heat is 1.0 BTU/lb/°F, which is why water is an excellent heat transfer medium.','This is the textbook definition of specific heat.'],h:'True'},
+{n:12,p:1,t:'mc',q:'___ forces or pressures occur when a fluid is not moving but is at rest.',o:['Hygrometic','Hydrostatic','Psychrometric','Dynamic'],a:1,ex:['Hygrometric relates to humidity measurement, not pressure forces.','CORRECT — HYDROSTATIC forces/pressures occur in fluids at rest. \'Hydro\' = water, \'static\' = at rest. In a hydronic system, hydrostatic pressure is the pressure created by the weight of the water column.','Psychrometric relates to air/moisture properties, not static fluid pressure.','Dynamic forces occur when fluid is MOVING, not at rest.'],h:'Hydrostatic'},
+{n:13,p:1,t:'short',q:'____________________ is any pressure that is less than atmospheric pressure.',o:[],a:-1,ex:['The correct answer is: Vacuum'],h:'Vacuum'},
+{n:14,p:1,t:'short',q:'____________________ is the speed water moves through a piping section, typically expressed in feet per second (fps).',o:[],a:-1,ex:['The correct answer is: Velocity'],h:'Velocity'},
+{n:15,p:1,t:'short',q:'____________________ is the amount of moisture in air compared to the amount of moisture the air would hold at the same temperature when the air is saturated.',o:[],a:-1,ex:['The correct answer is: Relative Humidity'],h:'Relative Humidity'},
+{n:16,p:1,t:'mc',q:'A ___ heat exchanger is an external tube-type heat exchanger that consists of a large pressure vessel with multiple tubes that run through it.',o:['cathodic','brazed','plate','shell-and-tube'],a:3,ex:['Cathodic protection prevents corrosion — not a heat exchanger type.','Brazed plate heat exchangers are flat plate-style, not tube-type.','Plate heat exchangers use corrugated plates, not tubes in a pressure vessel.','CORRECT — A SHELL-AND-TUBE heat exchanger has tubes bundled inside a large cylindrical pressure vessel (shell). One fluid flows through the tubes while the other flows around them inside the shell.'],h:'shell-and-tube'},
+{n:17,p:1,t:'mc',q:'A ___ is a device used to reject heat from the water circulated through a building\'s water-loop system or chiller condenser.',o:['cooling tower','magnetic bearing','compressor','space cooler'],a:0,ex:['CORRECT — A COOLING TOWER rejects heat from the water loop to the atmosphere through evaporation. Used in water-source heat pump systems and chilled water systems to dissipate condenser heat.','Magnetic bearings are pump/compressor components, not heat rejection devices.','A compressor is a refrigeration component that increases refrigerant pressure, not a heat rejection device for water loops.','A space cooler is a terminal unit that cools a room, not a heat rejection device for the building\'s water loop.'],h:'cooling tower'},
+{n:18,p:1,t:'mc',q:'A ___ utilizes a paddle to sense fluid flow and physically close an electrical circuit, allowing power to the boiler burner.',o:['flow switch','makeup water line','pressure-reducing valve','boiler blowdown valve'],a:0,ex:['CORRECT — A FLOW SWITCH uses a paddle (or vane) inserted into the pipe. Fluid flow pushes the paddle, which mechanically closes an electrical contact. Used to prove flow before allowing equipment to operate (e.g., chiller flow proving).','A makeup water line adds water to the system — it\'s piping, not a sensing device.','A PRV reduces incoming water pressure — doesn\'t sense flow.','A blowdown valve drains sediment from a boiler — doesn\'t sense flow.'],h:'flow switch'},
+{n:19,p:1,t:'mc',q:'A condensing boiler is a boiler where the heat exchangers are designed to extract ___ heat from the water vapor found in hot combustion gases before the gases enter the flue.',o:['specific','latent','sensible','vaporized'],a:1,ex:['Specific heat is a material property, not extracted from flue gases.','CORRECT — Condensing boilers extract LATENT heat by cooling flue gases below the dew point, causing water vapor to condense. This recovers the latent heat of vaporization that would otherwise be lost up the flue, achieving efficiencies above 90%.','All boilers extract sensible heat. Condensing boilers go further by also extracting latent heat.','Not a standard term for heat extracted from flue gases.'],h:'latent'},
+{n:20,p:1,t:'tf',q:'A safety relief valve is an automatic pressure relieving device actuated by the static pressure upstream of the valve, and it opens further with the increase in pressure over the opening pressure.',o:['True','False'],a:0,ex:['CORRECT — A safety relief valve IS an automatic pressure-relieving device actuated by upstream static pressure. Required by code on all hydronic boilers to prevent catastrophic overpressure.','This is the standard definition per ASME/mechanical codes.'],h:'True'},
+{n:21,p:1,t:'short',q:'A(n) ____________________ contains either a bladder or a diaphragm to separate the air charge contained in the tank from the system HTF.',o:[],a:-1,ex:['The correct answer is: pre-charged expansion tank'],h:'pre-charged expansion tank'},
+{n:22,p:1,t:'short',q:'A(n) ____________________ plate heat exchanger is sometimes referred to as a "honeycomb" or "turboseal-type" plate exchanger.',o:[],a:-1,ex:['The correct answer is: brazed'],h:'brazed'},
+{n:23,p:1,t:'short',q:'Backflow prevention involves the selection and installation of an approved backflow preventer designed to prevent backflow into a(n) ____________________ water supply.',o:[],a:-1,ex:['The correct answer is: potable'],h:'potable'},
+{n:24,p:1,t:'tf',q:'In a plate heat exchanger, heat passes very easily through the thin wall separating the two media from each other.',o:['True','False'],a:0,ex:['CORRECT — Plate heat exchangers have very thin corrugated metal plates separating the two fluids. Heat transfers easily through these thin walls, making plate exchangers highly efficient with compact size.','The statement accurately describes plate heat exchanger operation.'],h:'True'},
+{n:25,p:1,t:'short',q:'The ____________________ on any closed piping circuit will dictate, by its location, the system pressure changes that will occur when the pump starts.',o:[],a:-1,ex:['The correct answer is: point of no pressure change'],h:'point of no pressure change'},
+{n:26,p:2,t:'fill',q:'According to the mechanical code, the maximum operating pressure and temperature for a hydronic boiler to be considered low pressure is degrees F, and psig.',o:[],a:-1,ex:['The correct answer is: 250, 160'],h:'250, 160'},
+{n:27,p:1,t:'mc',q:'A high head pump is a pump classified as above ___ hp and operating above 12\' of pressure head.',o:['1/4','1/3','1/2','2/3'],a:2,ex:['1/4 hp is below the threshold for high-head classification.','1/3 hp is below the threshold.','CORRECT — A high-head pump is classified as above 1/2 hp operating above 12 feet of head. Below this threshold, pump location is less critical. Above it, proper piping practices for NPSH become important.','2/3 hp is above the threshold but 1/2 hp is the defined boundary.'],h:'1/2'},
+{n:28,p:1,t:'tf',q:'A section of straight pipe should never be installed between the suction side of a pump and first elbow.',o:['True','False'],a:1,ex:['A straight pipe section IS recommended between pump suction and the first elbow to ensure smooth, uniform flow entering the pump and prevent cavitation.','CORRECT (False) — A straight section of pipe SHOULD be installed between the pump suction and the first elbow. The statement says it should \'never\' be installed, which is incorrect. Straight pipe at pump suction ensures laminar flow entry and prevents uneven loading on the impeller.'],h:'False'},
+{n:29,p:1,t:'tf',q:'A wet rotor circulator uses system fluid for lubrication.',o:['True','False'],a:0,ex:['CORRECT — Wet rotor circulators ARE lubricated by the system fluid (water/glycol). The motor rotor is immersed in system fluid, which also serves as the bearing lubricant. This eliminates the need for mechanical shaft seals.','Wet rotor circulators absolutely do use system fluid for lubrication — that\'s their defining characteristic.'],h:'True'},
+{n:30,p:1,t:'tf',q:'All-bronze pumps are used for recirculation lines in domestic hot water systems and for pumping hot process water.',o:['True','False'],a:0,ex:['CORRECT — All-bronze pumps resist dezincification and corrosion from domestic hot water and potable water applications. Bronze construction is required by code for pumps handling potable water to prevent contamination.','This is standard practice — bronze pumps for potable/domestic hot water.'],h:'True'},
+{n:31,p:1,t:'short',q:'Although ____________________ pumps have the advantage of being able to provide very high pressures, they discharge fluids in a pulsating flow.',o:[],a:-1,ex:['The correct answer is: reciprocating'],h:'reciprocating'},
+{n:32,p:1,t:'mc',q:'As total head increases, the pump flow rate ___.',o:['decreases','is not affected','increases','balances'],a:0,ex:['CORRECT — As head (resistance) increases, pump flow DECREASES. This is shown on the pump curve — flow and head have an inverse relationship. At maximum head (shutoff), flow is zero. At maximum flow, head is minimal.','Head absolutely affects flow rate — they\'re inversely related on the pump curve.','As head increases, flow decreases, not increases.','Flow doesn\'t \'balance\' with head — it decreases.'],h:'decreases'},
+{n:33,p:1,t:'short',q:'As flow occurs, there is a corresponding ____________________ loss, or pressure drop, that must be overcome by the pump.',o:[],a:-1,ex:['The correct answer is: friction'],h:'friction'},
+{n:34,p:1,t:'short',q:'Glycol-based products are normally used for ____________________ protection in hydronic systems due to their temperature properties and the protection characteristics of glycol-based solutions.',o:[],a:-1,ex:['The correct answer is: corrosion'],h:'corrosion'},
+{n:35,p:1,t:'tf',q:'In air elimination systems, the air separator and pre-charged expansion tank must be connected on the outlet piping of the boiler, which also creates the point of no pressure change.',o:['True','False'],a:0,ex:['CORRECT — The air separator and expansion tank MUST be on the pump suction side (point of no pressure change) so the pump adds pressure to the system rather than creating a vacuum. This prevents air from being drawn into the system.','Installing these on the discharge side would allow the pump to create negative pressure at the suction, pulling air into the system.'],h:'True'},
+{n:36,p:1,t:'short',q:'In order for pumping action to begin, a pump must first be ____________________, that is, the impeller must be immersed in liquid.',o:[],a:-1,ex:['The correct answer is: primed'],h:'primed'},
+{n:37,p:1,t:'tf',q:'Secondary circuit pump heads have no effect on the primary circuit pumping head requirements and vice versa.',o:['True','False'],a:0,ex:['CORRECT — In primary/secondary piping, the closely-spaced tees create hydraulic isolation. Secondary pump head requirements are independent of primary pump head and vice versa. This is the fundamental advantage of primary/secondary design.','This IS the key principle of primary/secondary pumping — hydraulic independence.'],h:'True'},
+{n:38,p:2,t:'fill',q:'The two most commonly used pump seals in the industry are the seal and the type.',o:[],a:-1,ex:['The correct answer is: stuffing box, mechanical'],h:'stuffing box, mechanical'},
+{n:39,p:1,t:'tf',q:'When two circuits are interconnected, flow in one will not cause flow in the other if the pressure drop in the piping common to both is eliminated.',o:['True','False'],a:0,ex:['CORRECT — When circuits are interconnected with closely-spaced tees (minimal pressure drop between connection points), flow in one circuit will NOT cause flow in the other. This is the basis of primary/secondary piping — hydraulic decoupling.','This is the fundamental principle of closely-spaced tees in hydronic design.'],h:'True'},
+{n:40,p:1,t:'mc',q:'___ is the vertical distance liquid is raised by atmospheric pressure from the surface of a supply reservoir to the centerline of the pump suction connection.',o:['Static discharge head','Total discharge lift','Static suction lift','Total static head'],a:2,ex:['Static discharge head is the vertical distance on the DISCHARGE side above the pump — different concept.','Total discharge lift includes friction losses on the discharge side — not the same as suction lift.','CORRECT — STATIC SUCTION LIFT is the vertical distance liquid must be raised by atmospheric pressure from the supply reservoir surface to the pump centerline. Important for pump NPSH calculations.','Total static head is the total elevation difference in the system — combines suction and discharge.'],h:'Static suction lift'},
+{n:41,p:1,t:'mc',q:'___ valves are quietly operating heavy-duty valves that perform all of the functions normally required on the discharge side of hydronic system pumps.',o:['Straight-Angle','Triple Duty','Double Duty','Side-Angle'],a:1,ex:['Straight-angle is a valve configuration type, not a multi-function valve name.','CORRECT — TRIPLE DUTY valves perform three functions: shutoff, balancing, and check valve operation. They replace three separate valves, saving cost and space. Quiet operation due to their design.','Double Duty isn\'t the standard industry term for this valve type.','Side-angle describes a valve body style, not a multi-function valve.'],h:'Triple Duty'},
+{n:42,p:1,t:'short',q:'When filling a hydronic system, a(n) ____________________ fill adds HTF from the bottom of the system to the top, requiring the air to be vented from the top of the piping and its components.',o:[],a:-1,ex:['The correct answer is: quick'],h:'quick'},
+{n:43,p:1,t:'short',q:'A(n) ____________________ is designed to be used for air elimination systems for heat sources and chiller installations that cannot use the standard dip tube fitting.',o:[],a:-1,ex:['The correct answer is: inline air separator'],h:'inline air separator'},
+{n:44,p:1,t:'tf',q:'At elevated system water temperatures, a lower cold fill pressure could be necessary to properly pressurize a system.',o:['True','False'],a:1,ex:['At higher temps, water expands more — a lower cold fill pressure gives the expansion tank more room to absorb this greater expansion.','CORRECT (False) — At elevated temperatures, water expands MORE, so you may actually need a HIGHER cold fill pressure (or larger tank) to ensure the system doesn\'t lose pressure when it cools. The statement is false — higher temps don\'t require lower cold fill pressure.'],h:'False'},
+{n:45,p:1,t:'tf',q:'Each time water is added to a hydronic system, additional air enters the system as entrained air and dissolved gases.',o:['True','False'],a:0,ex:['CORRECT — Every time makeup water enters the system, it carries dissolved air and entrained air bubbles. This is why minimizing water loss and system leaks is important — each refill reintroduces air that must be eliminated.','Fresh water absolutely contains dissolved air that enters the system during each fill.'],h:'True'},
+{n:46,p:1,t:'mc',q:'Generally, on small systems where the pumps do not produce more than 12\' of head, pump ___ may not be important.',o:['temperature','pressure','location','flow direction'],a:2,ex:['Temperature isn\'t what\'s affected by pump head on small systems.','Pressure is always a factor in pump design.','CORRECT — On small systems under 12\' of head, pump LOCATION is less critical. The low head means there\'s minimal pressure variation throughout the system, so the pump can be placed more flexibly without significant performance impact.','Flow direction is always important in pump installation.'],h:'location'},
+{n:47,p:1,t:'tf',q:'In air control management systems, manual air vents are recommended to be installed at terminal units and high piping points.',o:['True','False'],a:0,ex:['CORRECT — In air control systems, manual air vents at terminal units (radiators, fan coils) allow trapped air to be bled at high points where air naturally collects. Essential for proper system operation and heat transfer.','Manual air vents at terminal units are standard practice for air management.'],h:'True'},
+{n:48,p:1,t:'short',q:'The ideal location for a pressure reducing valve and a compression tank connection is at the ____________________ since the operation of the pump will not affect either of them.',o:[],a:-1,ex:['The correct answer is: point of no pressure change'],h:'point of no pressure change'},
+{n:49,p:1,t:'tf',q:'Though the best location for air separators depends on the particular system, when possible, select a point that has both the lowest temperature and the highest pressure.',o:['True','False'],a:1,ex:['Air separators should ideally be installed at the point of LOWEST solubility (highest temperature, lowest pressure), which is typically the boiler outlet — not the hottest point necessarily.','CORRECT (False) — The best location depends on the system, but the general guideline is to install the air separator where air is MOST LIKELY to come out of solution — at the point of highest temperature and lowest pressure (typically boiler supply). The statement about selecting \'the hottest point\' oversimplifies the principle — it\'s about solubility, which depends on both temperature AND pressure.'],h:'False'},
+{n:50,p:1,t:'tf',q:'When any piping system is completely filled with water and all of the air is confined to the compression tank, the point where the tank connects to the system will be a point of no pressure change and will be virtually unaffected by pump operation.',o:['True','False'],a:0,ex:['CORRECT — When the system is completely filled and all air is in the compression tank, the system operates as a true closed loop. The expansion tank absorbs volume changes from temperature variations, maintaining stable system pressure.','This describes the ideal operating condition of a properly commissioned closed hydronic system.'],h:'True'},
+{n:51,p:1,t:'mc',q:'___ is the flashing of pumped liquid into vapor bubbles and the subsequent violent collapsing of those bubbles as the liquid moves from suction to discharge through a pump.',o:['Pitting','Bubbling','Cavitation','Corrosion'],a:2,ex:['Pitting is a form of localized corrosion, not caused by vapor bubble collapse.','Not a recognized technical term for this phenomenon.','CORRECT — CAVITATION is the formation and violent collapse of vapor bubbles in the pump impeller when local pressure drops below the fluid\'s vapor pressure. Causes noise, vibration, impeller damage, and reduced pump performance. Prevented by maintaining adequate NPSH.','Corrosion is a chemical/electrochemical process, not caused by bubble collapse.'],h:'Cavitation'},
+{n:52,p:1,t:'mc',q:'___ pumping is a means of interconnecting piping circuits so that the operation of one will not affect the other.',o:['Primary-secondary','Parallel','Secondary-tertiary','Series'],a:0,ex:['CORRECT — PRIMARY-SECONDARY pumping interconnects circuits with closely-spaced tees so that operation of one circuit doesn\'t affect another. Each circuit has its own pump, and the tees provide hydraulic isolation between primary and secondary loops.','Parallel pumping uses multiple pumps on the same circuit — doesn\'t provide hydraulic isolation between different circuits.','Secondary-tertiary is an extension of primary-secondary, not the basic concept described.','Series pumping puts pumps in sequence to increase head — doesn\'t provide hydraulic isolation.'],h:'Primary-secondary'},
+{n:53,p:1,t:'mc',q:'A ___ control valve is a silent, efficient, nonelectric control valve that provides reliable temperature control for a hydronic terminal unit.',o:['check','thermostatic','zone','drain'],a:1,ex:['Check valves prevent backflow but don\'t control temperature.','CORRECT — THERMOSTATIC control valves use a temperature-sensing element to automatically modulate flow in response to temperature changes. Silent operation, no electrical power needed — the wax element or liquid-filled bellows expands and contracts with temperature.','Zone valves are electrically actuated on/off valves — not thermostatic, not silent.','Drain valves are for draining the system — no temperature control function.'],h:'thermostatic'},
+{n:54,p:1,t:'mc',q:'A ___ is a fitting that creates a greater-than-normal pressure drop in a line in order to divert flow to another line.',o:['three-elbow swing','coupling','supply riser','diversion fitting'],a:3,ex:['A three-elbow swing is a piping configuration for absorbing expansion, not for creating pressure drop to divert flow.','A coupling joins two pipes — doesn\'t create pressure drop or divert flow.','A supply riser is vertical piping — doesn\'t create pressure drop for flow diversion.','CORRECT — A DIVERSION FITTING (such as a Monoflo tee) creates a localized pressure drop in the main to divert a portion of the flow into a branch circuit. Used in one-pipe systems to force flow through terminal units.'],h:'diversion fitting'},
+{n:55,p:1,t:'mc',q:'A(n) ___ is a special fitting made for installation at any convenient point along a long run of pipe for the purpose of absorbing expansion and contraction.',o:['contraction joint','expansion joint','expansion loop','contraction loop'],a:1,ex:['Contraction joints control cracking in concrete — not a piping fitting.','CORRECT — An EXPANSION JOINT is a special fitting installed in a pipe run to absorb thermal expansion and contraction. Unlike expansion loops (which are U-shaped pipe), expansion joints are compact in-line devices with bellows or slip mechanisms.','An expansion loop is a U-shaped pipe section — different from an expansion joint fitting.','Contraction loops don\'t exist as a standard piping term.'],h:'expansion joint'},
+{n:56,p:1,t:'short',q:'A(n) ____________________ is a U-shaped section of piping used to absorb expansion or contraction.',o:[],a:-1,ex:['The correct answer is: expansion loop'],h:'expansion loop'},
+{n:57,p:1,t:'tf',q:'An authority having jurisdiction (AHJ) is an organization, office, or individual designated by a government organization with legal powers to administer, interpret, and enforce codes and standards.',o:['True','False'],a:0,ex:['CORRECT — The AHJ (Authority Having Jurisdiction) IS the designated official or organization responsible for enforcing codes, approving equipment, and inspecting installations. The AHJ has final authority on code compliance.','This is the standard definition of AHJ used across all mechanical and building codes.'],h:'True'},
+{n:58,p:1,t:'short',q:'Flow-control valves are designed with a handle that, when turned fully ____________________, will permit gravity circulation.',o:[],a:-1,ex:['The correct answer is: counter clockwise'],h:'counter clockwise'},
+{n:59,p:1,t:'tf',q:'Swing check valves provide a high resistance to fluid flow.',o:['True','False'],a:1,ex:['Swing check valves actually have LOW resistance to flow due to their full-port design when open.','CORRECT (False) — Swing check valves provide LOW resistance to fluid flow when open. The disc swings fully open, creating a nearly unobstructed flow path. This makes them preferred where minimal pressure drop is important. Spring-loaded or lift check valves have higher resistance.'],h:'False'},
+{n:60,p:1,t:'short',q:'The main limitation of ____________________ piping is that it cannot sustain high pressure and high temperature at the same time.',o:[],a:-1,ex:['The correct answer is: plastic'],h:'plastic'},
+{n:61,p:1,t:'tf',q:'Three-way valves may be manually, electronically, pneumatically, or thermally controlled.',o:['True','False'],a:0,ex:['CORRECT — Three-way valves CAN be controlled by all these methods: manual (hand wheel), electronic (motorized actuator), pneumatic (air-operated actuator), or thermal (thermostatic wax element). This versatility makes them adaptable to many applications.','All four control methods are used with three-way valves in hydronic systems.'],h:'True'},
+{n:62,p:1,t:'mc',q:'___ is the leading international developer of codes and standards associated with the art, science, and practice of mechanical engineering.',o:['American Society of Mechanical Engineers (ASME)','American Society for Testing and Materials (ASTM)','American Water Works Association (AWWA)','Canadian Standards Association (CSA) Group'],a:0,ex:['CORRECT — ASME (American Society of Mechanical Engineers) is the leading developer of codes and standards for mechanical engineering, including boiler and pressure vessel codes (BPVC), piping codes, and related standards that govern hydronic system design and safety.','ASTM develops material testing standards — important but not the leading developer of mechanical codes.','AWWA focuses on water utility and municipal water supply standards, not HVAC/mechanical codes.','CSA Group is a Canadian standards organization — important for Canadian installations but not the \'leading international developer\' of mechanical codes.'],h:'American Society of Mechanical Engineers (ASME)'},
+{n:63,p:1,t:'mc',q:'A ___ is intended to supply air only to the room where it is located.',o:['heat pump','fan coil unit','four-pipe system','gravity hydronic loop'],a:1,ex:['A heat pump is a complete heating/cooling unit — may serve multiple rooms and is a system type, not specifically a room-level air supply device.','CORRECT — A FAN COIL UNIT is a terminal device with a fan and a coil (hot water, chilled water, or both) that conditions air for the specific room where it\'s located. Each unit operates independently to heat or cool its space.','A four-pipe system is a piping configuration, not a terminal unit.','A gravity loop is a piping system type, not a room-level air supply device.'],h:'fan coil unit'},
+{n:64,p:1,t:'mc',q:'A ___ radiator is a radiator designed to function more efficiently and at lower HTF temperatures than a traditional radiator.',o:['baseboard','finned tube','panel','radiant baseboard'],a:2,ex:['Baseboard radiators are effective but not specifically designed for lower HTF temperatures.','Finned tube radiators are conventional — not the enhanced low-temp design described.','CORRECT — PANEL radiators have large flat surfaces that emit radiant heat efficiently. Their large surface area allows them to operate effectively at lower HTF temperatures compared to conventional fin-tube or baseboard units.','Radiant baseboard is a general term — panel radiators are the specific type designed for enhanced low-temperature performance.'],h:'panel'},
+{n:65,p:1,t:'tf',q:'A radiant ceiling panel grid can be embedded into a new ceiling, or preformed panels can be mounted to the surface of a ceiling.',o:['True','False'],a:0,ex:['CORRECT — Radiant ceiling panels CAN be embedded in new construction ceilings or mounted as preformed panels on existing ceilings. This flexibility makes them suitable for both new and retrofit applications.','Both installation methods are available for radiant ceiling panels.'],h:'True'},
+{n:66,p:1,t:'short',q:'Although not technically a cabinet unit heater, a(n) ____________________ is ideal for use in a kitchen, bathroom, or other area where there is not enough wall space for a baseboard radiator or convection unit.',o:[],a:-1,ex:['The correct answer is: kickspace convection heater'],h:'kickspace convection heater'},
+{n:67,p:1,t:'mc',q:'As chilled water temperatures increase, less moisture condenses out of the air, and the RH ___.',o:['decreases','increases','balances','remains unaffected'],a:1,ex:['As chilled water temp increases, less cooling occurs, so less moisture condenses — but the remaining moisture stays in the air, INCREASING RH.','CORRECT — When chilled water temperature INCREASES, less moisture is removed from the air (less condensation on the coil). More moisture remains in the air, so RELATIVE HUMIDITY INCREASES. Colder chilled water = more dehumidification = lower RH.','RH doesn\'t simply balance with chilled water temperature.','Chilled water temperature absolutely affects RH — it determines how much moisture is removed.'],h:'increases'},
+{n:68,p:1,t:'tf',q:'In most cases, the inlet to a heating coil is on the top of the coil, and the outlet is at the bottom.',o:['True','False'],a:1,ex:['For hydronic heating coils, inlet at top and outlet at bottom can trap air in the coil. The proper arrangement depends on coil design and air elimination needs.','CORRECT (False) — In MOST cases, the inlet is at the BOTTOM and outlet at the TOP of a heating coil. This promotes counterflow heat exchange with the rising air stream AND allows air bubbles to naturally rise and exit through the top connection. Top-inlet installations can trap air.'],h:'True'},
+{n:69,p:1,t:'mc',q:'The ___ in a cabinet unit heater adds energy to the air so that directional louvers can be used on the top or front of the heater to distribute the air more efficiently in a building space.',o:['blower','filter','HTF coil','booster coil'],a:0,ex:['CORRECT — The BLOWER (fan) in a cabinet unit heater adds kinetic energy to the air, pushing it through the coil and out through directional louvers. Without the blower, the unit would rely only on natural convection, which can\'t direct airflow.','The filter removes particulates but doesn\'t add energy to the air for directional control.','The HTF coil adds THERMAL energy to the air but doesn\'t create the air velocity needed for directional louvers.','A booster coil is an additional heating element — not what creates the air movement for louver direction.'],h:'blower'},
+{n:70,p:1,t:'mc',q:'___ systems are used on driveways, walkways, parking areas, stairways, ramps, loading docks, and other outside surfaces.',o:['Radiant floor panel','Snow melt','Radiant ceiling panel','Radiant wall panel'],a:1,ex:['Radiant floor panels heat indoor living spaces — not designed for outdoor snow/ice conditions.','CORRECT — SNOW MELT systems use embedded hydronic tubing in outdoor surfaces (driveways, walkways, ramps, loading docks) to melt snow and ice. They circulate warm glycol-water solution to keep surfaces clear.','Radiant ceiling panels are indoor systems for space heating/cooling.','Radiant wall panels are indoor systems mounted on walls.'],h:'Snow melt'},
+{n:71,p:1,t:'short',q:'A(n) ____________________ is provided at each circuit in a radiant system, or for each area where the flow of HTF must be controlled, in order to provide equal distribution of heat transfer to each zone.',o:[],a:-1,ex:['The correct answer is: control valve'],h:'control valve'},
+{n:72,p:1,t:'short',q:'After the PEX tubing for a radiant system is installed, it should be tested to approximately _____ psig for 24 hours.',o:[],a:-1,ex:['The correct answer is: 50'],h:'50'},
+{n:73,p:1,t:'tf',q:'An uncoiler is used to straighten out crooked tubing panels after they are laid into place.',o:['True','False'],a:1,ex:['An uncoiler is used to straighten coiled tubing BEFORE installation, not after panels are laid into place.','CORRECT (False) — An uncoiler straightens PEX tubing as it comes off the coil DURING installation, not after panels are laid. Once tubing is installed in a pattern, it stays in place — you don\'t straighten it afterward.'],h:'False'},
+{n:74,p:1,t:'short',q:'Because a snow- and ice-melt system is designed to be installed where freezing temperatures are present, the HTF used is a ____________________ mixture.',o:[],a:-1,ex:['The correct answer is: glycol-water'],h:'glycol-water'},
+{n:75,p:1,t:'tf',q:'Manifold stations location should be chosen for ease of access and centrally located.',o:['True','False'],a:0,ex:['CORRECT — Manifold stations SHOULD be centrally located for equal circuit lengths and placed for easy access for maintenance, balancing, and troubleshooting. Central location minimizes the longest circuit run.','Central location with easy access is the standard recommendation.'],h:'True'},
+{n:76,p:1,t:'tf',q:'Radiant wall panel circuits are installed similar to radiant floor panel systems.',o:['True','False'],a:0,ex:['CORRECT — Radiant wall panels use the same PEX tubing, manifolds, and installation principles as radiant floor systems. The tubing is embedded in or attached to the wall structure rather than the floor.','Wall panel installation follows the same fundamental methods as floor panels.'],h:'True'},
+{n:77,p:1,t:'tf',q:'The function of the control joints in a thin slab installation is to control the HTF flow rate.',o:['True','False'],a:1,ex:['Control joints in concrete slabs control CRACKING from thermal expansion/contraction of the concrete — they have nothing to do with controlling HTF flow rate.','CORRECT (False) — Control joints in thin-slab installations control CONCRETE CRACKING, not HTF flow rate. They are expansion joints in the concrete to prevent random cracking as the slab expands and contracts.'],h:'False'},
+{n:78,p:1,t:'tf',q:'Tubing should be placed a minimum of 2\' from structural penetrations, block outs, and piping penetrations, especially water closet bend stubs.',o:['True','False'],a:1,ex:['2 feet is too far — tubing should be placed closer to penetrations than 2 feet.','CORRECT (False) — Tubing should be placed a minimum of 6 INCHES (not 2 feet) from structural penetrations, block-outs, and piping penetrations. Two feet would waste significant floor area and create cold spots near walls and penetrations.'],h:'False'},
+{n:79,p:1,t:'short',q:'When filling a radiant panel system, it is recommended that the HTF be introduced at the ________ point of the system and fill the system slowly.',o:[],a:-1,ex:['The correct answer is: low'],h:'low'},
+{n:80,p:1,t:'short',q:'_______________ are thin pieces of metal (usually aluminum) with grooves for PEX tubing to be installed, to aid in heat dispersion.',o:[],a:-1,ex:['The correct answer is: heat transfer plates'],h:'heat transfer plates'},
+{n:81,p:1,t:'mc',q:'The aluminum layer in ___ limits oxygen diffusion through the walls of the tubing.',o:['PP','EVOH','PEX-AL-PEX','PEX'],a:2,ex:['PP (polypropylene) doesn\'t have an aluminum layer for oxygen barrier.','EVOH is an oxygen barrier coating, not an aluminum layer.','CORRECT — PEX-AL-PEX has an aluminum layer sandwiched between inner and outer PEX layers. This aluminum barrier virtually eliminates oxygen diffusion through the tubing walls, preventing corrosion in ferrous system components.','Standard PEX doesn\'t have an aluminum layer (though some have EVOH oxygen barrier coatings).'],h:'PEX-AL-PEX'},
+{n:82,p:1,t:'mc',q:'The most commonly used panel tubing arrangement is the ___ coil method.',o:['cross-linked','stacked','spiral','serpentine'],a:3,ex:['Cross-linked describes the PEX material, not a coil layout pattern.','Stacked isn\'t a standard radiant tubing layout term.','Spiral (or counterflow spiral) is used but less common than serpentine.','CORRECT — The SERPENTINE (back-and-forth) coil method is most commonly used for radiant panel tubing. It\'s easy to install, provides reasonably uniform heat distribution, and works well in rectangular spaces.'],h:'serpentine'},
+{n:83,p:1,t:'tf',q:'Contaminants decrease the efficiency of heating systems and cause damage to the components.',o:['True','False'],a:0,ex:['CORRECT — Contaminants (dirt, scale, flux residue, biological growth) reduce heat transfer efficiency by insulating surfaces, restrict flow through components, and damage seals, valves, and pump bearings. System cleanliness is essential.','Contaminants absolutely cause efficiency loss and component damage.'],h:'True'},
+{n:84,p:1,t:'mc',q:'A water loop system circulates water from the chiller condenser to the cooling tower and back to the chiller condenser and is typically a(n) ___ system.',o:['gravity','open','closed','combination'],a:1,ex:['A gravity system relies on temperature-induced density differences, not a chiller/tower loop.','CORRECT — An OPEN water loop system circulates water from the chiller condenser through piping to the cooling tower, which is open to the atmosphere. The water is exposed to air at the tower, making it an \'open\' system. Requires water treatment for biological/mineral control.','A closed system doesn\'t expose the HTF to the atmosphere — a cooling tower is inherently open.','The question describes a straightforward open loop, not a combination system.'],h:'open'},
+{n:85,p:1,t:'tf',q:'From the total volume needed, the amount of glycol and water is calculated from the concentration percentage.',o:['True','False'],a:0,ex:['CORRECT — To determine the volume of glycol and water needed, you calculate total system volume first, then apply the required concentration percentage. For example, 30% glycol in a 100-gallon system = 30 gallons glycol + 70 gallons water.','This is the standard method for calculating glycol/water quantities.'],h:'True'},
+{n:86,p:1,t:'mc',q:'Glycol concentrations up to about ___% can be checked with a refractometer or glycol test kit.',o:['25','55','80','95'],a:1,ex:['25% is too low — refractometers can measure higher concentrations.','CORRECT — Refractometers and glycol test kits can accurately measure glycol concentrations up to about 55%. Above this concentration, more precise laboratory methods may be needed for accurate measurement.','80% exceeds the practical range of field refractometers.','95% far exceeds the measurable range of standard field instruments.'],h:'55'},
+{n:87,p:1,t:'tf',q:'In a hydronic system, HTF flow problems include air in the system that causes air lock, cavitation, HTF deterioration, and inefficient heat transfer.',o:['True','False'],a:0,ex:['CORRECT — Air in hydronic systems causes air lock (blocking flow), cavitation (pump damage), noise, corrosion (oxygen), and reduced heat transfer. All are legitimate flow problems caused by air in the system.','This accurately lists the problems caused by air in hydronic systems.'],h:'True'},
+{n:88,p:1,t:'mc',q:'Of the two types of glycols used with hydronic systems, ___ glycol has better heat transfer characteristics, but it is more hazardous to handle during preparation.',o:['Benzene','Ethylene','Xylene','Propylene'],a:1,ex:['Benzene is a toxic solvent — never used as HTF in hydronic systems.','CORRECT — ETHYLENE glycol has better heat transfer characteristics than propylene glycol. It has lower viscosity and higher thermal conductivity. However, ethylene glycol is TOXIC, so propylene glycol is used where potable water contamination is possible.','Xylene is a solvent, not a glycol used in hydronic systems.','Propylene glycol has inferior heat transfer compared to ethylene glycol, but is non-toxic and preferred where safety is a concern.'],h:'Ethylene'},
+{n:89,p:1,t:'mc',q:'When preparing to start a hydronic system for the first time, review the job specifications to determine the testing, ___, and adjusting work required and the requirements for reporting the results.',o:['balancing','inspecting','pressurizing','charging'],a:0,ex:['CORRECT — Before first startup, reviewing job specifications determines BALANCING requirements — the design flow rates, temperatures, and pressure drops that each circuit should achieve. Balancing ensures the system performs as designed.','Inspection is visual — doesn\'t require reviewing specifications for performance targets.','Pressurizing is a startup step but isn\'t determined by reviewing design specifications.','Charging (filling) is a physical process that doesn\'t require specification review for design parameters.'],h:'balancing'},
+{n:90,p:1,t:'mc',q:'___ is a formal assessment of the functionality and efficiency of a system.',o:['Balancing','Inspecting','Commissioning','Measuring'],a:2,ex:['Balancing adjusts flow rates but isn\'t a comprehensive system assessment.','Inspecting is visual examination — not a formal functional assessment.','CORRECT — COMMISSIONING is the formal, systematic process of assessing functionality and efficiency. It verifies that all systems perform according to design intent through testing, adjusting, and documenting system performance.','Measuring is one activity within commissioning, not the overall process.'],h:'Commissioning'},
+{n:91,p:1,t:'mc',q:'___ may be caused by excessive velocity present in a piping system.',o:['Erosion','Fatigue stresses','Pitting','Scale'],a:0,ex:['CORRECT — EROSION is caused by excessive fluid velocity wearing away pipe material. High-velocity flow carries particles that physically abrade pipe walls and fittings, especially at bends and restrictions. This is why maximum velocity limits (typically 4-8 fps) are specified.','Fatigue stresses are caused by cyclic pressure/temperature changes, not velocity.','Pitting is localized CORROSION caused by chemical/electrochemical attack, not velocity.','Scale is mineral deposit buildup from hard water — caused by water chemistry, not velocity.'],h:'Pitting'},
+{n:92,p:1,t:'tf',q:'A solenoid is an electrical switch that is actuated by a separate electrical circuit.',o:['True','False'],a:1,ex:['A solenoid is an electromagnetically operated valve/actuator — it IS actuated by a separate electrical circuit, but calling it an \'electrical switch\' is inaccurate. A relay is an electrical switch actuated by a separate circuit.','CORRECT (False) — A SOLENOID is an electromagnetically operated VALVE or actuator, not a switch. A relay is the device that acts as an electrical switch actuated by a separate circuit. Solenoids convert electrical energy into mechanical motion to open/close valves.'],h:'False'},
+{n:93,p:1,t:'short',q:'A(n) ____________________ is a device that measures the value of a controlled variable, such as temperature, pressure, or humidity, and transmits a signal that conveys this information to a controller.',o:[],a:-1,ex:['The correct answer is: sensor'],h:'sensor'},
+{n:94,p:1,t:'short',q:'A(n) ____________________ is the unoccupied heating or cooling setpoint.',o:[],a:-1,ex:['The correct answer is: setback'],h:'setback'},
+{n:95,p:1,t:'tf',q:'Good HTF flow is indicated by a relatively small differential pressure.',o:['True','False'],a:1,ex:['A small differential pressure across a device means low resistance/restriction — but this indicates GOOD flow is occurring through it.','CORRECT (False) — Good HTF flow is indicated by a relatively LARGE differential pressure across a coil or device, meaning the fluid is actively flowing through and encountering normal resistance. A SMALL ΔP across a coil could indicate flow is bypassing it or the coil is partially blocked.'],h:'False'},
+{n:96,p:1,t:'tf',q:'The purpose of a control system is to achieve and maintain certain conditions, which are quantified as setpoints.',o:['True','False'],a:0,ex:['CORRECT — The fundamental purpose of ANY control system is to maintain desired conditions (temperature, pressure, humidity) as quantified by setpoints. The controller compares measured values to setpoints and adjusts outputs accordingly.','This is the basic definition of control system purpose.'],h:'True'},
+{n:97,p:1,t:'mc',q:'___ sensors are the most common inputs used in hydronic control systems.',o:['Pressure','Temperature','Flow','Differential'],a:1,ex:['Pressure sensors are used but are less common than temperature sensors in hydronic controls.','CORRECT — TEMPERATURE sensors are the most common inputs in hydronic control systems. Nearly every control function involves measuring temperature — outdoor temp, supply temp, return temp, room temp, DHW temp. Temperature is the primary controlled variable.','Flow sensors are used for some applications but are far less prevalent than temperature sensors.','Differential sensors (pressure or temperature) are specialized inputs, not the most common.'],h:'Temperature'},
+{n:98,p:1,t:'mc',q:'For typical residential or light commercial applications, a temperature difference of about ___ may be used for both heating and cooling applications.',o:['5°F to 10°F','10°F to 20°F','20°F to 25°F','25°F to 35°F'],a:1,ex:['5-10°F is too narrow for typical residential/light commercial applications.','CORRECT — A ΔT of 10°F to 20°F is the typical design range for residential and light commercial hydronic systems. This provides a good balance between flow rate, pipe sizing, and heat delivery. (20°F ΔT is the most common residential design standard.)','20-25°F is higher than typical residential designs, though 20°F is at the upper boundary.','25-35°F is too high for standard residential applications — would require higher supply temperatures.'],h:'10°F to 20°F'},
+{n:99,p:1,t:'short',q:'A parallel pumping installation commonly used is system ____________________, in which two pumps are used sharing common suction piping.',o:[],a:-1,ex:['The correct answer is: redundancy'],h:'redundancy'},
+{n:100,p:1,t:'tf',q:'In one-pipe series systems, the pipe size remains the same throughout the system because the flow rate remains the same.',o:['True','False'],a:0,ex:['CORRECT (True) — In a one-pipe SERIES system, ALL water flows through EVERY terminal unit in sequence. The flow rate is constant throughout because there are no branches or bypasses. Therefore, the pipe size remains the same (it\'s one continuous loop).','The flow rate IS constant in a series loop — every drop of water passes through every unit.'],h:'False'},
+{n:101,p:1,t:'tf',q:'In two-pipe reverse-return systems, the supply pipe gets progressively larger as it goes out from the boiler or chiller.',o:['True','False'],a:1,ex:['In two-pipe reverse-return, the supply pipe actually gets progressively SMALLER as it moves away from the boiler (as branch circuits tap off flow), and the return pipe gets progressively larger.','CORRECT (False) — In a two-pipe reverse-return system, the SUPPLY pipe gets smaller (not larger) going away from the boiler because flow is being diverted to each branch. The RETURN pipe starts small and gets larger as it collects return flow from successive branches.'],h:'False'},
+{n:102,p:1,t:'short',q:'The equivalent length of an entire piping system can be found by converting all fittings to ____________________ equivalents.',o:[],a:-1,ex:['The correct answer is: elbow'],h:'elbow'},
+{n:103,p:1,t:'tf',q:'The equivalent length of pipe is based on the pipe size and velocity of the HTF.',o:['True','False'],a:0,ex:['CORRECT — Equivalent length of fittings IS based on both pipe size and fluid velocity. Larger pipes and higher velocities result in greater equivalent lengths for the same fitting type. This is why equivalent length tables are organized by pipe size.','Pipe size and velocity are both factors in determining equivalent lengths.'],h:'True'},
+{n:104,p:1,t:'tf',q:'The rate of water flow through a pipe or an orifice is a function of the pressure exerted on the water and the size and material of the pipe.',o:['True','False'],a:0,ex:['CORRECT — Flow rate through a pipe or orifice IS a function of the pressure applied. Higher pressure = higher flow rate through a given restriction. This is the fundamental relationship described by flow equations and used in sizing calculations.','This is a basic fluid mechanics principle — pressure drives flow.'],h:'True'},
+{n:105,p:1,t:'short',q:'The required size of a pump for each piping circuit or system is found by using the total ____________________ and the total head of the pump.',o:[],a:-1,ex:['The correct answer is: pressure drop'],h:'pressure drop'},
+{n:106,p:1,t:'mc',q:'The water flow velocity should normally be between 2.5 fps and ___ fps.',o:['4.8','6','8','9.3'],a:0,ex:['CORRECT — The maximum recommended velocity in hydronic piping is typically 4.8 fps (some references use 4 fps for small residential systems). Staying between 2.5 and 4.8 fps provides adequate flow while avoiding noise and erosion problems.','6 fps exceeds recommended velocity — would cause noise and potential erosion.','8 fps is far too high — would cause serious erosion, noise, and excessive pressure drop.','9.3 fps is dangerously high for hydronic piping — would cause severe erosion and noise.'],h:'8'},
+{n:107,p:1,t:'tf',q:'Total head is the effect of friction in a pipe.',o:['True','False'],a:1,ex:['Total head is the TOTAL pressure a pump must provide to overcome ALL resistances in the system — not just pipe friction. It includes fitting losses, valve losses, equipment pressure drops, etc.','CORRECT (False) — Total head is NOT just pipe friction. Total head includes friction losses from pipe, fittings, valves, AND equipment (boilers, heat exchangers, etc.). Pipe friction is only ONE component of total head.'],h:'False'},
+{n:108,p:1,t:'mc',q:'When one pump is used with multiple piping circuits, the piping circuit with the ___ is used to size the pump.',o:['highest temperature difference','least total pressure drop','greatest total pressure drop','lowest temperature difference'],a:2,ex:['Temperature difference determines flow rate needed, not how to size the pump for a multi-circuit system.','Using the least pressure drop would undersized the pump for other circuits.','CORRECT — The circuit with the GREATEST total pressure drop is the critical circuit that determines pump sizing. If the pump can handle the worst-case circuit, it can handle all others (which have less resistance). Excess pressure on shorter circuits is addressed with balancing valves.','Using the lowest temperature difference is a heat load calculation, not a pump sizing method.'],h:'greatest total pressure drop'},
+{n:109,p:1,t:'mc',q:'___ head is a function of the weight of HTF and the vertical height of the HTF in the system above a pump.',o:['Total','Static','Friction','Pressure'],a:1,ex:['Total head is pump-generated head including friction components — not strictly about weight and height.','CORRECT — STATIC head is the pressure created by the weight of the fluid column and its vertical height above a reference point. It\'s purely a function of fluid density and elevation — not affected by flow rate or pipe friction.','Friction head is caused by fluid flow resistance, not weight and height.','Pressure head is a general term — not specifically defined by weight and vertical height.'],h:'Static'},
+{n:110,p:1,t:'mc',q:'What type of hydronic heat piping system does the diagram show?',o:['Two-pipe reverse return','Single main','Series Loop','Two-pipe direct return'],a:0,ex:['CORRECT — A two-pipe REVERSE RETURN system has supply and return pipes that create equal total pipe lengths for each circuit — the first unit off the supply is the last on the return. This self-balances the system.','Single main (one-pipe) has only one main pipe.','Series loop connects all units in a single continuous loop with no separate return.','Direct return has unequal pipe lengths — the first unit on supply is also the first on return.'],h:'Two-pipe reverse return'},
+{n:111,p:1,t:'mc',q:'What type of hydronic heating system does this diagram show?',o:['Two-pipe direct return','Two-pipe reverse return','Series Loop','Single main'],a:0,ex:['CORRECT — A two-pipe DIRECT RETURN has the supply and return pipes running parallel with the shortest return from the first terminal unit. Unlike reverse-return, pipe lengths are unequal, requiring more careful balancing.','Reverse return creates equal pipe lengths — different from what\'s shown.','Series loop has no separate return pipe.','Single main uses one pipe for both supply and return.'],h:'Two-pipe direct return'},
+{n:112,p:1,t:'mc',q:'What type of hydronic heating system does this diagram show?',o:['Series Loop','Two-pipe reverse return','Single main','Two-pipe direct return'],a:0,ex:['CORRECT — A SERIES LOOP has all terminal units connected in series on one continuous pipe. All water passes through every unit. Simple and economical but offers no individual room control, and water temperature drops progressively.','Reverse return has separate supply and return pipes.','Single main has tees diverting flow to individual units.','Direct return has separate supply and return but unequal lengths.'],h:'Series Loop'},
+{n:113,p:2,t:'mc',q:'Determine the flow rate in gpm required to heat a building with 650,000 Btuh heat loss when using the standard heating temperature drop.',o:['65','6.5','650','13','130','1.35'],a:0,ex:['CORRECT — Using Q = (BTU/h) ÷ (500 × ΔT): 650,000 ÷ (500 × 20) = 650,000 ÷ 10,000 = 65 GPM. The \'500\' factor comes from: 8.33 lb/gal × 60 min/hr × 1.0 specific heat.','Decimal point error — 6.5 is ten times too low.','650 is ten times too high.','13 uses a ΔT of 100°F, which is incorrect.','130 uses an incorrect ΔT calculation.','1.35 is incorrect by a large factor.'],h:'65'},
+{n:114,p:2,t:'mc',q:'A mixing valve',o:['takes HTF flow into the valve and splits into 2 different directions','takes 2 different HTF temperatures and combines them to supply an intermediate temperature HTF','has two outlet ports and one inlet port','has two inlet ports and two outlet ports'],a:1,ex:['A diverting valve splits flow — one inlet, two outlets. That\'s the opposite of mixing.','CORRECT — A MIXING valve takes two inlet flows (typically hot supply and cooler return) and combines them to produce one outlet at an intermediate temperature. Two inlets, one outlet. Used for temperature control and reset.','Two outlets and one inlet describes a DIVERTING valve, not a mixing valve.','Two inlets and two outlets would be a four-way valve, not a standard three-way mixing valve.'],h:'takes 2 different HTF temperatures and combines them to supply an intermediate temperature HTF'},
+{n:115,p:2,t:'mc',q:'The pump in the secondary loop of a primary/secondary system should always _____________________ in order for it to work properly.',o:['pump out of the primary loop into the secondary loop','pump into the primary loop, out of the secondary loop','pump away from the pressure drop','doesn\'t matter, there won\'t be an issue either way'],a:0,ex:['CORRECT — The secondary pump should pump OUT OF the primary loop into the secondary loop. This means pumping away from the closely-spaced tees. This ensures proper flow direction and prevents interference between primary and secondary circuits.','Pumping INTO the primary would create flow interference and improper pressure relationships between the circuits.','Pumping away from pressure drop is vague — the correct principle is pumping away from the closely-spaced tees (point of no pressure change).','Direction DOES matter — improper pump orientation causes flow problems and poor system performance.'],h:'pump into the primary loop, out of the secondary loop'},
+{n:116,p:2,t:'mc',q:'If a hydronic system uses water as the HTF, it requires the use of a PRV to control the static pressure. About what pressure would that PRV be set for if the building has a height of 40 feet from the top of the system to the PRV?',o:['22 psig','17.3 psig','92.4 psig','97 psig'],a:0,ex:['CORRECT — For a 3-story building (approximately 30 feet), static pressure at the fill point = height × 0.433 psi/ft + safety margin. 30 ft × 0.433 = 13 psi, plus approximately 4 psi safety margin for expansion tank pre-charge = approximately 17-18 psi minimum. A 22 psig PRV setting provides adequate static pressure plus margin for the highest point. (Exact calculation depends on building specifics.)','17.3 psig may not provide adequate margin above the minimum static requirement.','92.4 psig is far too high for a typical hydronic heating system.','97 psig is dangerously high for standard hydronic equipment rated for low-pressure operation.'],h:'22 psig'},
+{n:117,p:10,t:'essay',q:'Complete a drawing of a 3-way valve installation. The system has a heat generator that uses a cooling tower to cool the water back down. The valve is a 3-way diverting valve and the failsafe mode is to bypass the cooling tower while maintaining flow through the heat generator at all times. When completed, hand in the diagram to the instructor. Use the following equipment; pump 3-way diverting valve all other valves and equipment needed for proper operation (shut-off valves, balance, bleed, drain, unions or flanges, etc.) use a straight edge and proper symbols label the valves ports and show arrows for the direction of flow',o:[],a:-1,ex:[]},
+{n:118,p:4,t:'fill',q:'Using the Taco 0011 pump curve in the handouts, answer the following questions. System static is 12 psig with the compression tank on the suction side of the pump. With the pump running, the suction gauge reads psig. The current discharge gauge reading is 15.7 psig. The current flow rate is gpm. If the building has a heat loss of 180,000 Btuh, the required flow rate using the standard ΔT (heating) should be gpm. If the triple duty valve is adjusted to achieve the flow rate required for the building, the discharge gauge should read psig. Answers should be numerical only, and round to the nearest .5 (ex; 1 or 1.5 or 2)',o:[],a:-1,ex:['The correct answer is: 12, 24, 18, 18.5'],h:'12, 24, 18, 18.5'},
+{n:119,p:10,t:'essay',q:'Using the design sheet for the System Syzer problem in the packet, answer all of the questions and hand in to the instructor when completed.',o:[],a:-1,ex:[]}];
+
+const L='ABCDEFGHIJ',TL={mc:'Multiple Choice',tf:'True / False',fill:'Fill in the Blank',short:'Short Answer',essay:'Essay',num:'Numerical'};
+const TP=Q.reduce((s,q)=>s+q.p,0);
+let S={scr:'start',mode:'practice',i:0,ans:{},txt:{},chk:{},sg:false,graded:false,flt:'all',shuf:null};
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function qs(){return S.shuf||Q;}
+
+// Calculate running score
+function calcScore(){
+const all=qs();
+let cor=0,wrg=0,pts=0,maxPts=0,checked=0;
+all.forEach(q=>{
+if(!S.chk[q.n]) return;
+if(q.a===-1) return; // skip non-gradable
+checked++;
+maxPts+=q.p;
+if(S.ans[q.n]===q.a){cor++;pts+=q.p;}
+else if(S.ans[q.n]!==undefined){wrg++;}
+});
+const gradable=all.filter(q=>q.a!==-1).length;
+const totalGradablePts=all.filter(q=>q.a!==-1).reduce((s,q)=>s+q.p,0);
+const pct=maxPts>0?Math.round((pts/maxPts)*100):0;
+return {cor,wrg,pts,maxPts,checked,pct,gradable,totalGradablePts};
+}
+
+function scoreBarHTML(){
+const sc=calcScore();
+const isExam=S.mode==='exam'&&!S.graded;
+const noData=sc.checked===0;
+const pctColor=sc.pct>=70?'var(--ok)':sc.pct>=50?'var(--warn)':'var(--no)';
+const barColor=sc.pct>=70?'var(--ok)':sc.pct>=50?'var(--warn)':'var(--no)';
+
+return `<div class="score-bar${isExam?' exam-mode':''}${noData?' no-data':''}">
+<div class="sc-section">
+<div class="sc-val" style="color:var(--ok)">${sc.cor}</div>
+<div class="sc-lbl">Correct</div>
+</div>
+<div class="sc-section">
+<div class="sc-val" style="color:var(--no)">${sc.wrg}</div>
+<div class="sc-lbl">Wrong</div>
+</div>
+<div class="sc-section">
+<div class="sc-val" style="color:var(--accent)">${sc.pts}<span style="font-size:.65em;color:var(--text2)">/${sc.checked>0?sc.maxPts:sc.totalGradablePts}</span></div>
+<div class="sc-lbl">Points</div>
+</div>
+<div class="sc-pct-wrap">
+<div class="sc-pct-bar"><div class="sc-pct-fill" style="width:${noData?0:sc.pct}%;background:${barColor}"></div></div>
+<div class="sc-pct-num" style="color:${noData?'var(--text2)':pctColor}">${noData?'—':sc.pct+'%'}</div>
+</div>
+</div>`;
+}
+
+function render(){
+const el=document.getElementById('app');
+if(S.scr==='start')return rStart(el);
+if(S.scr==='quiz')return rQuiz(el);
+if(S.scr==='results')return rResults(el);
+}
+
+function rStart(el){
+el.innerHTML=`<div class="start">
+<h1>💧 Hydronics HVAC Final</h1>
+<p class="sub">119 Questions — Hydronic Systems Course Final</p>
+<div class="stats">
+<div class="sb"><div class="v">119</div><div class="l">Questions</div></div>
+<div class="sb"><div class="v">${TP}</div><div class="l">Total Points</div></div>
+<div class="sb"><div class="v">264</div><div class="l">Explanations</div></div>
+</div>
+<div class="modes">
+<div class="mb ${S.mode==='practice'?'on':''}" onclick="setM('practice')"><h3>✅ Practice</h3><p>Check answers as you go with full explanations for every choice.</p></div>
+<div class="mb ${S.mode==='exam'?'on':''}" onclick="setM('exam')"><h3>📝 Exam</h3><p>No feedback until submit. Simulates real test conditions.</p></div>
+<div class="mb ${S.mode==='shuffle'?'on':''}" onclick="setM('shuffle')"><h3>🔀 Shuffle</h3><p>Randomized order with instant explanations. Great for review.</p></div>
+</div>
+<button class="go" onclick="startQ()">Start Exam</button>
+<p class="disclaimer">Answer key based on engineering principles. Verify with your course materials.</p>
+</div>`;}
+
+function rQuiz(el){
+const all=qs(),q=all[S.i],done=S.ans[q.n]!==undefined,checked=S.chk[q.n],isT=q.o.length===0;
+const prog=Object.keys(S.ans).length+Object.keys(S.txt).filter(k=>S.txt[k]).length;
+let grid='';
+if(S.sg){grid=`<div class="gp"><div class="gr">${all.map((qq,i)=>{
+let c='gd';if(i===S.i)c+=' cur';
+if(S.ans[qq.n]!==undefined||S.txt[qq.n])c+=' ans';
+if(S.chk[qq.n]&&S.ans[qq.n]===qq.a)c+=' gc';
+if(S.chk[qq.n]&&S.ans[qq.n]!==undefined&&S.ans[qq.n]!==qq.a)c+=' gw';
+return`<div class="${c}" onclick="go(${i})">${qq.n}</div>`;}).join('')}</div></div>`;}
+
+let opts='';
+if(!isT){
+opts=`<div class="opts">${q.o.map((o,i)=>{
+let c='op';
+if(S.ans[q.n]===i)c+=' sel';
+if(checked){c+=' dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a){c='op cor dis';}}
+let exH='';
+if(checked&&q.ex&&q.ex[i]){
+const isC=i===q.a;
+exH=`<div class="ex-box ${isC?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}" onclick="sel(${q.n},${i})"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('')}</div>`;
+}else{
+const v=S.txt[q.n]||'';const rows=q.t==='essay'?5:2;
+opts=`<textarea class="ti" rows="${rows}" placeholder="Type your answer..." oninput="setT(${q.n},this.value)"${checked?' disabled':''}>${esc(v)}</textarea>`;
+if(checked){
+if(q.h)opts+=`<div class="hint"><div class="hl">Suggested Answer</div><div class="ht">${esc(q.h)}</div></div>`;
+if(q.ex&&q.ex.length)opts+=`<div class="fill-exps">${q.ex.map(e=>`<div class="fill-exp">${esc(e)}</div>`).join('')}</div>`;
+}}
+
+const canChk=S.mode!=='exam'&&!checked&&(done||(isT&&S.txt[q.n]));
+el.innerHTML=`<div class="hdr">
+<span class="t">💧 Hydronics HVAC Final</span>
+<span class="pi">${prog}/${all.length} answered</span>
+<button class="gt" onclick="tg()">${S.sg?'Hide':'Show'} Map</button>
+</div>
+${scoreBarHTML()}
+<div class="pb"><div class="pf" style="width:${(prog/all.length)*100}%"></div></div>
+${grid}
+<div class="qc">
+<div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]||q.t}</span><span class="qp">${q.p} pts</span></div>
+<div class="qq">${esc(q.q)}</div>
+${opts}
+</div>
+<div class="nav">
+<button class="nb" onclick="go(${S.i-1})" ${S.i===0?'disabled':''}>← Prev</button>
+<div class="nc">
+${canChk?`<button class="nb ck" onclick="chk(${q.n})">Check Answer</button>`:''}
+${S.mode==='exam'&&!S.graded?`<button class="nb pr" onclick="submit()" style="background:#f59e0b;border-color:#f59e0b">Submit Exam</button>`:''}
+</div>
+<button class="nb${S.i===all.length-1?' pr':''}" onclick="${S.i===all.length-1?(S.mode==='exam'?'submit()':'showR()'):`go(${S.i+1})`}">${S.i===all.length-1?(S.mode==='exam'?'Submit':'Results'):'Next →'}</button>
+</div>`;}
+
+function rResults(el){
+const all=qs();let cor=0,wrg=0,skip=0,ep=0;
+all.forEach(q=>{if(q.a===-1){skip++;return;}if(S.ans[q.n]===q.a){cor++;ep+=q.p;}else if(S.ans[q.n]!==undefined)wrg++;else skip++;});
+const grd=all.filter(q=>q.a!==-1).length,pct=grd?Math.round(cor/grd*100):0;
+const mp=all.filter(q=>q.a!==-1).reduce((s,q)=>s+q.p,0);
+const cc=pct>=70?'var(--ok)':pct>=50?'var(--warn)':'var(--no)';
+let filt=all;
+if(S.flt==='wrong')filt=all.filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);
+if(S.flt==='correct')filt=all.filter(q=>S.ans[q.n]===q.a);
+if(S.flt==='skipped')filt=all.filter(q=>S.ans[q.n]===undefined&&q.a!==-1);
+if(S.flt==='text')filt=all.filter(q=>q.a===-1);
+
+const rev=filt.map(q=>{
+const isT=q.o.length===0;let os='';
+if(!isT){os=q.o.map((o,i)=>{
+let c='op dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a)c='op cor dis';
+let exH='';if(q.ex&&q.ex[i]){const ic=i===q.a;exH=`<div class="ex-box ${ic?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('');}
+else{
+const v=S.txt[q.n]||'<em style="color:var(--text2)">No answer</em>';
+os=`<div style="padding:8px 12px;background:var(--card2);border-radius:8px;font-size:.88em">${v}</div>`;
+if(q.h)os+=`<div class="hint"><div class="hl">Suggested Answer</div><div class="ht">${esc(q.h)}</div></div>`;
+if(q.ex&&q.ex.length)os+=`<div class="fill-exps">${q.ex.map(e=>`<div class="fill-exp">${esc(e)}</div>`).join('')}</div>`;}
+return`<div class="qc"><div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]}</span><span class="qp">${q.p} pts</span></div><div class="qq">${esc(q.q)}</div><div class="opts">${os}</div></div>`;}).join('');
+
+el.innerHTML=`<div class="res">
+<h2>Exam Results</h2>
+<div class="sc" style="border-color:${cc}"><div class="pct" style="color:${cc}">${pct}%</div><div class="of">${cor} / ${grd}</div></div>
+<div class="rg">
+<div class="rs"><div class="rv" style="color:var(--ok)">${cor}</div><div class="rl">Correct</div></div>
+<div class="rs"><div class="rv" style="color:var(--no)">${wrg}</div><div class="rl">Wrong</div></div>
+<div class="rs"><div class="rv" style="color:var(--text2)">${skip}</div><div class="rl">Skipped</div></div>
+<div class="rs"><div class="rv" style="color:var(--accent)">${ep}/${mp}</div><div class="rl">Points</div></div>
+</div>
+<div class="ra">
+<button class="nb" onclick="reset()">← Start Over</button>
+<button class="nb pr" onclick="retry()">Retry Wrong</button></div><div style="text-align:center;margin-top:10px"><button class="print-btn" onclick="window.print()">🖶 Print Results</button>
+</div>
+</div>
+<div style="padding:0 4px">
+<div class="ft">
+<button class="fb ${S.flt==='all'?'on':''}" onclick="setF('all')">All (${all.length})</button>
+<button class="fb ${S.flt==='wrong'?'on':''}" onclick="setF('wrong')">Wrong (${wrg})</button>
+<button class="fb ${S.flt==='correct'?'on':''}" onclick="setF('correct')">Correct (${cor})</button>
+<button class="fb ${S.flt==='skipped'?'on':''}" onclick="setF('skipped')">Skipped (${skip})</button>
+<button class="fb ${S.flt==='text'?'on':''}" onclick="setF('text')">Written (${all.filter(q=>q.a===-1).length})</button>
+</div>
+${rev}
+</div>`;}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function setM(m){S.mode=m;render();}
+function startQ(){S.scr='quiz';S.i=0;S.ans={};S.txt={};S.chk={};S.graded=false;S.shuf=S.mode==='shuffle'?shuffle(Q):null;render();scrollTo(0,0);}
+function sel(n,i){if(S.chk[n])return;S.ans[n]=i;render();}
+function setT(n,v){S.txt[n]=v;}
+function chk(n){S.chk[n]=true;render();}
+function go(i){const a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
+function tg(){S.sg=!S.sg;render();}
+function submit(){qs().forEach(q=>{S.chk[q.n]=true;});S.graded=true;showR();}
+function showR(){S.scr='results';S.flt='all';render();scrollTo(0,0);}
+function reset(){S.scr='start';S.mode='practice';render();scrollTo(0,0);}
+function setF(f){S.flt=f;render();}
+function retry(){const a=qs().filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);if(!a.length){alert('No wrong answers to retry!');return;}S.shuf=a;S.ans={};S.chk={};S.txt={};S.graded=false;S.scr='quiz';S.i=0;S.mode='practice';render();scrollTo(0,0);}
+document.addEventListener('keydown',e=>{if(S.scr!=='quiz')return;if(e.key==='ArrowRight'){e.preventDefault();go(S.i+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(S.i-1);}const a=qs(),q=a[S.i];if(q.o.length>0&&!S.chk[q.n]){const k='ABCDEFGHIJ'.indexOf(e.key.toUpperCase());if(k>=0&&k<q.o.length)sel(q.n,k);}});
+render();
+
+/* === ENHANCEMENTS === */
+/* === HVAC STUDY TOOL ENHANCEMENTS === */
+
+/* --- ENHANCEMENT CSS --- */
+const ENHANCE_CSS = `
+/* Timer bar */
+.timer-bar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:8px 16px;margin-bottom:10px}
+.timer-display{font-family:monospace;font-size:1.3em;font-weight:700;min-width:70px}
+.timer-bar .timer-label{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.timer-bar.warn .timer-display{color:var(--no);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Reference panel */
+.ref-overlay{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:var(--bg);border-left:2px solid var(--border);z-index:1000;transition:right .3s;overflow-y:auto;padding:20px;box-shadow:-8px 0 32px rgba(0,0,0,.4)}
+.ref-overlay.open{right:0}
+.ref-close{position:absolute;top:12px;right:12px;background:var(--card2);border:1px solid var(--border);border-radius:6px;color:var(--text);width:32px;height:32px;cursor:pointer;font-size:1.1em;display:flex;align-items:center;justify-content:center}
+.ref-tabs{display:flex;gap:4px;margin-bottom:16px}
+.ref-tab{flex:1;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;font-size:.8em;text-align:center;font-family:inherit;font-weight:600}
+.ref-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.ref-content{font-size:.85em;line-height:1.6}
+.ref-content h3{color:var(--accent);font-size:1em;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.ref-content h3:first-child{margin-top:0}
+.ref-content table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.88em}
+.ref-content th{background:var(--card2);color:var(--accent);padding:6px 8px;text-align:left;font-size:.75em;text-transform:uppercase;letter-spacing:.03em}
+.ref-content td{padding:5px 8px;border-bottom:1px solid var(--border);font-family:monospace;font-size:.92em}
+.ref-content tr:hover td{background:var(--card2)}
+.formula{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin:8px 0;font-family:monospace;font-size:.95em;line-height:1.8}
+.formula .fname{color:var(--accent);font-weight:700}
+.formula .fdesc{color:var(--text2);font-size:.85em;font-family:-apple-system,sans-serif}
+
+/* Calculator */
+.calc-overlay{position:fixed;bottom:20px;right:20px;width:280px;background:var(--card);border:2px solid var(--border);border-radius:var(--r);z-index:999;box-shadow:0 8px 32px rgba(0,0,0,.4);display:none}
+.calc-overlay.open{display:block}
+.calc-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)}
+.calc-header span{font-size:.85em;font-weight:600;color:var(--text2)}
+.calc-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.2em}
+.calc-display{background:var(--bg);margin:8px;border-radius:6px;padding:12px;font-family:monospace;font-size:1.3em;text-align:right;color:var(--text);min-height:44px;word-break:break-all}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 8px 8px}
+.calc-btn{padding:12px;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:monospace;font-size:1em;cursor:pointer;text-align:center}
+.calc-btn:hover{background:var(--border)}
+.calc-btn.op{color:var(--accent);font-weight:700}
+.calc-btn.eq{background:var(--accent);color:#fff;border-color:var(--accent)}
+.calc-btn.clr{color:var(--no)}
+
+/* FAB buttons */
+.fab-container{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:998}
+.fab{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2em;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:.2s}
+.fab:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.1)}
+
+/* Stats badge on start screen */
+.stats-history{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;text-align:center}
+.stats-history h3{font-size:.85em;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.stats-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.stat-item{min-width:80px}
+.stat-item .sv{font-size:1.4em;font-weight:700;font-family:monospace}
+.stat-item .sl{font-size:.68em;color:var(--text2);text-transform:uppercase}
+
+/* Weak spots mode button */
+.mb.weak{border-color:var(--no);background:rgba(248,113,113,.04)}
+.mb.weak:hover{border-color:var(--no);background:rgba(248,113,113,.08)}
+.mb.weak h3{color:var(--no)}
+
+/* Timed toggle */
+.timer-toggle{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:16px}
+.timer-toggle label{font-size:.85em;color:var(--text2)}
+.toggle-switch{position:relative;width:44px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;transition:.2s}
+.toggle-switch.on{background:var(--accent)}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s}
+.toggle-switch.on::after{left:23px}
+.timer-input{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:monospace;width:50px;text-align:center;font-size:.9em}
+
+@media(max-width:600px){.ref-overlay{width:100%;right:-100%}.fab-container{bottom:12px;right:12px}.calc-overlay{width:260px;right:12px;bottom:12px}}
+`;
+
+/* --- ENHANCEMENT JS --- */
+function initEnhancements(toolId) {
+  // Inject CSS
+  const style = document.createElement('style');
+  style.textContent = ENHANCE_CSS;
+  document.head.appendChild(style);
+
+  // === PERSISTENT STORAGE ===
+  const STORE_KEY = 'hvac_stats_' + toolId;
+  
+  function loadStats() {
+    try {
+      return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+    } catch(e) { return {}; }
+  }
+  
+  function saveStats(stats) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(stats)); } catch(e) {}
+  }
+  
+  function recordAnswer(qn, correct) {
+    const stats = loadStats();
+    if (!stats[qn]) stats[qn] = { right: 0, wrong: 0, last: 0 };
+    if (correct) stats[qn].right++;
+    else stats[qn].wrong++;
+    stats[qn].last = Date.now();
+    saveStats(stats);
+  }
+  
+  function getWeakQuestions() {
+    const stats = loadStats();
+    return Q.filter(q => {
+      const s = stats[q.n];
+      return s && s.wrong > 0 && (s.wrong >= s.right);
+    });
+  }
+  
+  function getOverallStats() {
+    const stats = loadStats();
+    let totalRight = 0, totalWrong = 0, attempted = 0;
+    for (const k in stats) {
+      totalRight += stats[k].right;
+      totalWrong += stats[k].wrong;
+      if (stats[k].right + stats[k].wrong > 0) attempted++;
+    }
+    return { totalRight, totalWrong, attempted, total: Q.length };
+  }
+  
+  // === SPACED REPETITION WEIGHTING ===
+  function spacedShuffle(questions) {
+    const stats = loadStats();
+    const weighted = [];
+    questions.forEach(q => {
+      const s = stats[q.n];
+      let weight = 1;
+      if (s) {
+        if (s.wrong > s.right) weight = 3;
+        else if (s.wrong > 0 && s.wrong === s.right) weight = 2;
+        else if (s.right > 3) weight = 0.5;
+        // Recency: if answered recently and correct, lower weight
+        const daysSince = (Date.now() - (s.last || 0)) / 86400000;
+        if (daysSince < 1 && s.right > s.wrong) weight *= 0.5;
+      } else {
+        weight = 1.5; // never seen = slightly boost
+      }
+      for (let i = 0; i < Math.ceil(weight); i++) weighted.push(q);
+    });
+    // Shuffle the weighted array then deduplicate keeping first occurrence
+    const shuffled = weighted.sort(() => Math.random() - 0.5);
+    const seen = new Set();
+    return shuffled.filter(q => { if (seen.has(q.n)) return false; seen.add(q.n); return true; });
+  }
+
+  // === TIMER ===
+  let timerInterval = null;
+  let timerSeconds = 0;
+  let timerEnabled = false;
+  let timerMinutes = 75; // default seconds per question
+  
+  function startTimer(questionCount) {
+    stopTimer();
+    timerSeconds = Math.ceil(questionCount * 1.25) * 60; // 1.25 min per question
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      updateTimerDisplay();
+      if (timerSeconds <= 0) {
+        stopTimer();
+        if (typeof submit === 'function') submit();
+      }
+    }, 1000);
+  }
+  
+  function stopTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  
+  function updateTimerDisplay() {
+    const el = document.getElementById('timer-display');
+    if (!el) return;
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    el.textContent = m + ':' + String(s).padStart(2, '0');
+    const bar = document.querySelector('.timer-bar');
+    if (bar) bar.className = 'timer-bar' + (timerSeconds < 120 ? ' warn' : '');
+  }
+  
+  function getTimerHTML() {
+    if (!timerEnabled || !timerInterval) return '';
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    return '<div class="timer-bar"><span class="timer-label">Time Left</span><span class="timer-display" id="timer-display">' + m + ':' + String(s).padStart(2, '0') + '</span></div>';
+  }
+
+  // === REFERENCE PANEL ===
+  function createRefPanel() {
+    if (document.getElementById('ref-panel')) return;
+    const div = document.createElement('div');
+    div.id = 'ref-panel';
+    div.className = 'ref-overlay';
+    div.innerHTML = '<button class="ref-close" onclick="toggleRef()">\u2715</button>' +
+      '<div class="ref-tabs">' +
+      '<button class="ref-tab active" onclick="showRefTab(\'pt\',this)">PT Charts</button>' +
+      '<button class="ref-tab" onclick="showRefTab(\'formulas\',this)">Formulas</button>' +
+      '</div>' +
+      '<div id="ref-pt" class="ref-content">' + getPTContent() + '</div>' +
+      '<div id="ref-formulas" class="ref-content" style="display:none">' + getFormulaContent() + '</div>';
+    document.body.appendChild(div);
+  }
+  
+  window.toggleRef = function() {
+    createRefPanel();
+    document.getElementById('ref-panel').classList.toggle('open');
+    // Close calc if open
+    const calc = document.getElementById('calc-panel');
+    if (calc) calc.classList.remove('open');
+  };
+  
+  window.showRefTab = function(tab, btn) {
+    document.getElementById('ref-pt').style.display = tab === 'pt' ? '' : 'none';
+    document.getElementById('ref-formulas').style.display = tab === 'formulas' ? '' : 'none';
+    document.querySelectorAll('.ref-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  };
+
+  function getPTContent() {
+    return '<h3>R-410A</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-20,20.7],[0,48.8],[10,65.5],[20,84.2],[25,94.3],[30,105],[35,116],[40,128],[44,138],[50,152],[60,179],[70,208],[80,241],[90,268],[95,283],[100,296],[105,314],[110,331],[115,349],[120,367],[130,406]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>R-22</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-40,-0.5],[0,24],[10,33],[20,43],[30,54.9],[40,68.5],[50,84],[60,102],[70,122],[80,143.6],[90,167.4],[100,196],[110,226],[120,260],[130,296],[140,335]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>R-134a</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-20,-2.4],[0,6.5],[10,12],[20,18.4],[25,22],[30,26],[35,30.4],[40,35.1],[45,40.2],[50,45.7],[55,51.6],[60,57.9],[70,71.4],[80,86.4],[90,103],[98,117],[100,120],[110,138],[120,158]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>Quick Reference</h3><div class="formula"><div class="fdesc">Water: 0.433 psi per foot of head</div><div class="fdesc">1 ton = 12,000 BTU/hr</div><div class="fdesc">Atmospheric: 14.7 psi = 29.92" Hg</div><div class="fdesc">1" Hg \u2248 0.491 psi</div><div class="fdesc">Water density: 62.4 lbs/ft\u00b3 = 8.33 lbs/gal</div><div class="fdesc">7.48 gallons per ft\u00b3</div></div>';
+  }
+  
+  function getFormulaContent() {
+    return '<h3>Heat Calculations</h3>' +
+      '<div class="formula"><div class="fname">BTU = SH \u00d7 W \u00d7 \u0394T</div><div class="fdesc">Sensible heat: Specific Heat \u00d7 Weight (lbs) \u00d7 Temp Difference</div></div>' +
+      '<div class="formula"><div class="fname">BTU = LH \u00d7 W</div><div class="fdesc">Latent heat: Latent Heat value \u00d7 Weight (lbs)</div><div class="fdesc">Ice: 144 BTU/lb &bull; Steam: 970.4 BTU/lb</div></div>' +
+      '<div class="formula"><div class="fname">1 Ton = 12,000 BTU/hr</div><div class="fdesc">Tons = Total BTU \u00f7 12,000 (per hour)</div></div>' +
+      '<h3>Pressure & Head</h3>' +
+      '<div class="formula"><div class="fname">P = H \u00d7 0.433</div><div class="fdesc">Pressure (psi) = Height of water (ft) \u00d7 0.433 psi/ft</div></div>' +
+      '<div class="formula"><div class="fname">PSIA = PSIG + 14.7</div><div class="fdesc">Absolute = Gauge + Atmospheric</div></div>' +
+      '<div class="formula"><div class="fname">Compression Ratio = Discharge (psia) \u00f7 Suction (psia)</div><div class="fdesc">Always convert to ABSOLUTE first!</div></div>' +
+      '<h3>Refrigeration</h3>' +
+      '<div class="formula"><div class="fname">Superheat = Actual Temp \u2212 Saturation Temp</div><div class="fdesc">Measured at suction line leaving evaporator</div></div>' +
+      '<div class="formula"><div class="fname">Subcooling = Saturation Temp \u2212 Actual Temp</div><div class="fdesc">Measured at liquid line leaving condenser</div></div>' +
+      '<div class="formula"><div class="fname">Net Oil Pressure = Oil Gauge \u2212 Suction Pressure</div><div class="fdesc">Actual lubrication pressure above crankcase</div></div>' +
+      '<div class="formula"><div class="fname">Water Flow: 3 GPM/ton</div><div class="fdesc">Standard for recirculated water-cooled condensers (10\u00b0F \u0394T)</div></div>' +
+      '<h3>Volume & Density</h3>' +
+      '<div class="formula"><div class="fname">V = \u03c0r\u00b2h</div><div class="fdesc">Cylinder volume (ft\u00b3) &bull; \u00d7 7.48 for gallons</div></div>' +
+      '<div class="formula"><div class="fname">D = W \u00f7 V</div><div class="fdesc">Density = Weight \u00f7 Volume &bull; Water = 62.4 lbs/ft\u00b3</div></div>' +
+      '<h3>Temperature</h3>' +
+      '<div class="formula"><div class="fname">\u00b0C = (\u00b0F \u2212 32) \u00d7 5/9</div><div class="fdesc">Fahrenheit to Celsius</div></div>' +
+      '<div class="formula"><div class="fname">\u00b0F = (\u00b0C \u00d7 9/5) + 32</div><div class="fdesc">Celsius to Fahrenheit</div></div>' +
+      '<h3>Expansion</h3>' +
+      '<div class="formula"><div class="fname">EL = L \u00d7 \u0394T \u00d7 COE</div><div class="fdesc">Expansion (ft) = Length \u00d7 Temp Diff \u00d7 Coefficient</div><div class="fdesc">Steel COE \u2248 0.0000067 per \u00b0F</div></div>' +
+      '<h3>Steam</h3>' +
+      '<div class="formula"><div class="fname">BTU released = (h<sub>steam</sub> \u2212 h<sub>water</sub>) \u00d7 lbs</div><div class="fdesc">Use steam tables for enthalpy values at operating pressure</div></div>' +
+      '<div class="formula"><div class="fname">Vacuum: 1" Hg \u2248 1 ft water lift</div><div class="fdesc">28" Hg vacuum \u2248 28 ft lift capacity</div></div>';
+  }
+
+  // === CALCULATOR ===
+  let calcDisplay = '0';
+  let calcPrev = null;
+  let calcOp = null;
+  let calcNew = true;
+  
+  function createCalc() {
+    if (document.getElementById('calc-panel')) return;
+    const div = document.createElement('div');
+    div.id = 'calc-panel';
+    div.className = 'calc-overlay';
+    const btns = ['C','(',')','/','7','8','9','*','4','5','6','-','1','2','3','+','0','.','±','='];
+    div.innerHTML = '<div class="calc-header"><span>🖩 Calculator</span><button class="calc-close" onclick="toggleCalc()">\u2715</button></div>' +
+      '<div class="calc-display" id="calc-disp">0</div>' +
+      '<div class="calc-grid">' + btns.map(b => {
+        let cls = 'calc-btn';
+        if ('/*-+'.includes(b)) cls += ' op';
+        if (b === '=') cls += ' eq';
+        if (b === 'C') cls += ' clr';
+        return '<button class="' + cls + '" onclick="calcPress(\'' + b.replace("'","\\'") + '\')">' + b + '</button>';
+      }).join('') + '</div>';
+    document.body.appendChild(div);
+  }
+  
+  window.toggleCalc = function() {
+    createCalc();
+    document.getElementById('calc-panel').classList.toggle('open');
+  };
+  
+  window.calcPress = function(key) {
+    const disp = document.getElementById('calc-disp');
+    if (key === 'C') { calcDisplay = '0'; calcPrev = null; calcOp = null; calcNew = true; }
+    else if (key === '±') { 
+      if (calcDisplay !== '0') calcDisplay = calcDisplay.startsWith('-') ? calcDisplay.slice(1) : '-' + calcDisplay;
+    }
+    else if (key === '=') {
+      try { calcDisplay = String(eval(calcDisplay.replace(/×/g,'*').replace(/÷/g,'/'))); } 
+      catch(e) { calcDisplay = 'Error'; }
+      calcNew = true;
+    }
+    else if ('+-*/'.includes(key)) { calcDisplay += key; calcNew = false; }
+    else if (key === '(' || key === ')') { calcDisplay = (calcNew && calcDisplay === '0' ? '' : calcDisplay) + key; calcNew = false; }
+    else {
+      if (calcNew && calcDisplay === '0') calcDisplay = key;
+      else if (calcNew) { calcDisplay = key; calcNew = false; }
+      else calcDisplay += key;
+      calcNew = false;
+    }
+    disp.textContent = calcDisplay;
+  };
+
+  // === FAB BUTTONS ===
+  function createFABs() {
+    if (document.getElementById('fab-btns')) return;
+    const div = document.createElement('div');
+    div.id = 'fab-btns';
+    div.className = 'fab-container';
+    div.innerHTML = '<button class="fab" onclick="toggleCalc()" title="Calculator">🖩</button>' +
+      '<button class="fab" onclick="toggleRef()" title="Reference">📖</button>';
+    document.body.appendChild(div);
+  }
+
+  // === HOOK INTO EXISTING FUNCTIONS ===
+  
+  // Override the check function to record stats
+  const origChk = window.chk;
+  window.chk = function(n) {
+    origChk(n);
+    // Find the question and record result
+    const allQ = typeof qs === 'function' ? qs() : Q;
+    const q = allQ.find(qq => qq.n === n);
+    if (q && q.a !== -1) {
+      recordAnswer(n, S.ans[n] === q.a);
+    }
+  };
+  
+  // Override submit to record all answers
+  const origSubmit = window.submit;
+  window.submit = function() {
+    const allQ = typeof qs === 'function' ? qs() : Q;
+    allQ.forEach(q => {
+      if (q.a !== -1 && S.ans[q.n] !== undefined) {
+        S.chk[q.n] = true;
+        recordAnswer(q.n, S.ans[q.n] === q.a);
+      }
+    });
+    S.graded = true;
+    if (typeof showR === 'function') showR();
+    stopTimer();
+  };
+  
+  // Override shuffle to use spaced repetition
+  const origShuffle = window.shuffle;
+  window.shuffle = function(arr) {
+    if (S.mode === 'shuffle') return spacedShuffle(arr);
+    return origShuffle(arr);
+  };
+  
+  // Add weak spots mode
+  window.startWeak = function() {
+    const weak = getWeakQuestions();
+    if (!weak.length) { alert('No weak spots yet! Take some quizzes first.'); return; }
+    if (typeof filteredQ === 'function') S.activeQ = weak;
+    else S.shuf = weak;
+    S.scr = 'quiz'; S.i = 0; S.ans = {}; S.txt = {}; S.chk = {}; S.graded = false;
+    S.mode = 'practice';
+    render(); scrollTo(0, 0);
+  };
+  
+  // Enhanced startQ with timer
+  const origStartQ = window.startQ;
+  window.startQ = function() {
+    origStartQ();
+    if (timerEnabled && S.scr === 'quiz') {
+      const count = typeof qs === 'function' ? qs().length : Q.length;
+      startTimer(count);
+    }
+  };
+  
+  // Override reset to stop timer  
+  const origReset = window.reset;
+  window.reset = function() {
+    stopTimer();
+    origReset();
+  };
+  
+  // Override render to add enhancements
+  const origRender = window.render;
+  window.render = function() {
+    origRender();
+    
+    // Add FABs if in quiz mode
+    if (S.scr === 'quiz') {
+      createFABs();
+      document.getElementById('fab-btns').style.display = '';
+      // Add timer if enabled
+      if (timerEnabled && timerInterval) {
+        const hdr = document.querySelector('.hdr');
+        if (hdr && !document.getElementById('timer-display')) {
+          hdr.insertAdjacentHTML('afterend', getTimerHTML());
+        }
+      }
+    } else {
+      const fabs = document.getElementById('fab-btns');
+      if (fabs) fabs.style.display = 'none';
+      // Close panels
+      const ref = document.getElementById('ref-panel');
+      if (ref) ref.classList.remove('open');
+      const calc = document.getElementById('calc-panel');
+      if (calc) calc.classList.remove('open');
+    }
+    
+    // Add stats + weak spots + timer toggle to start screen
+    if (S.scr === 'start') {
+      const stats = getOverallStats();
+      const weak = getWeakQuestions();
+      const startDiv = document.querySelector('.start');
+      if (startDiv && !document.getElementById('enhance-stats')) {
+        // Find the modes div and insert before it
+        const modesDiv = startDiv.querySelector('.modes');
+        if (modesDiv) {
+          // Stats history
+          let statsHTML = '';
+          if (stats.attempted > 0) {
+            const pct = stats.totalRight + stats.totalWrong > 0 ? Math.round(stats.totalRight / (stats.totalRight + stats.totalWrong) * 100) : 0;
+            statsHTML = '<div class="stats-history" id="enhance-stats"><h3>Your History</h3><div class="stats-row">' +
+              '<div class="stat-item"><div class="sv" style="color:var(--ok)">' + stats.totalRight + '</div><div class="sl">Correct</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:var(--no)">' + stats.totalWrong + '</div><div class="sl">Wrong</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:var(--accent)">' + stats.attempted + '/' + stats.total + '</div><div class="sl">Attempted</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:' + (pct >= 70 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : 'var(--no)') + '">' + pct + '%</div><div class="sl">Accuracy</div></div>' +
+              '</div></div>';
+          }
+          
+          // Weak spots button
+          let weakHTML = '';
+          if (weak.length > 0) {
+            weakHTML = '<div class="mb weak" onclick="startWeak()"><h3>\u26a0\ufe0f Weak Spots (' + weak.length + ')</h3><p>Practice questions you\'ve missed. Spaced repetition focuses on your weakest areas.</p></div>';
+          }
+          
+          // Timer toggle
+          const timerHTML = '<div class="timer-toggle" id="timer-toggle">' +
+            '<label>Timed Mode</label>' +
+            '<div class="toggle-switch' + (timerEnabled ? ' on' : '') + '" onclick="toggleTimer()"></div>' +
+            '</div>';
+          
+          modesDiv.insertAdjacentHTML('beforebegin', statsHTML);
+          modesDiv.insertAdjacentHTML('afterend', timerHTML);
+          if (weakHTML) {
+            // Insert weak spots button after the last mode button
+            modesDiv.insertAdjacentHTML('beforeend', weakHTML);
+          }
+        }
+      }
+    }
+  };
+  
+  window.toggleTimer = function() {
+    timerEnabled = !timerEnabled;
+    const sw = document.querySelector('.toggle-switch');
+    if (sw) sw.classList.toggle('on', timerEnabled);
+  };
+  
+  window.clearHistory = function() {
+    if (confirm('Clear all study history for this tool?')) {
+      localStorage.removeItem(STORE_KEY);
+      render();
+    }
+  };
+}
+
+initEnhancements("hydronics");
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>HVAC Study Hub — Class of 2026</title>
+<meta name="description" content="Interactive HVAC/R study tools — Hydronics, Steam, Refrigeration, and more. 1,200+ questions with detailed explanations.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HVAC Study">
+<meta name="theme-color" content="#0c0e12">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--accent2:#2d7dd2;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+
+/* Subtle grid background */
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background-image:radial-gradient(circle at 1px 1px,rgba(74,158,255,.03) 1px,transparent 0);background-size:40px 40px;pointer-events:none;z-index:0}
+
+.page{max-width:960px;margin:0 auto;padding:32px 20px;position:relative;z-index:1}
+
+/* Hero */
+.hero{text-align:center;padding:48px 0 40px}
+.hero-icon{font-size:64px;margin-bottom:12px;display:block;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero h1{font-size:2.4em;font-weight:800;letter-spacing:-.03em;margin-bottom:4px;background:linear-gradient(135deg,var(--accent),var(--ok));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .tagline{color:var(--text2);font-size:1.05em;margin-bottom:8px}
+.hero .class-badge{display:inline-block;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:4px 16px;font-size:.8em;color:var(--accent);font-weight:600;letter-spacing:.03em}
+
+/* Stats overview */
+.overview{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:32px 0}
+.ov-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px 16px;text-align:center}
+.ov-val{font-size:2em;font-weight:800;font-family:'Segoe UI',monospace;line-height:1.2}
+.ov-label{font-size:.72em;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+
+/* Tool cards */
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:32px 0}
+.tool-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:24px;cursor:pointer;transition:all .25s;text-decoration:none;color:var(--text);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.tool-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 32px rgba(74,158,255,.12)}
+.tool-card::after{content:'→';position:absolute;top:24px;right:24px;font-size:1.2em;color:var(--border);transition:.2s}
+.tool-card:hover::after{color:var(--accent);transform:translateX(4px)}
+.tool-card.master{grid-column:1/-1;background:linear-gradient(135deg,var(--card) 0%,rgba(74,158,255,.04) 100%);border-color:rgba(74,158,255,.2)}
+.tool-card.master:hover{border-color:var(--accent)}
+.tool-icon{font-size:2em;margin-bottom:10px}
+.tool-name{font-size:1.15em;font-weight:700;margin-bottom:4px}
+.tool-desc{font-size:.82em;color:var(--text2);line-height:1.5;margin-bottom:14px;flex:1}
+.tool-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.tool-badge{font-size:.72em;padding:3px 10px;border-radius:12px;font-weight:600}
+.tool-badge.questions{background:rgba(74,158,255,.1);color:var(--accent)}
+.tool-badge.types{background:rgba(52,211,153,.1);color:var(--ok)}
+.tool-badge.history{background:rgba(251,191,36,.1);color:var(--warn)}
+
+/* Progress bars per tool */
+.tool-progress{margin-top:12px;display:flex;align-items:center;gap:8px}
+.tool-prog-bar{flex:1;height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.tool-prog-fill{height:100%;border-radius:3px;transition:width .6s}
+.tool-prog-pct{font-size:.75em;font-family:monospace;font-weight:700;min-width:36px;text-align:right}
+
+/* Section headers */
+.section-head{display:flex;align-items:center;gap:10px;margin:36px 0 16px}
+.section-head h2{font-size:1.1em;font-weight:700;color:var(--text)}
+.section-head .line{flex:1;height:1px;background:var(--border)}
+
+/* Features */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.feat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center}
+.feat-icon{font-size:1.8em;margin-bottom:6px}
+.feat-name{font-size:.85em;font-weight:600;margin-bottom:2px}
+.feat-desc{font-size:.72em;color:var(--text2);line-height:1.4}
+
+/* Footer */
+.footer{text-align:center;padding:32px 0;margin-top:20px;border-top:1px solid var(--border);color:var(--text2);font-size:.78em}
+.footer a{color:var(--accent);text-decoration:none}
+
+/* Clear history button */
+.clear-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.75em;cursor:pointer;font-family:inherit;transition:.15s;margin-top:12px}
+.clear-btn:hover{border-color:var(--no);color:var(--no)}
+
+@media(max-width:700px){
+  .overview{grid-template-columns:repeat(2,1fr)}
+  .tools-grid{grid-template-columns:1fr}
+  .tool-card.master{grid-column:1}
+  .features{grid-template-columns:1fr}
+  .hero h1{font-size:1.8em}
+  .page{padding:20px 14px}
+}
+</style>
+</head>
+<body>
+<div class="page" id="app">
+  <div class="hero">
+    <span class="hero-icon">❄️</span>
+    <h1>HVAC Study Hub</h1>
+    <div class="tagline">Interactive Exam Prep — All Subjects, All Tools</div>
+    <div class="class-badge">UA Local 400 — Class of 2026</div>
+  </div>
+
+  <div class="overview" id="overview">
+    <div class="ov-card"><div class="ov-val" style="color:var(--accent)" id="ov-total">1,281</div><div class="ov-label">Total Questions</div></div>
+    <div class="ov-card"><div class="ov-val" style="color:var(--ok)" id="ov-correct">—</div><div class="ov-label">Correct Answers</div></div>
+    <div class="ov-card"><div class="ov-val" style="color:var(--warn)" id="ov-attempted">—</div><div class="ov-label">Attempted</div></div>
+    <div class="ov-card"><div class="ov-val" id="ov-accuracy">—</div><div class="ov-label">Overall Accuracy</div></div>
+  </div>
+
+  <div class="section-head"><h2>Study Tools</h2><div class="line"></div></div>
+
+  <div class="tools-grid" id="tools-grid"></div>
+
+  <div class="section-head"><h2>Features</h2><div class="line"></div></div>
+
+  <div class="features">
+    <div class="feat"><div class="feat-icon">🧠</div><div class="feat-name">Spaced Repetition</div><div class="feat-desc">Shuffle mode prioritizes questions you've missed</div></div>
+    <div class="feat"><div class="feat-icon">📖</div><div class="feat-name">PT Chart Reference</div><div class="feat-desc">R-410A, R-22, R-134a tables during any quiz</div></div>
+    <div class="feat"><div class="feat-icon">🖩</div><div class="feat-name">Built-in Calculator</div><div class="feat-desc">Scratchpad for BTU, pressure, and volume calcs</div></div>
+    <div class="feat"><div class="feat-icon">⏱</div><div class="feat-name">Timed Mode</div><div class="feat-desc">Countdown timer to simulate real exam conditions</div></div>
+    <div class="feat"><div class="feat-icon">⚠️</div><div class="feat-name">Weak Spots</div><div class="feat-desc">Drill the questions you keep getting wrong</div></div>
+    <div class="feat"><div class="feat-icon">📊</div><div class="feat-name">Progress Tracking</div><div class="feat-desc">Persistent stats across sessions</div></div>
+  </div>
+
+  <div style="text-align:center"><button class="clear-btn" onclick="if(confirm('Clear ALL study history across all tools?')){for(let k in localStorage){if(k.startsWith('hvac_stats_'))localStorage.removeItem(k);}location.reload();}">Clear All Study History</button></div>
+
+  <div class="footer">
+    Built for HVAC/R exam prep &bull; 7 study tools &bull; 1,281 questions with detailed explanations
+  </div>
+</div>
+
+<script>
+const TOOLS = [
+  { id: 'master', file: 'Master_HVAC_Exam.html', icon: '🏆', name: 'Master Exam', desc: 'All subjects combined with category and type selectors. The ultimate review tool.', questions: 544, types: '5 subjects', master: true },
+  { id: 'hydronics', file: 'Hydronics_Final_Study_Tool.html', icon: '💧', name: 'Hydronics Final', desc: 'Hydronic heating/cooling systems — piping, valves, pumps, heat transfer.', questions: 119, types: 'MC, T/F, Short, Fill, Essay' },
+  { id: 'steam', file: 'Steam_Exam_Study_Tool.html', icon: '⚙️', name: 'Steam Final', desc: 'Steam systems — boilers, traps, condensate, pressure, safety controls.', questions: 143, types: 'MC, T/F, Fill, Essay, Numerical' },
+  { id: 'hvacr', file: 'HVACR_Practice_Exam_Full.html', icon: '❄️', name: 'HVAC/R Refrigeration', desc: 'Core refrigeration — cycle, components, PT relationships, charging, piping.', questions: 120, types: 'Multiple Choice' },
+  { id: 'firstyear', file: '1st_Year_Final_Study_Tool.html', icon: '❄️', name: '1st Year Final', desc: 'First year service review — refrigeration fundamentals and troubleshooting.', questions: 120, types: 'Multiple Choice' },
+  { id: 'adv_refrig', file: 'Adv_Refrigeration_Final_Study_Tool.html', icon: '🔬', name: 'Adv. Refrigeration', desc: 'Advanced refrigeration — chillers, compressors, capacity control, system design.', questions: 174, types: 'MC, True/False' },
+  { id: 'practice', file: 'Practice_Test_Study_Tool.html', icon: '📐', name: 'Practice Test', desc: 'Fundamentals and calculations — BTU, pressure, volume, density, conversions.', questions: 61, types: 'Multiple Choice' },
+];
+
+function getToolStats(toolId) {
+  try {
+    const data = JSON.parse(localStorage.getItem('hvac_stats_' + toolId)) || {};
+    let right = 0, wrong = 0, attempted = 0;
+    for (const k in data) {
+      right += data[k].right || 0;
+      wrong += data[k].wrong || 0;
+      if ((data[k].right || 0) + (data[k].wrong || 0) > 0) attempted++;
+    }
+    return { right, wrong, attempted };
+  } catch(e) { return { right: 0, wrong: 0, attempted: 0 }; }
+}
+
+function renderTools() {
+  const grid = document.getElementById('tools-grid');
+  let totalRight = 0, totalWrong = 0, totalAttempted = 0;
+
+  grid.innerHTML = TOOLS.map(tool => {
+    const stats = getToolStats(tool.id);
+    totalRight += stats.right;
+    totalWrong += stats.wrong;
+    totalAttempted += stats.attempted;
+
+    const pct = stats.right + stats.wrong > 0 ? Math.round(stats.right / (stats.right + stats.wrong) * 100) : 0;
+    const progColor = pct >= 70 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : stats.attempted > 0 ? 'var(--no)' : 'var(--border)';
+
+    let progressHTML = '';
+    if (stats.attempted > 0) {
+      progressHTML = '<div class="tool-progress">' +
+        '<div class="tool-prog-bar"><div class="tool-prog-fill" style="width:' + Math.min(100, Math.round(stats.attempted / tool.questions * 100)) + '%;background:' + progColor + '"></div></div>' +
+        '<div class="tool-prog-pct" style="color:' + progColor + '">' + pct + '%</div></div>';
+    }
+
+    let histBadge = '';
+    if (stats.attempted > 0) {
+      histBadge = '<span class="tool-badge history">' + stats.attempted + '/' + tool.questions + ' seen</span>';
+    }
+
+    return '<a href="' + tool.file + '" class="tool-card' + (tool.master ? ' master' : '') + '">' +
+      '<div class="tool-icon">' + tool.icon + '</div>' +
+      '<div class="tool-name">' + tool.name + '</div>' +
+      '<div class="tool-desc">' + tool.desc + '</div>' +
+      '<div class="tool-meta">' +
+        '<span class="tool-badge questions">' + tool.questions + ' questions</span>' +
+        '<span class="tool-badge types">' + tool.types + '</span>' +
+        histBadge +
+      '</div>' +
+      progressHTML +
+    '</a>';
+  }).join('');
+
+  // Update overview stats
+  const totalQ = TOOLS.reduce((s, t) => s + t.questions, 0);
+  document.getElementById('ov-total').textContent = totalQ.toLocaleString();
+
+  if (totalRight + totalWrong > 0) {
+    const accuracy = Math.round(totalRight / (totalRight + totalWrong) * 100);
+    const accColor = accuracy >= 70 ? 'var(--ok)' : accuracy >= 50 ? 'var(--warn)' : 'var(--no)';
+    document.getElementById('ov-correct').textContent = totalRight.toLocaleString();
+    document.getElementById('ov-correct').style.color = 'var(--ok)';
+    document.getElementById('ov-attempted').textContent = totalAttempted.toLocaleString();
+    document.getElementById('ov-accuracy').textContent = accuracy + '%';
+    document.getElementById('ov-accuracy').style.color = accColor;
+  }
+}
+
+renderTools();
+</script>
+</body>
+</html>

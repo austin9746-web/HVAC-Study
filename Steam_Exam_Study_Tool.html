@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0c0e12">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
+<title>Steam Final Exam — Study Tool</title>
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--accent2:#2d7dd2;--ok:#34d399;--ok-bg:rgba(52,211,153,.08);--no:#f87171;--no-bg:rgba(248,113,113,.08);--warn:#fbbf24;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:880px;margin:0 auto;padding:16px}
+.start{text-align:center;padding:48px 16px}
+.start h1{font-size:2.2em;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.start .sub{color:var(--text2);margin-bottom:32px}
+.stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.sb{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 22px;min-width:110px}
+.sb .v{font-size:1.7em;font-weight:700;color:var(--accent)}
+.sb .l{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.modes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.mb{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px 20px;cursor:pointer;text-align:left;min-width:220px;transition:.2s}
+.mb:hover{border-color:var(--accent);background:var(--card2)}
+.mb.on{border-color:var(--accent);background:rgba(74,158,255,.06)}
+.mb h3{font-size:.95em;margin-bottom:2px}
+.mb p{font-size:.78em;color:var(--text2)}
+.go{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:12px 44px;font-size:1.05em;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;margin-top:8px}
+.go:hover{background:var(--accent2);transform:translateY(-1px)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;margin-bottom:0;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
+.hdr .t{font-size:.85em;font-weight:600;color:var(--text2)}
+.hdr .pi{font-size:.82em;color:var(--text2);font-family:monospace}
+
+/* === SCORE BAR === */
+.score-bar{display:flex;align-items:center;gap:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin:10px 0;overflow:hidden;min-height:48px}
+.score-bar .sc-section{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 16px;min-width:70px;border-right:1px solid var(--border)}
+.score-bar .sc-section:last-child{border-right:none}
+.score-bar .sc-val{font-size:1.2em;font-weight:700;font-family:monospace;line-height:1.2}
+.score-bar .sc-lbl{font-size:.62em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);line-height:1.2}
+.sc-pct-wrap{flex:1;padding:8px 16px;display:flex;align-items:center;gap:12px;min-width:120px}
+.sc-pct-bar{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;position:relative}
+.sc-pct-fill{height:100%;border-radius:4px;transition:width .4s,background .3s}
+.sc-pct-num{font-size:1.3em;font-weight:700;font-family:monospace;min-width:52px;text-align:right}
+.score-bar.exam-mode{opacity:.5;filter:blur(3px);pointer-events:none;user-select:none}
+.score-bar.no-data .sc-val{color:var(--text2)}
+@media(max-width:500px){.score-bar .sc-section{padding:6px 10px;min-width:54px}.score-bar .sc-val{font-size:1em}.sc-pct-wrap{padding:6px 10px}.sc-pct-num{font-size:1.1em;min-width:44px}}
+
+.pb{height:4px;background:var(--card2);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));border-radius:2px;transition:width .4s}
+.qc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:14px}
+.qm{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.qn{font-family:monospace;font-size:.8em;font-weight:600;color:var(--accent);background:rgba(74,158,255,.1);padding:3px 9px;border-radius:6px}
+.qt{font-size:.75em;color:var(--text2);background:var(--card2);padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+.qp{font-size:.75em;color:var(--warn);margin-left:auto;font-weight:600}
+.qq{font-size:1.05em;line-height:1.6;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.op{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--card2);border:2px solid transparent;border-radius:8px;cursor:pointer;transition:.15s;font-size:.92em;line-height:1.5}
+.op:hover{border-color:var(--border);background:#252a35}
+.op.sel{border-color:var(--accent);background:rgba(74,158,255,.05)}
+.op.cor{border-color:var(--ok);background:var(--ok-bg)}
+.op.wrg{border-color:var(--no);background:var(--no-bg)}
+.op.shw{border-color:var(--ok);background:var(--ok-bg)}
+.op.dis{cursor:default}
+.ol{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.75em;font-weight:600;color:var(--text2);transition:.15s}
+.op.sel .ol{background:var(--accent);color:#fff}
+.op.cor .ol{background:var(--ok);color:#000}
+.op.wrg .ol{background:var(--no);color:#fff}
+.op.shw .ol{background:var(--ok);color:#000}
+.ot{padding-top:2px;flex:1}
+.ex-box{margin-top:8px;padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5;color:var(--text)}
+.ex-box.ex-ok{border-left-color:var(--ok);background:var(--ok-bg)}
+.ex-box.ex-no{border-left-color:var(--no);background:var(--no-bg)}
+.ti{width:100%;background:var(--card2);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:.92em;resize:vertical;min-height:44px}
+.ti:focus{outline:none;border-color:var(--accent)}
+.hint{background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.2);border-radius:8px;padding:12px 14px;margin-top:10px}
+.hint .hl{font-size:.75em;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.hint .ht{font-size:.88em;line-height:1.5}
+.fill-exps{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fill-exp{padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5}
+.nav{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.nb{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 18px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;font-weight:500}
+.nb:hover{background:var(--card2);border-color:var(--text2)}
+.nb.pr{background:var(--accent);border-color:var(--accent);color:#fff}
+.nb.pr:hover{background:var(--accent2)}
+.nb:disabled{opacity:.3;cursor:not-allowed}
+.nc{display:flex;gap:6px;align-items:center}
+.ck{background:var(--warn);border:none;color:#000;font-weight:600}
+.ck:hover{background:#e5a900}
+.gt{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);cursor:pointer;font-size:.8em;font-family:inherit;transition:.15s}
+.gt:hover{border-color:var(--text2);color:var(--text)}
+.gp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:3px}
+.gd{width:100%;aspect-ratio:1;border-radius:5px;border:1px solid var(--border);background:var(--card2);cursor:pointer;font-size:.7em;font-weight:600;display:flex;align-items:center;justify-content:center;transition:.15s;color:var(--text2)}
+.gd:hover{border-color:var(--text2)}
+.gd.cur{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 2px rgba(74,158,255,.15)}
+.gd.ans{background:rgba(74,158,255,.12);border-color:var(--accent);color:var(--accent)}
+.gd.gc{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.gd.gw{background:var(--no-bg);border-color:var(--no);color:var(--no)}
+.res{text-align:center;padding:32px 16px}
+.res h2{font-size:1.8em;margin-bottom:6px}
+.sc{width:160px;height:160px;border-radius:50%;border:5px solid var(--ok);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px auto}
+.sc .pct{font-size:2.8em;font-weight:700}
+.sc .of{font-size:.82em;color:var(--text2)}
+.rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:20px 0}
+.rs{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.rs .rv{font-size:1.4em;font-weight:700}
+.rs .rl{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.ra{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.ft{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.fb{padding:5px 12px;border-radius:18px;border:1px solid var(--border);background:none;color:var(--text2);font-size:.8em;cursor:pointer;font-family:inherit;transition:.15s}
+.fb.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fb:hover{border-color:var(--text2)}
+.disclaimer{margin-top:12px;font-size:.75em;color:var(--text2);opacity:.7}
+@media(max-width:600px){.app{padding:8px}.qc{padding:16px}.start h1{font-size:1.5em}.mb{min-width:100%}.gr{grid-template-columns:repeat(auto-fill,minmax(30px,1fr))}}
+
+/* Back to hub button */
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;text-decoration:none;display:flex;align-items:center;gap:5px;transition:.2s}
+.back-btn:hover{border-color:var(--accent);color:var(--text);background:var(--card2)}
+/* Print results button */
+.print-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 22px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.print-btn:hover{border-color:var(--accent);background:var(--card2)}
+@media print{.back-btn,.fab-container,.calc-overlay,.ref-overlay,.nav,.hdr,.go,.modes,.timer-toggle,.stats-history,.print-btn,.nb{display:none!important}.app{padding:0}.qc{break-inside:avoid;border:1px solid #ccc;margin:8px 0}.start{display:none}.res,.opts,.qc{display:block!important}body{background:#fff;color:#000}.score-bar,.pb{display:none}:root{--card:#fff;--card2:#f5f5f5;--border:#ddd;--text:#000;--text2:#666;--ok:#22c55e;--no:#dc2626;--accent:#2563eb}}
+</style>
+</head>
+<body>
+<a href="index.html" class="back-btn">← Study Hub</a>
+<div class="app" id="app"></div>
+<script>
+const Q=[{n:1,p:2,t:'mc',q:'A down-fed system is __________.',o:['When the boiler is at the lowest level of the building','When the terminal unit is located above the steam main','When the terminal unit is located below the steam main','When the boiler is at the highest level of the building'],a:2,ex:['Describes an up-fed system where steam rises from the boiler in the basement.','Describes a standard up-fed branch connection, not the overall system type.','CORRECT — In a down-fed system, the steam main runs at a high elevation and feeds down to terminal units below it. Gravity assists condensate drainage.','The defining characteristic is the relationship between the steam main and terminal units, not the boiler\'s position.']},
+{n:2,p:2,t:'mc',q:'A drip is a __________.',o:['Vertical piece of pipe off the bottom of a steam pipe or terminal unit','Horizontal connection from a terminal unit to a riser','Vertical connection to a radiator valve or trap from the steam or condensate return','Vertical pipe below the trap or valve connection','Horizontal pipe connection from a main to a riser or terminal unit'],a:0,ex:['CORRECT — A drip (drip leg/drip pocket) extends downward from the bottom of a steam main to collect condensate for removal by a steam trap, preventing water hammer.','This describes a runout or branch line.','This describes a riser or drop connection, not a drip.','The drip is the pocket that collects condensate before the trap, not pipe after it.','This describes a branch takeoff.']},
+{n:3,p:2,t:'mc',q:'A vacuum can raise water or hold water to an elevation of ___________.',o:['1 foot per 1"Hg','2.31 feet per 1"Hg','.433 feet per 1"Hg','None of the above are correct'],a:0,ex:['CORRECT — 1"Hg of vacuum supports approximately 1.13 feet of water. In practice, this is rounded to ~1 foot per 1"Hg. Key value for vacuum return systems.','2.31 feet per 1 PSI is the conversion for pressure to water column height. This confuses psi with inches of mercury.','0.433 psi per foot of water is the inverse conversion — pressure created by a 1-foot water column. Related but different.','Answer A is correct.']},
+{n:4,p:2,t:'mc',q:'A wet return is a __________.',o:['Return line for condensate located below the boilers water level','Return line for condensate located above the boilers water level','Horizontal piping arrangement from the boiler to the steam main','Vertical connection carrying condensate from the top floors to the basement'],a:0,ex:['CORRECT — A wet return is always filled with water because it sits below the boiler\'s waterline. The water seal prevents steam from entering the return piping.','This describes a dry return, which is above the waterline.','This describes the steam header or supply piping, not a return.','This would be a condensate riser, not specifically a wet return.']},
+{n:5,p:2,t:'mc',q:'According to the Wisconsin State Code, another term for a low pressure boiler is a _______.',o:['Power boiler','Heating boiler','Neither is correct'],a:1,ex:['A power boiler is HIGH-pressure (above 15 psig). This is the opposite.','CORRECT — Under Wisconsin State Code and ASME, a low-pressure steam boiler (≤15 psig) is classified as a \'heating boiler,\' typically used for space heating.','Answer B is correct.']},
+{n:6,p:2,t:'mc',q:'As water molecules change to steam, they __________.',o:['Contract approximately 1600 times','Expand approximately 1600 times','Remain the same','Stop moving'],a:1,ex:['Opposite of what happens — molecules spread apart during vaporization.','CORRECT — Water undergoes ~1,600× volumetric expansion when changing to steam at atmospheric pressure. This massive expansion gives steam its power for heating and mechanical work.','A liquid-to-gas phase change involves dramatic volume increase.','Steam molecules move much faster and more energetically than liquid water.']},
+{n:7,p:2,t:'mc',q:'Heat that can be indicated with a thermometer is called ________.',o:['sensible heat','specific heat','latent heat','none of the above are correct'],a:0,ex:['CORRECT — Sensible heat causes a temperature change you can \'sense\' or measure with a thermometer. Heating water from 50°F to 200°F = sensible heat.','Specific heat is a material property (BTU to raise 1 lb by 1°F), not a type of heat.','Latent heat is \'hidden\' — it causes phase change (liquid→steam) WITHOUT temperature change. A thermometer can\'t detect it.','Answer A is correct.']},
+{n:8,p:2,t:'mc',q:'The generation and release of steam in a boiler creates a very _________ boiler water line.',o:['low','high','steady','turbulent'],a:3,ex:['Water line fluctuates but isn\'t characteristically low.','Steam generation doesn\'t inherently push water level high.','Opposite of what happens during active steam generation.','CORRECT — Boiling creates vigorous turbulence at the water surface. Steam bubbles constantly form, rise, and burst, causing the water level to fluctuate erratically. This is why gauge glasses show a \'dancing\' water line.']},
+{n:9,p:2,t:'mc',q:'Steam __________ its energy as it changes to condensate.',o:['absorbs','collects','releases','maintains'],a:2,ex:['Steam absorbed energy when formed. When it condenses, it gives energy back.','Not the correct thermodynamic term.','CORRECT — Condensing steam releases its latent heat of vaporization (~970 BTU/lb at atmospheric pressure). This released energy heats the space or process. This is the fundamental principle of steam heating.','Energy is transferred during phase change, not maintained.']},
+{n:10,p:2,t:'mc',q:'When steam is super-heating;',o:['the pressure is increased with no change in temperature','the temperature is increased with no change in pressure','the temperature and pressure are both increased','the temperature and pressure are both decreased'],a:1,ex:['Describes compression, not superheating.','CORRECT — Superheating adds heat to fully vaporized steam at constant pressure, raising its temperature above the saturation point. Superheated steam is \'dry\' with no moisture.','Superheating specifically adds heat at constant pressure.','Describes expansion or cooling, not superheating.']},
+{n:11,p:2,t:'mc',q:'One pound of steam when condensing at 0 psig will give up;',o:['1 btu','144 btu\'s','180 btu\'s','970.4 btu\'s'],a:3,ex:['1 BTU raises 1 lb of water by 1°F — not the latent heat of steam.','144 BTU/lb is the latent heat of fusion for ICE, not steam.','180 BTU is the sensible heat to raise 1 lb water from 32°F to 212°F.','CORRECT — The latent heat of vaporization at atmospheric pressure (0 psig / 212°F) is ~970.4 BTU/lb. This is the energy released when 1 lb of steam condenses. Critical value for steam system design.']},
+{n:12,p:2,t:'mc',q:'High pressure steam is considered to be;',o:['anything above 0 psig','higher than 10 psig','higher than 15 psig','none of the above are correct'],a:2,ex:['Any positive pressure doesn\'t qualify — low pressure extends up to 15 psig.','10 psig is still within the low-pressure range.','CORRECT — Per ASME code, steam above 15 psig = high-pressure (power) boiler. At or below 15 psig = low-pressure (heating) boiler. This threshold affects licensing, inspections, and safety requirements.','Answer C is correct.']},
+{n:13,p:2,t:'mc',q:'The device that controls the pressure in a low pressure steam boiler is called __________.',o:['a pressuretrol','an aquastat','a thermostat','a thermocouple'],a:0,ex:['CORRECT — A pressuretrol is a pressure-activated switch that controls the burner based on steam pressure — turns burner off at cut-out, on at cut-in. Primary operating control for steam boilers.','An aquastat controls temperature in hot water (hydronic) boilers, not pressure in steam boilers.','A thermostat measures room temperature and signals heat demand. Doesn\'t directly control boiler pressure.','A thermocouple senses temperature for flame safety systems. Doesn\'t control pressure.']},
+{n:14,p:2,t:'mc',q:'The arrangement of the return piping on a steam boiler that would reduce the likelihood of a low water condition in the boiler is called a/an __________.',o:['equalizer','reverse return','Hartford loop','wet return'],a:2,ex:['The equalizer connects steam space to the water column, but isn\'t the protective arrangement described.','Reverse return is a piping layout for balancing flow, not protecting against low water.','CORRECT — The Hartford loop connects the condensate return to the equalizer line 2-4 inches below NOWL, preventing water loss if the return piping leaks below the waterline.','A wet return is a type of piping, not a protective arrangement.']},
+{n:15,p:2,t:'mc',q:'The rapid fluctuation of the water level in a boiler which is created by impurities on the surface of the water is called _________.',o:['priming','foaming','spotting','trapping'],a:1,ex:['Priming is when slugs of water carry over with steam due to high water level or sudden load changes — a different problem.','CORRECT — Foaming occurs when impurities (oils, dissolved solids, alkalinity) create foam and bubbles on the water surface, causing wild water level fluctuations. Makes it difficult to determine true water level — a serious safety concern.','Not a standard steam boiler term for this condition.','Trapping refers to condensate removal via steam traps, not a water condition.']},
+{n:16,p:2,t:'mc',q:'The _______________ allows condensate to return immediately to the boiler and keeps the water from being pushed back through the return piping as the steam pressure increases.',o:['short nipple','equalizer line','system take-off riser','use of swing joints'],a:1,ex:['A short nipple is a short pipe length, not a functional component for this purpose.','CORRECT — The equalizer line connects the steam space to the return header at approximately the waterline, equalizing pressure so condensate flows freely back into the boiler without being held back by rising steam pressure.','A steam supply connection, not related to condensate return.','Swing joints accommodate thermal expansion, not condensate flow.']},
+{n:17,p:2,t:'mc',q:'The piping directly around the boiler is known as near boiler piping and should __________ be replaced when installing a replacement steam boiler.',o:['never','seldom','always','frequently'],a:2,ex:['Reusing old piping can cause problems from scale, corrosion, and mismatched connections.','Understates the importance of replacing this critical piping.','CORRECT — Near-boiler piping should always be replaced with a new boiler. Old piping contains scale, rust, and debris that contaminates the new boiler. Sizing must match the new boiler\'s requirements.','\'Always\' is the correct standard, not just \'frequently.\'']},
+{n:18,p:2,t:'mc',q:'All __________ are required by code to have a low-water cutoff.',o:['hot water boilers','steam boilers','gas-fired boilers','boilers'],a:1,ex:['Some hot water boilers have LWCOs, but the universal code requirement is specifically for steam boilers.','CORRECT — ASME code requires all steam boilers to have a LWCO because steam boilers have constantly changing water levels as water evaporates, making low-water conditions a real danger.','The requirement is based on boiler type (steam), not fuel source.','The code requirement is specifically for steam boilers, not all boilers universally.']},
+{n:19,p:2,t:'mc',q:'The purpose of the Hartford loop is to;',o:['prevent the boiler from running out of water','prevent an immediate loss of water due to a vacuum or a leak on the condensate return line','prevent a too high of a water level in the boiler','prevent the loss of steam through the condensate return line'],a:1,ex:['The LWCO prevents running out of water. The Hartford loop addresses a more specific failure.','CORRECT — If return piping leaks below the waterline, without a Hartford loop, boiler pressure could push all water out through the leak. The loop\'s connection point limits how much water can be lost.','The Hartford loop doesn\'t control high water levels.','While it helps separate steam and return, its primary purpose is water level protection.']},
+{n:20,p:2,t:'mc',q:'The location of the Hartford loop is;',o:['2" to 4" below the NOWL on the equalizer line','2" to 4" above the NOWL on the equalizer line','24" below the NOWL on the equalizer line','28" above the NOWL on the equalizer line'],a:0,ex:['CORRECT — The Hartford loop connects 2-4 inches below Normal Operating Water Level on the equalizer line, ensuring minimal water loss through return line failures while allowing normal condensate return.','Above the waterline wouldn\'t provide the protective water seal needed.','Far too low — would allow too much water to drain before protection engaged.','Above the waterline, no protection provided.']},
+{n:21,p:2,t:'mc',q:'Water hammer is possible when;',o:['steam and condensate come in contact with each other','the steam becomes super-heated','the steam becomes sub-cooled','all of the above are correct'],a:0,ex:['CORRECT — Water hammer occurs when steam contacts cooler condensate. The steam rapidly condenses, creating sudden vacuum/pressure waves, or propels condensate slugs at high velocity into fittings.','Superheated steam is drier and LESS likely to cause water hammer.','Not the standard term. The issue is contact between two phases.','Only A is correct.']},
+{n:22,p:2,t:'mc',q:'Thermal shock happens when;',o:['steam bubbles collapse and liquid rushed in to fill that void','steam and condensate travel in the same pipe at different speeds causing waves to form, when then slam into fittings and valves','a valve closes quickly causing the fluid to rebound into the piping system','none of the above are correct'],a:0,ex:['CORRECT — Thermal shock occurs when steam bubbles surrounded by cooler condensate collapse suddenly, creating localized vacuum. Surrounding liquid rushes in violently. Common when cold water enters a steam-filled space.','This describes DIFFERENTIAL shock, not thermal shock.','This describes HYDRAULIC shock (conventional water hammer from rapid valve closure).','Answer A is correct.']},
+{n:23,p:2,t:'mc',q:'Differential shock happens when;',o:['steam bubbles collapse and liquid rushes in to fill that void','steam and condensate travel in the same pipe at different speeds causing waves to form, when then slam into valves and fittings','a valve closes too quickly causing the fluid to rebound into the piping system','none of the above are correct'],a:1,ex:['This describes THERMAL shock.','CORRECT — Steam travels much faster than condensate in the same pipe. This speed difference creates waves that get picked up by fast-moving steam and hurled into fittings. Proper pipe pitch and drip legs prevent this.','This describes HYDRAULIC shock.','Answer B is correct.']},
+{n:24,p:2,t:'mc',q:'What could happen if the condensate is not removed from a heat exchanger?',o:['freezing','water hammer','loss of heat transfer','corrosion','all of the above are correct'],a:4,ex:['Partially correct — standing condensate could freeze in cold weather.','Partially correct — steam entering a flooded heat exchanger causes violent water hammer.','Partially correct — condensate occupies space where steam should be, reducing heat transfer.','Partially correct — standing condensate becomes acidic (carbonic acid) and corrodes metal.','CORRECT — All four consequences are real risks. This is why proper trapping is critical.']},
+{n:25,p:2,t:'mc',q:'The way to fix hydraulic shock is to install;',o:['sparge fittings or perforated tempering tubes','properly pitched pipe, enough drips and back venting','slower opening valves and lift checks (silent checks)','a smaller pop safety'],a:2,ex:['Sparge fittings fix THERMAL shock by gently introducing steam into cold water.','This fixes DIFFERENTIAL shock by preventing condensate buildup.','CORRECT — Hydraulic shock is caused by rapid valve closure. Slower-opening/closing valves prevent sudden flow stoppage. Lift checks (silent checks) close gently without slamming.','Pop safety valve size is unrelated to water hammer.']},
+{n:26,p:2,t:'mc',q:'The way to fix differential shock is to install;',o:['slow opening valves and lift checks (silent checks)','properly pitched pipe, enough drips and back venting','sparge fittings or perforated tempering tubes','a larger pop safety'],a:1,ex:['This fixes HYDRAULIC shock, not differential shock.','CORRECT — Differential shock is caused by condensate accumulating in steam pipes. Fix: properly pitch piping so condensate drains to drip legs, and provide adequate back venting for continuous condensate removal.','This fixes THERMAL shock.','Safety valve sizing is unrelated.']},
+{n:27,p:2,t:'mc',q:'A vacuum breaker is necessary on a system that has an automatic control valve because;',o:['steam collapses causing a vacuum','it allows the coil to drain on a down cycle','neither a nor b are correct','both a and b are correct'],a:3,ex:['True but incomplete on its own.','True but incomplete on its own.','Both statements are true.','CORRECT — When an automatic control valve closes, trapped steam condenses creating vacuum. This vacuum prevents drainage. A vacuum breaker admits air to break the vacuum, allowing free condensate drainage. Both functions are essential.']},
+{n:28,p:2,t:'mc',q:'The vacuum breaker should be installed on the outlet of the coil because;',o:['the coil may have a large pressure drop which doesn\'t allow proper drainage','the automatic control valve may leak slightly causing the coil to remain in a vacuum even though some steam is entering the coil','both a and b are correct','neither a nor b are correct'],a:2,ex:['True but incomplete on its own.','True but incomplete on its own.','CORRECT — The outlet side is correct because: (1) large coils have significant pressure drop making the outlet more susceptible to vacuum; (2) a leaking valve can maintain vacuum while not building enough pressure to push condensate out.','Both A and B are correct.']},
+{n:29,p:2,t:'mc',q:'Wire drawing, sometimes called cutting, is usually caused by;',o:['super-heated steam flashing off as it passes through a valve (pressure drop)','hot condensate flashing off as it passes through a valve (pressure drop)','steam super-heating as it passes through a valve (pressure drop)','condensate sub-cooling as it passes through a valve (pressure drop)'],a:1,ex:['Superheated steam doesn\'t \'flash\' — it\'s already fully vaporized.','CORRECT — Hot condensate through a partially open valve flashes to steam from the pressure drop. This high-velocity mixture erodes valve seat surfaces, cutting grooves like wire through metal.','A pressure drop causes cooling, not superheating.','Sub-cooled condensate wouldn\'t flash — it\'s below saturation temperature.']},
+{n:30,p:2,t:'mc',q:'Air in a steam system is not wanted because it causes;',o:['loss of heat transfer','corrosion','a lack of steam to enter the pipe or heat exchanger because there isn\'t room','all of the above are correct'],a:3,ex:['True but incomplete — air insulates surfaces.','True but incomplete — oxygen causes oxidation/corrosion.','True but incomplete — air occupies space preventing steam from reaching surfaces.','CORRECT — Air causes all three: insulates surfaces, causes corrosion through oxygen, and physically blocks steam. This is why proper air venting is essential.']},
+{n:31,p:2,t:'tf',q:'In order to clean an electric probe low-water cutoff, it must be removed from the boiler.',o:['True','False'],a:0,ex:['CORRECT — Electric probe LWCOs sense conductivity between probes. Scale deposits insulate the probes over time. They must be removed and physically cleaned to restore proper function.','The probes must be removed for proper cleaning of scale deposits.']},
+{n:32,p:2,t:'tf',q:'In order to keep the float chamber of a low-water cutoff clean, it must be blown down on a regular basis.',o:['True','False'],a:0,ex:['CORRECT — Float-type LWCOs accumulate sediment and sludge. Regular blowdown (typically daily) flushes debris and verifies proper function.','Regular blowdown is essential for float chamber maintenance.']},
+{n:33,p:2,t:'tf',q:'Excessive air in the system will not affect a standard (normal) inverted bucket trap.',o:['True','False'],a:1,ex:['Excessive air CAN affect an IB trap — the small vent hole can\'t handle large air volumes.','CORRECT — The IB trap has only a small air vent hole. Excessive air fills the bucket, keeping it buoyant (closed), causing the trap to become air-bound and unable to cycle.']},
+{n:34,p:2,t:'tf',q:'An F & T trap modulates to the load, therefore it discharges constantly if there is a condensate load present.',o:['True','False'],a:0,ex:['CORRECT — The F&T float rises proportionally to incoming condensate, opening the valve to match flow. Under continuous load, it discharges continuously — unlike cycling traps (IB, disc).','The F&T does modulate and discharge continuously with load.']},
+{n:35,p:2,t:'tf',q:'The F & T trap can be used on compressed air systems.',o:['True','False'],a:0,ex:['CORRECT — The float mechanism responds to liquid regardless of whether the gas is steam or compressed air. The thermostatic element vents gas while the float handles condensate.','F&T traps work on compressed air systems for condensate drainage.']},
+{n:36,p:2,t:'tf',q:'When allowed to cool below steam temperature, carbon dioxide combines with condensate to form carbonic acid.',o:['True','False'],a:0,ex:['CORRECT — CO₂ dissolves in condensate below ~300°F, forming carbonic acid (H₂CO₃) — a major source of return line corrosion. CO₂ comes from bicarbonate breakdown in feedwater.','This is a well-established corrosion mechanism in steam systems.']},
+{n:37,p:2,t:'tf',q:'The F & T trap vents air better than an inverted bucket trap.',o:['True','False'],a:0,ex:['CORRECT — The F&T has a dedicated thermostatic air vent that opens widely for air. The IB only has a tiny vent hole in the bucket — very limited air-handling capacity.','The F&T\'s thermostatic air vent is far superior to the IB\'s small vent hole.']},
+{n:38,p:2,t:'tf',q:'The inverted bucket trap need not be primed on initial start-up or after draining or cleaning, it will work right away.',o:['True','False'],a:1,ex:['The IB trap requires a water seal (prime) to operate properly.','CORRECT — The IB trap needs water surrounding the bucket for buoyancy to work. Without priming, steam blows straight through. Must be primed on initial start-up or after draining.']},
+{n:39,p:2,t:'tf',q:'Every 2 feet of lift in a siphon drainage system increases pressure differential by 1 psig.',o:['True','False'],a:0,ex:['CORRECT — A 2.31-foot water column = 1 psi. Practically, every 2 feet of lift ≈ 1 psi of required ΔP. Critical for sizing traps in lift applications.','The 2 feet per 1 psi rule is a standard approximation.']},
+{n:40,p:2,t:'tf',q:'A thermostatic trap will operate under vacuum and positive pressures.',o:['True','False'],a:0,ex:['CORRECT — Thermostatic traps respond to temperature difference, not pressure. They function regardless of vacuum or positive pressure, making them versatile across pressure ranges.','Thermostatic traps work on temperature, independent of pressure.']},
+{n:41,p:2,t:'tf',q:'The thin flexible metal parts of a thermostatic bellows stands up well to water hammer.',o:['True','False'],a:1,ex:['The delicate bellows is extremely vulnerable to water hammer forces.','CORRECT — The thin, corrugated metal bellows is easily crushed, ruptured, or deformed by water hammer forces. Thermostatic traps must be protected from water hammer through proper piping.']},
+{n:42,p:2,t:'tf',q:'Float traps may be used to vent air or gas from water or other liquid lines.',o:['True','False'],a:0,ex:['CORRECT — F&T traps with thermostatic air vents can vent air/gases from any pressurized liquid system. The float handles liquid, the thermostatic element vents gases.','Float traps can serve this function beyond just steam systems.']},
+{n:43,p:2,t:'tf',q:'A thermostatic steam trap discharges condensate as soon as it enters the trap.',o:['True','False'],a:1,ex:['The thermostatic trap requires condensate to cool below saturation before opening.','CORRECT — The bellows contracts only as temperature drops below saturation (typically 10-30°F sub-cooling needed). There\'s always a delay while condensate cools. That\'s why a cooling leg is required.']},
+{n:44,p:2,t:'tf',q:'If a safety drain trap is utilized, it should be located 4" below the primary trap.',o:['True','False'],a:1,ex:['4 inches is insufficient separation for a safety drain trap.','CORRECT — A safety drain trap needs more separation than 4 inches for proper gravity drainage and independent operation. The specific distance varies by installation but 4 inches is inadequate.']},
+{n:45,p:2,t:'tf',q:'The pressure powered pump trap discharges condensate as soon as it enters the trap body.',o:['True','False'],a:1,ex:['Pump traps operate in fill/discharge cycles, not instantaneously.','CORRECT — The pump trap has two cycles: FILL (condensate collects) then DISCHARGE (motive pressure pushes condensate out). It does not discharge instantaneously upon entry.']},
+{n:46,p:2,t:'tf',q:'Reduced ΔP will reduce the traps capacity.',o:['True','False'],a:0,ex:['CORRECT — ΔP is the driving force pushing condensate through the trap. Less ΔP = less force = reduced capacity. Trap sizing must always account for actual operating ΔP.','ΔP directly determines trap capacity.']},
+{n:47,p:2,t:'tf',q:'A supplemental lifting device is required in all cases when condensate must be elevated overhead.',o:['True','False'],a:1,ex:['Existing steam pressure often provides sufficient ΔP for moderate lift.','CORRECT — If the available ΔP (minus ~1 psi per 2 feet of lift) is still adequate, no supplemental device is needed. Only required when ΔP is insufficient for the lift.']},
+{n:48,p:2,t:'tf',q:'DCC (differential condensate controller) traps are constructed similar to IB traps.',o:['True','False'],a:0,ex:['CORRECT — The DCC uses an inverted bucket mechanism like the standard IB trap. Key difference: DCC handles larger differential pressures for high-pressure or high back-pressure applications.','The DCC shares the IB\'s basic operating principle.']},
+{n:49,p:2,t:'mc',q:'What trap is the best suited for handling air and non-condensables?',o:['F & T','IB','piston impulse','disc'],a:0,ex:['CORRECT — The F&T has a dedicated thermostatic air vent that opens automatically for cooler air and gases — rapid, high-capacity air venting.','IB only has a tiny vent hole in the bucket — very limited air handling.','Impulse traps lack a dedicated air venting mechanism.','Disc traps have poor air handling and can become air-bound.']},
+{n:50,p:2,t:'mc',q:'What trap would be the first choice when dripping a constant supply?',o:['F & T','IB','DCC','thermostatic bellows'],a:1,ex:['F&T handles varying loads well but IB is preferred for constant drip applications.','CORRECT — The IB trap is preferred for main line drip applications with constant condensate supply. Durable, water-hammer resistant, handles dirt well (valve at top), reliable long-term service.','DCC is for high-pressure differential, not general drip service.','Thermostatic requires sub-cooling delay — less ideal for continuous drip applications.']},
+{n:51,p:2,t:'mc',q:'What type of trap requires a 4 foot cooling leg?',o:['F & T','IB','thermostatic','disc'],a:2,ex:['F&T discharges at/near steam temperature using its float. No cooling leg needed.','IB operates by buoyancy, not temperature. No cooling leg needed.','CORRECT — The thermostatic (bellows) trap opens when condensate cools below saturation. A ~4-foot uninsulated cooling leg allows condensate to cool enough to activate the thermostatic element.','Disc traps operate on velocity/pressure, not temperature.']},
+{n:52,p:2,t:'mc',q:'Which type of trap requires a 12" static drip before it?',o:['F & T','IB','thermostatic','disc'],a:1,ex:['F&T doesn\'t specifically require a 12-inch static drip leg.','CORRECT — The IB trap requires ~12 inches of static head ahead of it to ensure proper priming, filling of the trap body, and the water seal needed for operation.','Thermostatic needs a cooling leg, not a static drip leg.','Disc traps don\'t require a specific static drip leg.']},
+{n:53,p:2,t:'mc',q:'Tracer lines are usually trapped by using _____________ trap.',o:['an F & T','an IB','a thermostatic','a disc'],a:2,ex:['F&T is typically too large and expensive for small tracer lines.','IB is generally oversized for the small condensate loads of tracers.','CORRECT — Thermostatic traps are ideal for tracers: compact, inexpensive, and effective. The natural sub-cooling in small tracer lines works perfectly with the thermostatic operating principle.','Disc traps are less reliable than thermostatic for tracer service.']},
+{n:54,p:2,t:'mc',q:'The L in LAMBS refers to;',o:['life of the trap','condensate load of the trap','actual load of the trap, times the safety factor','level of the trap below the condensate return line'],a:1,ex:['Trap life is important but not what L stands for.','CORRECT — L = Load (condensate load in lbs/hr). The first and most critical sizing factor. LAMBS = Load, Application, Maintenance, Back pressure, Safety factor.','Safety factor is a separate consideration applied to the load.','Level/lift falls under a different part of the sizing process.']},
+{n:55,p:2,t:'mc',q:'The B in LAMBS refers to;',o:['bi-phase','below','body type','back pressure'],a:3,ex:['Not part of the LAMBS acronym.','Not the standard meaning in LAMBS.','Body type is not what B represents.','CORRECT — B = Back pressure on the trap\'s discharge side. Back pressure reduces effective ΔP and therefore trap capacity. LAMBS = Load, Application, Maintenance, Back pressure, Safety factor.']},
+{n:56,p:2,t:'mc',q:'Siphon drainage refers to the situation when the trap is installed;',o:['below the condensate return line','below the device being drained','above the device being drained','above the condensate return line'],a:1,ex:['Describes a lift condition on the discharge side, not siphon drainage.','CORRECT — Siphon drainage occurs when the trap is below the equipment it drains. Condensate siphons down from the equipment to the trap. Affects trap sizing — the siphon provides additional inlet head pressure.','If the trap is above, that\'s a lift condition, not siphon drainage.','Describes the trap\'s position relative to the return, not the equipment.']},
+{n:57,p:2,t:'mc',q:'The inverted bucket trap is a good choice in dirty steam applications because;',o:['the valve is at the top of the trap','the bucket traps the dirt and scale','all inverted bucket traps have strainers at the inlet to trap the dirt','all of the above are correct'],a:0,ex:['CORRECT — The discharge valve sits at the top, well above where debris settles at the bottom of the trap body. The operating mechanism stays clean while contamination collects below.','Dirt settles to the bottom of the trap body, not the bucket itself.','Not all IB traps have built-in strainers, though strainers are recommended.','Only A is the accurate primary reason.']},
+{n:58,p:2,t:'mc',q:'The operating principle of a disc trap is;',o:['the disc floats on the condensate and sinks in the steam','the higher velocity of the steam across the disc face causes a lower pressure below the disc','the temperature difference between the steam and the condensate expands and contracts the disc which opens and closes the trap','none of the above are correct'],a:1,ex:['The disc doesn\'t float or sink.','CORRECT — Uses the Bernoulli principle: high-velocity steam across the disc creates low pressure holding it closed. Lower-velocity condensate can\'t hold the disc down, so inlet pressure lifts it open for discharge.','Describes a thermostatic principle, not disc trap operation.','Answer B is correct.']},
+{n:59,p:2,t:'mc',q:'What is the purpose of the steam trap?',o:['acts as an automatic valve that prevents condensate flow','acts as an automatic valve that allows condensate and air to flow out','acts as an automatic valve to allow steam to flow out of the heat exchanger','none of the above are correct'],a:1,ex:['Opposite — traps ALLOW condensate flow, not prevent it.','CORRECT — A steam trap automatically discharges condensate and air/non-condensables while preventing live steam from escaping. Keeps steam in the system doing useful work.','The trap should PREVENT steam from escaping, not allow it out.','Answer B is correct.']},
+{n:60,p:2,t:'mc',q:'Why is an air vent necessary in an inverted bucket trap?',o:['to release the air and make room for the steam to to enter the bucket','to permit the valve to operate faster','to permit the air to bleed slowly out of the bucket in order to be discharged with the condensate','none of the above are correct'],a:2,ex:['Oversimplifies — air needs to leave the bucket, not make room for steam entry.','The vent\'s purpose isn\'t valve speed.','CORRECT — Air collecting inside the inverted bucket would keep it buoyant (closed = air-bound). The small vent hole lets air bleed out slowly so the bucket can eventually sink and discharge air with the condensate.','Answer C is correct.']},
+{n:61,p:2,t:'mc',q:'How does the inverted bucket trap operate?',o:['condensate enters the trap causing the bucket to rise, opening the discharge valve','condensate enters the trap allowing the bucket to drop, opening the discharge valve','when enough air, steam and non-condensables enter the trap, it allows the bucket to float, opening the valve','none of these are accurate'],a:1,ex:['Condensate causes the bucket to SINK (lose buoyancy), not rise.','CORRECT — Cycle: steam enters bucket → bucket floats up → valve closes. Steam condenses in bucket, condensate enters around it → bucket loses buoyancy and drops → valve opens → condensate discharges → repeat.','Steam/air make the bucket float and CLOSE the valve, not open it.','Answer B is correct.']},
+{n:62,p:2,t:'mc',q:'Flash steam is defined as;',o:['the steam that is generated from the boiler','the steam that is generated when a high pressure and temperature steam goes to an area of lower pressure','the steam that is generated when a high pressure and temperature condensate goes to an area of lower pressure','the steam that comes out of a pressure reducing valve'],a:2,ex:['Boiler steam is \'live\' or \'generated\' steam, not flash steam.','Steam going to lower pressure is throttled/expanded, not flashed. Flash steam specifically comes from HOT CONDENSATE.','CORRECT — Flash steam forms when hot, high-pressure condensate passes to a lower pressure zone. The excess heat causes some condensate to re-evaporate (\'flash\') into steam. This is recoverable energy.','A PRV reduces live steam pressure; it doesn\'t create flash steam from condensate.']},
+{n:63,p:3,t:'fill',q:'When testing a trap, the three most common ways that we could check the trap are ___, ___, and ___.',o:[],a:-1,ex:['VISUAL — Observe discharge for continuous blow-through (failed-open) or distinguish flash from live steam.','TEMPERATURE — Use pyrometer/IR thermometer on both sides. Equal temps may indicate blow-through; cold trap = failed-closed.','SOUND/ULTRASONIC — Use stethoscope or ultrasonic detector to hear cycling patterns, steam leakage, or abnormal sounds.'],h:'Visual inspection, temperature testing, and sound/ultrasonic testing'},
+{n:64,p:2,t:'mc',q:'What is the visual difference between flash steam and live steam?',o:['flash steam is lazy in appearance and does not have an invisible area at the beginning of the discharge','flash steam is blue in color','flash steam looks just like live steam during discharge','live steam is lazy in appearance and has an invisible area at the beginning of the discharge'],a:0,ex:['CORRECT — Flash steam appears as a gentle, lazy, wispy plume forming immediately at discharge. Live steam exits with high velocity, an invisible superheated zone at the discharge point, then a vigorous white plume further away.','Flash steam is white/grey like any steam vapor, not blue.','They look distinctly different — that\'s how visual testing works.','Combines contradictory descriptions. Live steam is FORCEFUL, not lazy.']},
+{n:65,p:2,t:'mc',q:'Which type of trap is considered to have the least amount of maintenance?',o:['F & T trap','IB trap','Thermostatic trap','Disc trap'],a:1,ex:['F&T has internal moving parts (float, linkage, thermostatic element) needing periodic maintenance.','CORRECT — The IB trap has very few moving parts, resists water hammer, tolerates dirty steam, and provides long service life. Simple, robust construction = fewest failure modes.','Delicate bellows is susceptible to water hammer damage and fatigue.','Disc traps wear quickly in dirty conditions and need frequent disc replacement.']},
+{n:66,p:2,t:'mc',q:'High output heaters using a modulating control valve use which type of trap?',o:['F & T trap','IB trap','Thermostatic trap','Disc trap'],a:0,ex:['CORRECT — F&T is ideal for modulating valves: modulates to varying loads, handles varying pressures, has excellent air venting, operates at very low ΔP when the control valve is nearly closed.','IB traps can lose their prime under vacuum conditions from modulating valves.','Sub-cooling requirement makes thermostatic traps poor for high-output modulating applications.','Disc traps perform poorly at low ΔP and varying loads.']},
+{n:67,p:2,t:'mc',q:'When a modulating control valve is used on a heating unit, a __________________ should be used.',o:['vacuum breaker','IB trap','Thermostatic trap','Disc trap'],a:0,ex:['CORRECT — When the modulating valve throttles or closes, condensing steam creates vacuum in the coil. A vacuum breaker admits air to break the vacuum, allowing proper condensate drainage by gravity.','While a trap is needed, the question asks about the additional device needed specifically because of the modulating valve.','A trap type, not the specific device needed for modulating valve service.','Same — a trap type, not the required additional device.']},
+{n:68,p:2,t:'mc',q:'What is the minimum ΔP needed to elevate condensate 12 feet?',o:['12 psig','24 psig','6 psig','3 psig'],a:2,ex:['Significantly overestimates the pressure needed.','Far too much for 12 feet of lift.','CORRECT — 1 psi supports ~2.31 feet of water. 12÷2.31≈5.2 psi. Using the practical rule (1 psi per 2 feet): 12÷2=6 psig. Accounting for friction, ~6 psig minimum.','Only supports ~6-7 feet of lift, not 12 feet.']},
+{n:69,p:2,t:'mc',q:'What could happen if two units are trapped using just one trap?',o:['short circuiting could happen, lowering the output of one of the units','Nothing, saves money on installation','output increases based on the loss of only one trap vs. two','The steam would not be able to condense in the coil'],a:0,ex:['CORRECT — The unit with higher pressure or lower resistance becomes the preferred path. Steam short-circuits through one unit, starving the other. Each heat exchanger should always have its own trap.','Saves one trap but performance loss makes this a false economy.','Output DECREASES due to short circuiting, not increases.','Steam would condense, but unevenly between the two units.']},
+{n:70,p:2,t:'mc',q:'In outdoor installations, it is good practice to;',o:['not oversize the steam trap','keep the discharge lines as short as possible','insulate all supply, discharge, and return lines','all of the above are correct','none of the above are correct'],a:3,ex:['True but incomplete — oversized traps waste energy.','True but incomplete — shorter lines = less heat loss and freezing risk.','True but incomplete — insulation prevents freezing and heat loss.','CORRECT — All three practices are important outdoors where freezing, heat loss, and weather exposure are concerns.','All three practices are correct.']},
+{n:71,p:2,t:'mc',q:'A thermostatic trap that failed in the closed position would cause a heating unit to become;',o:['steam bound','water-logged','superheated','air-bound'],a:1,ex:['Steam-bound = steam trapped and can\'t move. A closed trap backs up condensate, not steam.','CORRECT — Failed-closed trap = condensate can\'t drain. The coil fills with stagnant condensate (water-logged), leaving no room for steam to enter and transfer heat.','A failed-closed trap wouldn\'t cause superheating.','Air-bound = air displaced steam. A closed trap causes condensate backup, not air accumulation.']},
+{n:72,p:2,t:'mc',q:'When steam traps fail, economic losses may occur because of;',o:['the fuel wasted on the lost steam','treatment and heating of make-up water to replace the lost steam','cost of damaged product','all of the above are correct','none of the above are correct'],a:3,ex:['True but incomplete.','True but incomplete.','True but incomplete.','CORRECT — Failed traps (especially failed-open) waste energy, require additional treated make-up water, and can damage products through improper temperature control.','All three are valid economic losses.']},
+{n:73,p:2,t:'mc',q:'In freezing conditions, a thermo-drain may be used to help prevent freezing the condensate in the trap. The thermo-drain works by;',o:['opening if the condensate temperature reaches 165º F or lower','opening if the pressure in the trap falls below about 4 - 5 psig','a combination of pressure and temperature in the trap, modulating flow','none of the above are correct'],a:0,ex:['CORRECT — The thermo-drain has a thermostatic element set to open at ~165°F. When condensate cools toward this temperature (indicating freezing risk), it opens and drains before freezing can occur.','The thermo-drain responds to temperature, not pressure.','Primarily temperature-activated, not a combination.','Answer A is correct.']},
+{n:74,p:2,t:'mc',q:'The proper operation of the pump trap during the transfer cycle is;',o:['vent line is open; motive line is closed; condensate in is open; condensate out is closed','motive line is open; vent line is closed; condensate in is open; condensate out is closed','motive line is open; vent line is closed; condensate out is open; condensate in is closed','vent line is open; motive line is closed; condensate out is open; condensate in is closed'],a:2,ex:['This describes the FILL cycle, not transfer.','During transfer, condensate in must be CLOSED to prevent backflow.','CORRECT — Transfer cycle: motive pressure enters (open), vent closes to pressurize, condensate inlet closes (prevent backflow), condensate outlet opens for discharge.','Can\'t discharge with vent open and no motive pressure — no driving force.']},
+{n:75,p:2,t:'mc',q:'The pump motor on a condensate receiver pump is usually started by;',o:['a low water level in the boiler','a high water level in the boiler','a high water level in the receiver','a time clock'],a:2,ex:['This would start a boiler FEED pump, not a receiver pump.','Boiler water level doesn\'t control the receiver pump.','CORRECT — A float switch in the receiver starts the pump when condensate fills to the high-level setpoint, transferring collected condensate toward the boiler/feedwater system.','Time-based operation wouldn\'t match variable condensate return rates.']},
+{n:76,p:2,t:'mc',q:'A one-pipe parallel flow steam piping system requires the system main to be pitched ____________.',o:['down in the direction of flow','up in the direction of flow','level','does not matter'],a:0,ex:['CORRECT — Steam and condensate travel the same direction. Downward pitch helps gravity move condensate with the steam toward drip points and return. Prevents pooling and water hammer.','Would cause condensate to flow against steam = water hammer and flooding.','Level piping causes condensate to pool in low spots.','Pipe pitch is critical in steam systems.']},
+{n:77,p:2,t:'mc',q:'Why is the condensate from a process application usually dumped or wasted, and not returned to the boiler?',o:['the condensate may be contaminated','the condensate may be too hard to collect','there is too much ΔP to overcome','both a and b are correct','both b and c are correct','all of the above are correct'],a:3,ex:['True but incomplete — process chemicals can contaminate condensate.','True but incomplete — scattered equipment makes collection impractical.','Not typically the primary reason.','CORRECT — Contamination (process materials mixing with condensate) and collection difficulty (impractical piping from scattered equipment) are the two main reasons.','ΔP is not the primary concern.','ΔP is not typically the main issue.']},
+{n:78,p:2,t:'mc',q:'In a properly working mechanical condensate return steam system, how is the condensate returned into the boiler?',o:['by gravity (slight pitch)','by creating static head to overcome the boiler pressure','by a pump','none of the above are correct'],a:2,ex:['Gravity alone usually can\'t overcome boiler pressure.','Static head helps in gravity systems, but a \'mechanical\' system specifically uses a pump.','CORRECT — A mechanical condensate return uses a pump (electric or pressure-powered) to push condensate back against boiler operating pressure and elevation differences.','Answer C is correct.']},
+{n:79,p:2,t:'mc',q:'What is the difference between a condensate receiver pump and a boiler feed pump?',o:['a high level in the boiler turns on the boiler feed pump and a low level in the condensate receiver turns on the condensate receiver pump','a low level in the boiler turns on the boiler feed pump and a high level in the condensate receiver turns on the condensate receiver pump','a high level in the boiler turns on the boiler feed pump and a high level in the condensate receiver turns on the condensate receiver pump','a low level in the boiler turns on the boiler feed pump and a low level in the condensate receiver turns on the condensate receiver pump'],a:1,ex:['Boiler feed pump starts on LOW level, not high.','CORRECT — Boiler feed pump: activated by LOW boiler water level (adds water when level drops). Receiver pump: activated by HIGH receiver level (transfers collected condensate when receiver fills).','Boiler feed pump responds to LOW level, not high.','Receiver pump responds to HIGH level, not low.']},
+{n:80,p:2,t:'tf',q:'A low-water cutoff is installed in the condensate receiver in order to protect the boiler feed pump.',o:['True','False'],a:0,ex:['CORRECT — The LWCO protects the pump from running dry, which causes overheating, cavitation, and failure. Shuts the pump off before water drops to damaging levels.','The LWCO is specifically to protect the pump from running without water.']},
+{n:81,p:2,t:'tf',q:'The water level in a boiler feed pump receiver is mechanically maintained.',o:['True','False'],a:0,ex:['CORRECT — Float switches, pump controls, and make-up water valves work together to maintain the level within proper operating range automatically.','Mechanical controls (floats, valves) maintain the receiver level.']},
+{n:82,p:2,t:'tf',q:'Reducing the pipe size in a horizontal steam main requires the use of a concentric reducer.',o:['True','False'],a:1,ex:['An ECCENTRIC reducer (flat on bottom) is required, not concentric.','CORRECT — Concentric reducers create a bottom pocket where condensate collects, causing water hammer. An eccentric reducer (flat bottom) maintains smooth condensate flow.']},
+{n:83,p:2,t:'tf',q:'Guides are not needed if a slip-type expansion joint is installed in the steam piping.',o:['True','False'],a:1,ex:['Guides are ESSENTIAL with slip-type expansion joints.','CORRECT — Guides keep piping aligned so the expansion joint moves in a straight line. Without guides, the pipe could shift laterally or twist, causing the joint to bind, leak, or fail.']},
+{n:84,p:2,t:'tf',q:'Steam piping should be attached to supports (hangers, brackets, etc.) in such a way that it cannot move.',o:['True','False'],a:1,ex:['Piping must be free to move for thermal expansion.','CORRECT — Steam piping undergoes significant thermal expansion/contraction. Rigid attachments create enormous stress. Supports must allow movement in the direction of expansion while guiding it.']},
+{n:85,p:2,t:'tf',q:'Un-reamed system piping may cause water hammer.',o:['True','False'],a:0,ex:['CORRECT — Cut pipe burrs create restrictions that trap condensate and disrupt flow. Accumulated condensate behind these restrictions can be propelled by steam, causing water hammer.','Reaming cut pipe ends is a basic but important installation practice.']},
+{n:86,p:2,t:'tf',q:'One reason a saddle is used is to protect pipe insulation against damage caused by pipe movement.',o:['True','False'],a:0,ex:['CORRECT — A pipe saddle distributes load and slides on the support as the pipe moves, protecting insulation from being crushed, torn, or worn through at support points.','Saddles protect insulation at pipe support contact points.']},
+{n:87,p:2,t:'tf',q:'Swing joints should always be installed in a steam heating system in order to accommodate expansion of the piping.',o:['True','False'],a:1,ex:['Swing joints are ONE option, not always required.','CORRECT — Multiple methods exist: expansion loops, bellows/slip joints, piping direction changes, and natural flexibility. Swing joints are used in specific situations, not universally required.']},
+{n:88,p:2,t:'tf',q:'Branch connections should always be connected to the bottom of a steam supply main.',o:['True','False'],a:1,ex:['Branches should come from the TOP, never the bottom.','CORRECT — The bottom of a steam main collects condensate and debris. Tapping from the bottom feeds condensate (not dry steam) into the branch, causing water hammer and poor performance. Always tap from the top or side.']},
+{n:89,p:2,t:'tf',q:'The supply header connections to a heating element may be made at the bottom, top, or at the end of the inlet header.',o:['True','False'],a:0,ex:['CORRECT — Unlike the steam main (top only), heating element connections are flexible. Steam supply can enter at top, bottom, or end depending on the manufacturer\'s coil design and installation requirements.','Heating element connection points depend on the specific coil design.']},
+{n:90,p:2,t:'mc',q:'If a pump trap fills rapidly but the discharge cycle is slow, a potential problem could be _________________.',o:['too low of steam pressure for the motive force','too high of steam pressure for the motive force','the impeller may be plugged','the strainer may be plugged','the pump trap is too small','the pump trap is too big'],a:0,ex:['CORRECT — Low motive pressure can\'t overcome back pressure and elevation head. Fill works fine (gravity), but discharge is sluggish without enough motive force.','High motive pressure would cause fast/violent discharge, not slow.','Pump traps don\'t have impellers — they\'re not centrifugal pumps.','A plugged strainer would slow the FILL cycle, not discharge.','A small pump trap fills and discharges quickly (cycles more often).','An oversized trap wouldn\'t specifically cause slow discharge.']},
+{n:91,p:2,t:'mc',q:'What pitch is required for the condensate return piping?',o:['2" per 10 feet','1" per 10 feet','1/2" per 20 feet','1" per 20 feet'],a:3,ex:['Too steep for condensate return piping.','Acceptable for steam supply mains, but returns use a gentler slope.','Equals 1/4" per 10 feet — too little pitch.','CORRECT — Minimum 1 inch per 20 feet (= 1/2 inch per 10 feet) in the direction of flow. Provides adequate gravity drainage while being practical for long runs.']},
+{n:92,p:2,t:'mc',q:'When is it recommended that the Hartford Loop be used in connection with a boiler feed pump on a low pressure boiler?',o:['always','never','only if a check valve is used after the pump','if a check valve is used it doesn\'t matter'],a:0,ex:['CORRECT — The Hartford loop should always be used on low-pressure steam boilers regardless of pump or check valve configuration. It provides essential protection against catastrophic water loss from return piping failures.','The Hartford loop is always recommended.','Needed regardless of check valve presence.','The Hartford loop matters in all configurations.']},
+{n:93,p:2,t:'mc',q:'Mechanical expansion joints may be preferred over pipe expansion loops because;',o:['there is less chance of a leak','they are much cheaper','they take up less space','none of the above are correct'],a:2,ex:['Mechanical joints actually have more potential leak points than welded loops.','Mechanical expansion joints can be expensive, especially for larger pipes.','CORRECT — Mechanical expansion joints install in-line, occupying minimal space vs. expansion loops which extend perpendicular to the main. Compact size is a major advantage in tight spaces.','Answer C is correct.']},
+{n:94,p:2,t:'mc',q:'When steam piping is supported, it is important to make sure there are enough hangers and that they are in good shape. This will help prevent _______________, which is very damaging to the piping system and very dangerous.',o:['thermal shock','hydraulic shock','differential shock','electric shock'],a:2,ex:['Thermal shock is caused by steam-condensate interaction, not support issues.','Hydraulic shock is caused by rapid valve closure, not inadequate supports.','CORRECT — Inadequate/failed hangers allow pipe to sag, creating low spots where condensate pools. Fast-moving steam picks up this pooled condensate creating waves that slam into fittings = differential shock.','Not related to steam piping supports.']},
+{n:95,p:2,t:'mc',q:'A spring can hanger is;',o:['an engineered spring loaded device used on pipe supports','set and stressed at the factory','a critical pipe support system for high pressure steam systems','all of the above are correct','none of the above are correct'],a:3,ex:['True but incomplete.','True but incomplete.','True but incomplete.','CORRECT — A spring can hanger is all three: engineered/spring-loaded for supporting pipe while allowing vertical movement; factory pre-set to calculated settings; and critical for high-pressure systems with significant thermal movement.','All three statements are correct.']},
+{n:96,p:2,t:'mc',q:'A high pressure steam main installed in the fall (40ºF) transporting 150 psig steam with 100º of superheat, will expand by how much? The pipe run is 650 feet.',o:['14\' 2-3/8"','1\' 10-1/4"','18\' 6-5/8"','1\' 5-1/16"'],a:1,ex:['Significantly overestimates the expansion.','CORRECT — At 150 psig, saturation ≈ 366°F + 100°F superheat = 466°F. ΔT from installation = 466-40 = 426°F. Using steel expansion coefficient: 650ft × 12 × 426 × 6.33×10⁻⁶ ≈ 21.1 inches ≈ 1\' 9", close to 1\' 10-1/4".','Vastly overestimated.','Underestimates the expansion for this temperature difference and length.']},
+{n:97,p:2,t:'mc',q:'A roller hanger is designed to;',o:['allow the pipe to expand and contract with temperature without causing binding','be installed right on the pipe insulation to keep it in good shape','to allow the clevis hanger to pivot, changing it\'s pitch automatically','all of the above are correct','none of the above are correct'],a:0,ex:['CORRECT — Roller hangers support the pipe on rollers that allow horizontal movement during thermal expansion/contraction. Low-friction support prevents binding and stress.','Roller hangers contact the pipe or pipe saddle, not insulation directly.','Describes a different hanger function; clevis hangers pivot on their rod.','Only A is correct.','Answer A is correct.']},
+{n:98,p:2,t:'mc',q:'A packaged boiler comes with;',o:['everything needed to operated safely and efficiently','everything except the gas train','everything except the burner equipment','none of the above are correct'],a:0,ex:['CORRECT — A packaged boiler is factory-assembled with pressure vessel, burner, controls, safety devices, insulation, and all operating components. Connect utilities on site and start up with minimal field assembly.','The gas train is typically included in a packaged boiler.','The burner is a core component of a packaged boiler.','Answer A is correct.']},
+{n:99,p:2,t:'mc',q:'A dry-back boiler uses the following in their design;',o:['a submerged chamber to get more heat transfer','at least 5 passes for higher efficiency','refractory at the back of the boiler to redirect the flue gases','none of the above are correct'],a:2,ex:['This describes a WET-back design.','Most fire-tube boilers have 2-4 passes.','CORRECT — In a dry-back boiler, the rear reversal chamber is lined with refractory (not water-cooled). The refractory redirects combustion gases from the furnace tube into second-pass tubes. \'Dry\' = this area isn\'t water-cooled.','Answer C is correct.']},
+{n:100,p:4,t:'fill',q:'Four types of fuels that may be used for combustion in a boiler are ___, ___, ___, and ___.',o:[],a:-1,ex:['Natural gas — most common for modern boilers, clean-burning and efficient.','Fuel oil (#2, #4, or #6) — used as primary or backup fuel.','Coal — historically important, still used in some industrial/utility applications.','Wood/biomass — used in some industrial and district heating. Other answers: propane, waste fuels.'],h:'Natural gas, fuel oil, coal, and wood (or electricity)'},
+{n:101,p:2,t:'mc',q:'A wet-back boiler uses the following in their design;',o:['refractory at the back of the boiler to redirect the flue gases','a submerged chamber to get more heat transfer','at least 5 passes for higher efficiency','none of the above are correct'],a:1,ex:['This describes a DRY-back design.','CORRECT — A wet-back has a water-cooled reversal chamber submerged in boiler water. Heat is absorbed even during gas reversal, increasing efficiency and reducing refractory maintenance vs. dry-back.','Pass count isn\'t the defining feature of wet-back design.','Answer B is correct.']},
+{n:102,p:2,t:'mc',q:'A water-tube boiler has the following;',o:['combustion gases in the tubes and water surrounding the tubes','combustion gases surrounding the tubes and water in the tubes','combustion gases injected right into the water to boil it','none of the above'],a:1,ex:['This describes a FIRE-TUBE boiler (opposite).','CORRECT — Water-tube: water inside tubes, hot gases outside. Opposite of fire-tube. Handles higher pressures because small-diameter tubes withstand pressure better than a large shell.','Not how any standard boiler operates.','Answer B is correct.']},
+{n:103,p:2,t:'mc',q:'A low-water cutoff is designed to;',o:['add water to the boiler when the water level gets too low','shut the boiler fuel off when the water gets too low','shut the boiler fuel off and add water when the water gets too low','all of the above are correct','none of the above are correct'],a:1,ex:['This describes a water FEEDER, not a LWCO.','CORRECT — The LWCO\'s sole function is SAFETY: shut off fuel when water drops to an unsafe level. It does NOT add water. A separate water feeder handles that.','This describes a COMBINATION water feeder/cutoff, not a standalone LWCO.','Only B is correct for a standalone LWCO.','Answer B is correct.']},
+{n:104,p:2,t:'mc',q:'Which group states in their code for low-pressure heating boilers that each boiler shall be equipped with a LWCO?',o:['ANSI','ASME','ACME','ARI'],a:1,ex:['ANSI sets general standards but doesn\'t write the boiler code.','CORRECT — ASME (American Society of Mechanical Engineers) Boiler and Pressure Vessel Code, Section IV, requires LWCOs on steam heating boilers.','ACME is not a standards-setting organization for boilers.','ARI (now AHRI) deals with air conditioning/refrigeration, not boiler codes.']},
+{n:105,p:2,t:'mc',q:'What device may be added to a condensate receiver tank to make sure that the water level is adequate for the boiler feed-water pump?',o:['low water cutoff','mechanical water feeder','pop safety valve','all of the above are correct','none of the above are correct'],a:1,ex:['A LWCO protects the pump by shutting it off, but doesn\'t ADD water.','CORRECT — A mechanical water feeder (make-up valve) automatically adds fresh city water when condensate level drops. Compensates for unreturned condensate, ensuring adequate water for the feed pump.','A pop safety protects against overpressure, not low water.','Only B directly addresses maintaining adequate water level.','Answer B is correct.']},
+{n:106,p:2,t:'tf',q:'A steam flow line may never be taken out of the steam equalizing pipe of a water column.',o:['True','False'],a:0,ex:['CORRECT — Tapping a steam line from the equalizer would create a pressure differential disrupting accurate water level readings in the gauge glass. The equalizer must be undisturbed.','The equalizer must provide undisturbed pressure for accurate level indication.']},
+{n:107,p:2,t:'tf',q:'It is essential to install a pressure reducing valve on the inlet cold water supply to a boiler water feeder.',o:['True','False'],a:1,ex:['A PRV on the water supply isn\'t essential in all installations.','CORRECT — Not universally required. The water feeder itself controls flow. What IS essential is that supply pressure exceeds boiler operating pressure so water can flow in when the feeder opens.']},
+{n:108,p:2,t:'tf',q:'On a boiler supplying process steam, where 100% of the condensate is not returned to the boiler, it is recommended that a separate water feeder and low water cutoff be used.',o:['True','False'],a:0,ex:['CORRECT — High make-up situations need separate devices: an independent water feeder for continuous make-up and a separate LWCO for safety, rather than a combination unit that may not provide adequate protection.','Separate devices provide better protection in high make-up applications.']},
+{n:109,p:2,t:'fill',q:'The purpose of a water feeder cutoff combination controller used on closed heating systems is to maintain a ___ level in the boiler, and not to keep the boiler filled to its operating level.',o:[],a:-1,ex:['On a closed system, the combination unit maintains a MINIMUM safe water level. Returning condensate should maintain normal operating level. If the feeder is constantly adding water, it indicates a system problem (leak, open vent) that needs investigation.'],h:'minimum'},
+{n:110,p:2,t:'short',q:'The lowest safe water line in a boiler should not be lower than the ___________________ of the gauge glass.',o:[],a:-1,ex:['The lowest safe water level must be VISIBLE in the gauge glass. If water drops below the bottom, the operator can\'t determine the actual level — a dangerous situation requiring immediate shutdown.'],h:'lowest visible part (bottom)'},
+{n:111,p:2,t:'short',q:'If a heating system cannot be well balanced, it\'s possible for ____________ boiler water level conditions to occur.',o:[],a:-1,ex:['An unbalanced system creates FALSE water level readings. Uneven condensate return causes fluctuating levels. The gauge glass may show adequate level when it\'s actually dangerously low, or vice versa.'],h:'false (or low)'},
+{n:112,p:2,t:'mc',q:'What may happen if the boiler water level drops below the minimum safe water level?',o:['the low water condition won\'t allow the boiler feed water pump to operate','the low water condition will open the relief valve due to the lack of a water seal','there isn\'t enough water to absorb the heat which could cause an explosion','all of the above are correct'],a:2,ex:['The LWCO would shut the burner, but this isn\'t what \'happens\' if water actually drops too low.','The relief valve responds to pressure, not water level.','CORRECT — Exposed heating surfaces overheat without water to absorb heat. Metal weakens and can fail. If water then contacts the overheated metal, it instantly flashes to steam causing a catastrophic explosion.','Only C describes the actual dangerous consequence.']},
+{n:113,p:2,t:'mc',q:'How does a combination boiler water feeder and cutoff provide both mechanical and electrical protection?',o:['as the water drops, the water feeder turns the pump on, and if it can\'t keep up it shuts the boiler\'s burner off','as the water drops, the water feeder allows water into the boiler by a float, and if it can\'t keep up it shuts the boiler\'s fuel off','if the water level drops, it shuts off the fuel and if it continues to drop it turns the pump on','if the water level drops, it shuts the boiler\'s fuel off and if it continues to drop it puts water into the boiler by the float'],a:1,ex:['The water feeder uses a float and mechanical valve, not a pump.','CORRECT — Two stages: (1) MECHANICAL: float opens water valve to admit make-up water. (2) ELECTRICAL: if level still drops, a switch trips and shuts off fuel. Water addition first, fuel shutoff as backup.','Sequence reversed — water addition happens first, then fuel shutoff.','Sequence reversed — float/water addition is the FIRST response.']},
+{n:114,p:2,t:'mc',q:'If multiple boilers are tied together with common piping, you still need to control each boiler separately because;',o:['code requires that all boilers have their own separate feed water no matter whether they are tied together or not','it is possible to have an uneven pressure differential in the boilers even though they are the same size','if water is fed into one boiler, it may not necessarily feed water to each boiler no matter if they are "equalized" or not','all of the above are correct','none of the above are correct'],a:3,ex:['True but incomplete.','True but incomplete.','True but incomplete.','CORRECT — All valid: code requires independent controls; pressure differences cause unequal distribution; equalized piping doesn\'t guarantee equal flow. Each boiler needs its own LWCO, feeder, and controls.','All three reasons are valid.']},
+{n:115,p:2,t:'mc',q:'What organization sets the boiler code?',o:['ASME','ANSI','NITC','ASHRAE'],a:0,ex:['CORRECT — ASME publishes the Boiler and Pressure Vessel Code (BPVC), the primary code governing boiler design, construction, installation, and operation in the US.','ANSI accredits standards organizations but doesn\'t write the boiler code.','Not a recognized boiler code organization.','ASHRAE sets HVAC design standards, not the boiler code.']},
+{n:116,p:2,t:'mc',q:'What is an economizer?',o:['heat exchanger that preheats the boiler\'s combustion air','heat exchanger that preheats the boiler\'s feed-water','heat exchanger that adds heat to the boiler\'s leaving steam','none of the above are correct'],a:1,ex:['This describes an air heater/air preheater.','CORRECT — An economizer recovers waste heat from flue gases to preheat incoming feedwater. Improves efficiency by reducing fuel needed to heat feedwater to operating temperature.','This describes a superheater.','Answer B is correct.']},
+{n:117,p:2,t:'mc',q:'What is an air heater used for?',o:['heat exchanger that preheats the boiler\'s feed-water','heat exchanger that reheats the boiler\'s condensate return to eliminate the air','heat exchanger that preheats the boiler\'s combustion air','none of the above are correct'],a:2,ex:['This describes an economizer.','This describes a deaerator function.','CORRECT — An air heater recovers heat from flue gases to preheat incoming combustion air, improving burner efficiency and reducing fuel consumption.','Answer C is correct.']},
+{n:118,p:3,t:'fill',q:'Three different tube designs used in packaged water-tube boilers are ___, ___, and ___.',o:[],a:-1,ex:['A-type: Two lower drums, one upper, tubes form an \'A\' shape.','D-type: Drums on one side, furnace on the other, tubes form a \'D\'.','O-type: Tubes form an \'O\' enclosing the furnace in a circular pattern.'],h:'A-type, D-type, and O-type'},
+{n:119,p:2,t:'fill',q:'Two different types of super-heaters are the ___ type and the ___ type.',o:[],a:-1,ex:['Radiant: Located in the furnace, absorbs heat through radiation. Output increases at LOWER loads.','Convection: Located in the convection pass, absorbs heat from flue gas flow. Output increases at HIGHER loads.'],h:'radiant and convection'},
+{n:120,p:3,t:'fill',q:'Three different ways that a boiler can be rated are by ___, ___, and ___.',o:[],a:-1,ex:['Boiler horsepower (BHP): 1 BHP = 34.5 lbs steam/hr at 212°F ≈ 33,475 BTU/hr.','BTU per hour output: Actual heat energy in MBH or MMBH.','Square feet of heating surface: Total area exposed to combustion gases.'],h:'horsepower, BTU output, and square feet of heating surface'},
+{n:121,p:2,t:'mc',q:'What does the acronym MAWP stand for?',o:['minimum allowable working pressue','maximum allowable working pressure','most acceptable working parameters','maximum allowable warming potential'],a:1,ex:['Maximum, not minimum.','CORRECT — MAWP = Maximum Allowable Working Pressure. Stamped on the nameplate. Determines safety valve settings and operating control limits. Operating above MAWP is a code violation and safety hazard.','Not the correct meaning.','Not a standard engineering term.']},
+{n:122,p:2,t:'mc',q:'Where does the discharge of a high pressure boiler\'s pop safety get piped to?',o:['approximately 6" off the boiler room floor','into the DA tank','safely outside','none of the above are correct'],a:2,ex:['This applies to LOW-pressure boiler safety valves discharged inside the boiler room.','Safety valve discharge cannot be piped into any enclosed vessel.','CORRECT — High-pressure safety valve discharge must be piped safely outdoors. The tremendous volume and force would be dangerous inside. Discharge pipe must be adequately sized and supported.','Answer C is correct.']},
+{n:123,p:2,t:'mc',q:'What is the pipe size range for the bottom blow-down piping of a power boiler have to be?',o:['1/2" to 2"','1" to 2"','3/4" to 2-1/2"','1" to 2-1/2"'],a:3,ex:['1/2" is too small for power boiler blowdown.','Upper range extends to 2-1/2", not just 2".','3/4" is below the code minimum.','CORRECT — Per ASME code: minimum 1" (adequate flow) to maximum 2-1/2" (prevents too-rapid water loss).']},
+{n:124,p:2,t:'mc',q:'What is an OS & Y valve?',o:['outside screw and yoke','open steam and yoke','outside steam and yoke','optional screw and yoke'],a:0,ex:['CORRECT — Outside Screw and Yoke: the stem threads are external. Extended stem = open, retracted = closed. Provides clear visual indication of valve position. Required on boiler steam stop valves.','Not the correct meaning.','Not the correct meaning.','Not the correct meaning.']},
+{n:125,p:2,t:'mc',q:'What is the code for steam outlet piping for multiple high pressure boilers tied into the same header?',o:['must have 2 valves, one slow opening and one quick opening','must have 2 valves, first one a non-return valve and the second a gate valve','must have 2 valves, first one a gate valve and the second a stop/check','none of the above are correct'],a:1,ex:['Quick-opening valves are not required.','CORRECT — Each outlet needs: (1) non-return valve (stop-check) closest to boiler prevents backflow; (2) OS&Y gate valve between non-return and header for manual isolation. Prevents shutdown boiler from being pressurized by running boilers.','Order reversed — non-return goes FIRST (closest to boiler).','Answer B is correct.']},
+{n:126,p:2,t:'mc',q:'A blow-down tank is used for;',o:['allowing high pressure condensate to flash off and re-use the lower pressure steam somewhere else and returning the remaining condensate back to the boiler','catching hot boiler water, allowing it to flash off wasting that steam and cooling the remaining water before dumping it down the drain','both are correct','neither are correct'],a:1,ex:['This describes a FLASH TANK — a different device designed to recover energy.','CORRECT — A blowdown tank receives hot, high-pressure blowdown water. Pressure drops, some water flashes to steam (vented), remaining water is cooled (often with cold water mixing) to safe temperature before draining. Primary purpose: safety.','Only B describes a blowdown tank.','Answer B is correct.']},
+{n:127,p:2,t:'mc',q:'An open feed-water heater;',o:['uses a heat exchanger to transfer the heat from the steam to the boiler feedwater','injects steam right into the boiler feed water to pre-heat it','both are correct','neither is correct'],a:1,ex:['This describes a CLOSED feedwater heater.','CORRECT — In an open feedwater heater (e.g., deaerator), steam contacts feedwater directly — no physical barrier. Steam condenses, heating the water while driving off dissolved gases (O₂, CO₂). Called \'open\' because fluids mix.','Only B is correct.','Answer B is correct.']},
+{n:128,p:2,t:'mc',q:'A closed feed-water heater;',o:['uses a heat exchanger to transfer the heat from the steam to the boiler feed-water','injects steam right into the boiler feed-water to pre-heat it','both are correct','neither is correct'],a:0,ex:['CORRECT — A closed feedwater heater uses tubes/surfaces to separate steam from feedwater. Heat transfers through walls. Fluids never mix. Can operate at different pressures.','This describes an OPEN feedwater heater.','Only A is correct.','Answer A is correct.']},
+{n:129,p:2,t:'tf',q:'An instantaneous type heat exchanger used for heating water requires the use of a storage tank for that water.',o:['True','False'],a:1,ex:['Instantaneous (tankless) heat exchangers heat water on-demand without storage.','CORRECT — Instantaneous heaters provide hot water as it flows through — no storage tank needed. Eliminates standby losses. A tank MAY be added for high-demand capacity but is not required.']},
+{n:130,p:2,t:'mc',q:'When two or more boilers are fed from a common source, the boiler water make-up line needs to have;',o:['shut-off valve','check valve','regulating valve','all of the above are correct'],a:3,ex:['True but incomplete — needed for maintenance isolation.','True but incomplete — prevents backflow into domestic water supply.','True but incomplete — controls flow rate and pressure.','CORRECT — All three are necessary: shut-off for isolation, check valve for backflow prevention, regulating valve for flow/pressure control.']},
+{n:131,p:2,t:'mc',q:'A direct acting PRV;',o:['needs a sensing line installed, is the largest, most expensive and most accurate','uses small openings in the valve body to make it work, has good accuracy, moderate expense, and moderate size','is self-contained, smallest, cheapest, and least accurate','none of the above are correct'],a:2,ex:['Describes an EXTERNALLY piloted PRV.','Describes an INTERNALLY piloted PRV.','CORRECT — Direct-acting uses a spring-loaded diaphragm responding directly to downstream pressure. Self-contained (no external lines), simplest, smallest, cheapest. Least accurate due to spring \'droop\' with varying loads.','Answer C is correct.']},
+{n:132,p:2,t:'mc',q:'An externally piloted PRV;',o:['needs a sensing line installed, is the largest, most expensive and most accurate','uses small openings in the valve body to make it work, has good accuracy, moderate expense, and moderate size','is self-contained, smallest, cheapest, and least accurate','none of the above are correct'],a:0,ex:['CORRECT — External pilot valve connected by sensing line to downstream piping. Senses pressure at the ideal location. Largest, most expensive, but most precise pressure regulation.','Describes internally piloted.','Describes direct-acting.','Answer A is correct.']},
+{n:133,p:2,t:'mc',q:'An internally piloted PRV;',o:['needs a sensing line installed, is the largest, most expensive, and most accurate','uses small openings in the valve body to make it work, has good accuracy, moderate expense, and moderate size','is self-contained, smallest, cheapest, and least accurate','none of the above are correct'],a:1,ex:['Describes externally piloted.','CORRECT — Small pilot built into the valve body with internal passages. Better accuracy than direct-acting, more compact than externally piloted. The middle-ground option.','Describes direct-acting.','Answer B is correct.']},
+{n:134,p:2,t:'mc',q:'It is critical to make sure the PRV does not get condensate in the valve because;',o:['the condensate will lock the valve closed hydraulically','the condensate will flash off, crossing the seat and causing it to wire-draw','the condensate will wash off the lubricant from the surfaces','none of the above are correct'],a:1,ex:['Hydraulic lock is possible but not the primary concern with PRVs.','CORRECT — Hot condensate flashes to steam at the pressure drop across the valve seat. This high-velocity mixture erodes seating surfaces (wire-drawing), causing permanent damage and leaking. Always install a drip leg/separator upstream.','PRV seats are typically metal-to-metal, not lubrication-dependent.','Answer B is correct.']},
+{n:135,p:2,t:'mc',q:'Storing water from a converter is not efficient because;',o:['it will lose temperature if it\'s not used promptly','it will overheat and boil when the steam is turned off','both are correct','neither is correct'],a:2,ex:['True but incomplete — standby heat loss through tank walls.','True but incomplete — residual heat can cause temperature control issues.','CORRECT — Both problems reduce efficiency: standby losses from stored hot water, and thermal dynamics causing overheating when steam cycles off. Instantaneous heating is generally more efficient for converters.','Both are correct.']},
+{n:136,p:2,t:'mc',q:'The two different types of heat exchangers are the feedback and feed-forward types. Which statement is correct? (Δ stands for difference or change in)',o:['feedback works on ΔP of the water and feed-forward works on ΔT','they both work on the ΔP of the water','they both work on ΔT of the water','feedback works on ΔT of the water and feed-forward works on ΔP'],a:3,ex:['Relationships are reversed.','They use different sensing methods.','They use different sensing methods.','CORRECT — Feedback measures leaving water TEMPERATURE (ΔT) and adjusts after the change. Feed-forward measures incoming flow/PRESSURE (ΔP) and anticipates needed steam — faster response to load changes.']},
+{n:137,p:2,t:'mc',q:'The purpose of the condenser in a HP steam system is to;',o:['condense the unused steam so it can be returned to the boiler feed system','condense the feed-water for the boiler','condense the steam before it goes into the turbine','none of the above are correct'],a:0,ex:['CORRECT — The condenser receives turbine exhaust steam, condenses it back to water for return to the feedwater system. Also creates vacuum on turbine exhaust, improving efficiency.','Feedwater is already liquid.','Steam must be vapor to power the turbine.','Answer A is correct.']},
+{n:138,p:2,t:'mc',q:'The cooling towers for a HP steam system are used to;',o:['take heat away from the superheated steam to be used in the turbines','take heat away from the water being used in the condensers','to supply water to the re-heaters for the second stage of turbines','none of the above are correct'],a:1,ex:['Cooling towers don\'t interact with steam directly.','CORRECT — Cooling towers reject heat from condenser cooling water to the atmosphere through evaporation and convection. The cooled water returns to the condenser to repeat the cycle.','Cooling towers handle cooling water, not steam or feedwater.','Answer B is correct.']},
+{n:139,p:2,t:'mc',q:'To make sure the boilers start with good water to avoid corrosion, the following systems can be or are used;',o:['charcoal type filtering','water softeners','in-line type filters','all of the above are correct','none of the above are correct'],a:3,ex:['True but incomplete — removes chlorine and organics.','True but incomplete — removes hardness minerals (Ca, Mg) that cause scale.','True but incomplete — removes particulate matter.','CORRECT — Feedwater treatment is multi-faceted: charcoal filters, water softeners, and in-line filters all contribute to producing clean water that prevents corrosion, scale, and deposits.','All three are valid treatment methods.']},
+{n:140,p:4,t:'essay',q:'List at least 4 things that the DA tank is responsible for.',o:[],a:-1,ex:['1) REMOVES DISSOLVED OXYGEN from feedwater — primary cause of pitting corrosion. Heating to saturation drives O₂ out (Henry\'s Law).','2) REMOVES DISSOLVED CO₂ — CO₂ forms carbonic acid causing return line corrosion.','3) PREHEATS FEEDWATER to ~220-240°F — reduces thermal shock, improves efficiency, further reduces dissolved gases.','4) PROVIDES FEEDWATER STORAGE (surge capacity) — ensures adequate supply for the boiler feed pump during peak loads.','Additional: chemical treatment injection point, blending condensate with make-up water.'],h:'Removes O₂, removes CO₂, preheats feedwater, provides storage'},
+{n:141,p:4,t:'num',q:'How many BTUs are given up when steam at 75 psia condenses to form 5 pounds of condensate, and cools to 240°F?',o:[],a:-1,ex:['From steam tables at 75 psia: tsat ≈ 307.6°F, hfg ≈ 895.6 BTU/lb, hf at 307.6°F ≈ 277.4 BTU/lb, hf at 240°F ≈ 208.5 BTU/lb.','Heat per pound = hfg + (hf@307.6 − hf@240) = 895.6 + 68.9 = 964.5 BTU/lb.','For 5 pounds: 964.5 × 5 ≈ 4,618 BTUs (values may vary slightly by steam table edition).'],h:'≈ 4,618 BTUs'},
+{n:142,p:2,t:'num',q:'What is the saturation temperature of steam at 50.3 psig?',o:[],a:-1,ex:['Convert: 50.3 psig + 14.7 = 65 psia.','From steam tables at 65 psia → saturation temperature ≈ 298°F.','Key skill: converting gauge to absolute pressure, then reading the steam table.'],h:'≈ 298°F'},
+{n:143,p:4,t:'num',q:'How many BTUs does it take per pound to form steam at 125.3 psig, when the water starts at 50°F?',o:[],a:-1,ex:['Convert: 125.3 psig + 14.7 = 140 psia. From steam tables at 140 psia: hf ≈ 324.8 BTU/lb, hfg ≈ 863 BTU/lb, hg ≈ 1,187.8 BTU/lb.','Energy in starting water at 50°F ≈ 50.1 BTU/lb (from subcooled water tables).','Total = hg − hf(50°F) ≈ 1,187.8 − 50.1 ≈ 1,137 BTU/lb. Includes all sensible heat (50°F to saturation) plus all latent heat.'],h:'≈ 1,137 BTUs per pound'}];
+
+const L='ABCDEFGHIJ',TL={mc:'Multiple Choice',tf:'True / False',fill:'Fill in the Blank',short:'Short Answer',essay:'Essay',num:'Numerical'};
+const TP=Q.reduce((s,q)=>s+q.p,0);
+let S={scr:'start',mode:'practice',i:0,ans:{},txt:{},chk:{},sg:false,graded:false,flt:'all',shuf:null};
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function qs(){return S.shuf||Q;}
+
+// Calculate running score
+function calcScore(){
+const all=qs();
+let cor=0,wrg=0,pts=0,maxPts=0,checked=0;
+all.forEach(q=>{
+if(!S.chk[q.n]) return;
+if(q.a===-1) return; // skip non-gradable
+checked++;
+maxPts+=q.p;
+if(S.ans[q.n]===q.a){cor++;pts+=q.p;}
+else if(S.ans[q.n]!==undefined){wrg++;}
+});
+const gradable=all.filter(q=>q.a!==-1).length;
+const totalGradablePts=all.filter(q=>q.a!==-1).reduce((s,q)=>s+q.p,0);
+const pct=maxPts>0?Math.round((pts/maxPts)*100):0;
+return {cor,wrg,pts,maxPts,checked,pct,gradable,totalGradablePts};
+}
+
+function scoreBarHTML(){
+const sc=calcScore();
+const isExam=S.mode==='exam'&&!S.graded;
+const noData=sc.checked===0;
+const pctColor=sc.pct>=70?'var(--ok)':sc.pct>=50?'var(--warn)':'var(--no)';
+const barColor=sc.pct>=70?'var(--ok)':sc.pct>=50?'var(--warn)':'var(--no)';
+
+return `<div class="score-bar${isExam?' exam-mode':''}${noData?' no-data':''}">
+<div class="sc-section">
+<div class="sc-val" style="color:var(--ok)">${sc.cor}</div>
+<div class="sc-lbl">Correct</div>
+</div>
+<div class="sc-section">
+<div class="sc-val" style="color:var(--no)">${sc.wrg}</div>
+<div class="sc-lbl">Wrong</div>
+</div>
+<div class="sc-section">
+<div class="sc-val" style="color:var(--accent)">${sc.pts}<span style="font-size:.65em;color:var(--text2)">/${sc.checked>0?sc.maxPts:sc.totalGradablePts}</span></div>
+<div class="sc-lbl">Points</div>
+</div>
+<div class="sc-pct-wrap">
+<div class="sc-pct-bar"><div class="sc-pct-fill" style="width:${noData?0:sc.pct}%;background:${barColor}"></div></div>
+<div class="sc-pct-num" style="color:${noData?'var(--text2)':pctColor}">${noData?'—':sc.pct+'%'}</div>
+</div>
+</div>`;
+}
+
+function render(){
+const el=document.getElementById('app');
+if(S.scr==='start')return rStart(el);
+if(S.scr==='quiz')return rQuiz(el);
+if(S.scr==='results')return rResults(el);
+}
+
+function rStart(el){
+el.innerHTML=`<div class="start">
+<h1>⚙️ Steam Final Exam</h1>
+<p class="sub">Interactive Study Tool — 143 Questions with Detailed Explanations</p>
+<div class="stats">
+<div class="sb"><div class="v">143</div><div class="l">Questions</div></div>
+<div class="sb"><div class="v">${TP}</div><div class="l">Total Points</div></div>
+<div class="sb"><div class="v">505</div><div class="l">Explanations</div></div>
+</div>
+<div class="modes">
+<div class="mb ${S.mode==='practice'?'on':''}" onclick="setM('practice')"><h3>✅ Practice</h3><p>Check answers as you go with full explanations for every choice.</p></div>
+<div class="mb ${S.mode==='exam'?'on':''}" onclick="setM('exam')"><h3>📝 Exam</h3><p>No feedback until submit. Simulates real test conditions.</p></div>
+<div class="mb ${S.mode==='shuffle'?'on':''}" onclick="setM('shuffle')"><h3>🔀 Shuffle</h3><p>Randomized order with instant explanations. Great for review.</p></div>
+</div>
+<button class="go" onclick="startQ()">Start Exam</button>
+<p class="disclaimer">Answer key based on engineering principles. Verify with your course materials.</p>
+</div>`;}
+
+function rQuiz(el){
+const all=qs(),q=all[S.i],done=S.ans[q.n]!==undefined,checked=S.chk[q.n],isT=q.o.length===0;
+const prog=Object.keys(S.ans).length+Object.keys(S.txt).filter(k=>S.txt[k]).length;
+let grid='';
+if(S.sg){grid=`<div class="gp"><div class="gr">${all.map((qq,i)=>{
+let c='gd';if(i===S.i)c+=' cur';
+if(S.ans[qq.n]!==undefined||S.txt[qq.n])c+=' ans';
+if(S.chk[qq.n]&&S.ans[qq.n]===qq.a)c+=' gc';
+if(S.chk[qq.n]&&S.ans[qq.n]!==undefined&&S.ans[qq.n]!==qq.a)c+=' gw';
+return`<div class="${c}" onclick="go(${i})">${qq.n}</div>`;}).join('')}</div></div>`;}
+
+let opts='';
+if(!isT){
+opts=`<div class="opts">${q.o.map((o,i)=>{
+let c='op';
+if(S.ans[q.n]===i)c+=' sel';
+if(checked){c+=' dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a){c='op cor dis';}}
+let exH='';
+if(checked&&q.ex&&q.ex[i]){
+const isC=i===q.a;
+exH=`<div class="ex-box ${isC?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}" onclick="sel(${q.n},${i})"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('')}</div>`;
+}else{
+const v=S.txt[q.n]||'';const rows=q.t==='essay'?5:2;
+opts=`<textarea class="ti" rows="${rows}" placeholder="Type your answer..." oninput="setT(${q.n},this.value)"${checked?' disabled':''}>${esc(v)}</textarea>`;
+if(checked){
+if(q.h)opts+=`<div class="hint"><div class="hl">Suggested Answer</div><div class="ht">${esc(q.h)}</div></div>`;
+if(q.ex&&q.ex.length)opts+=`<div class="fill-exps">${q.ex.map(e=>`<div class="fill-exp">${esc(e)}</div>`).join('')}</div>`;
+}}
+
+const canChk=S.mode!=='exam'&&!checked&&(done||(isT&&S.txt[q.n]));
+el.innerHTML=`<div class="hdr">
+<span class="t">⚙️ Steam Final Exam</span>
+<span class="pi">${prog}/${all.length} answered</span>
+<button class="gt" onclick="tg()">${S.sg?'Hide':'Show'} Map</button>
+</div>
+${scoreBarHTML()}
+<div class="pb"><div class="pf" style="width:${(prog/all.length)*100}%"></div></div>
+${grid}
+<div class="qc">
+<div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]||q.t}</span><span class="qp">${q.p} pts</span></div>
+<div class="qq">${esc(q.q)}</div>
+${opts}
+</div>
+<div class="nav">
+<button class="nb" onclick="go(${S.i-1})" ${S.i===0?'disabled':''}>← Prev</button>
+<div class="nc">
+${canChk?`<button class="nb ck" onclick="chk(${q.n})">Check Answer</button>`:''}
+${S.mode==='exam'&&!S.graded?`<button class="nb pr" onclick="submit()" style="background:#f59e0b;border-color:#f59e0b">Submit Exam</button>`:''}
+</div>
+<button class="nb${S.i===all.length-1?' pr':''}" onclick="${S.i===all.length-1?(S.mode==='exam'?'submit()':'showR()'):`go(${S.i+1})`}">${S.i===all.length-1?(S.mode==='exam'?'Submit':'Results'):'Next →'}</button>
+</div>`;}
+
+function rResults(el){
+const all=qs();let cor=0,wrg=0,skip=0,ep=0;
+all.forEach(q=>{if(q.a===-1){skip++;return;}if(S.ans[q.n]===q.a){cor++;ep+=q.p;}else if(S.ans[q.n]!==undefined)wrg++;else skip++;});
+const grd=all.filter(q=>q.a!==-1).length,pct=grd?Math.round(cor/grd*100):0;
+const mp=all.filter(q=>q.a!==-1).reduce((s,q)=>s+q.p,0);
+const cc=pct>=70?'var(--ok)':pct>=50?'var(--warn)':'var(--no)';
+let filt=all;
+if(S.flt==='wrong')filt=all.filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);
+if(S.flt==='correct')filt=all.filter(q=>S.ans[q.n]===q.a);
+if(S.flt==='skipped')filt=all.filter(q=>S.ans[q.n]===undefined&&q.a!==-1);
+if(S.flt==='text')filt=all.filter(q=>q.a===-1);
+
+const rev=filt.map(q=>{
+const isT=q.o.length===0;let os='';
+if(!isT){os=q.o.map((o,i)=>{
+let c='op dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a)c='op cor dis';
+let exH='';if(q.ex&&q.ex[i]){const ic=i===q.a;exH=`<div class="ex-box ${ic?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('');}
+else{
+const v=S.txt[q.n]||'<em style="color:var(--text2)">No answer</em>';
+os=`<div style="padding:8px 12px;background:var(--card2);border-radius:8px;font-size:.88em">${v}</div>`;
+if(q.h)os+=`<div class="hint"><div class="hl">Suggested Answer</div><div class="ht">${esc(q.h)}</div></div>`;
+if(q.ex&&q.ex.length)os+=`<div class="fill-exps">${q.ex.map(e=>`<div class="fill-exp">${esc(e)}</div>`).join('')}</div>`;}
+return`<div class="qc"><div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]}</span><span class="qp">${q.p} pts</span></div><div class="qq">${esc(q.q)}</div><div class="opts">${os}</div></div>`;}).join('');
+
+el.innerHTML=`<div class="res">
+<h2>Exam Results</h2>
+<div class="sc" style="border-color:${cc}"><div class="pct" style="color:${cc}">${pct}%</div><div class="of">${cor} / ${grd}</div></div>
+<div class="rg">
+<div class="rs"><div class="rv" style="color:var(--ok)">${cor}</div><div class="rl">Correct</div></div>
+<div class="rs"><div class="rv" style="color:var(--no)">${wrg}</div><div class="rl">Wrong</div></div>
+<div class="rs"><div class="rv" style="color:var(--text2)">${skip}</div><div class="rl">Skipped</div></div>
+<div class="rs"><div class="rv" style="color:var(--accent)">${ep}/${mp}</div><div class="rl">Points</div></div>
+</div>
+<div class="ra">
+<button class="nb" onclick="reset()">← Start Over</button>
+<button class="nb pr" onclick="retry()">Retry Wrong</button></div><div style="text-align:center;margin-top:10px"><button class="print-btn" onclick="window.print()">🖶 Print Results</button>
+</div>
+</div>
+<div style="padding:0 4px">
+<div class="ft">
+<button class="fb ${S.flt==='all'?'on':''}" onclick="setF('all')">All (${all.length})</button>
+<button class="fb ${S.flt==='wrong'?'on':''}" onclick="setF('wrong')">Wrong (${wrg})</button>
+<button class="fb ${S.flt==='correct'?'on':''}" onclick="setF('correct')">Correct (${cor})</button>
+<button class="fb ${S.flt==='skipped'?'on':''}" onclick="setF('skipped')">Skipped (${skip})</button>
+<button class="fb ${S.flt==='text'?'on':''}" onclick="setF('text')">Written (${all.filter(q=>q.a===-1).length})</button>
+</div>
+${rev}
+</div>`;}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function setM(m){S.mode=m;render();}
+function startQ(){S.scr='quiz';S.i=0;S.ans={};S.txt={};S.chk={};S.graded=false;S.shuf=S.mode==='shuffle'?shuffle(Q):null;render();scrollTo(0,0);}
+function sel(n,i){if(S.chk[n])return;S.ans[n]=i;render();}
+function setT(n,v){S.txt[n]=v;}
+function chk(n){S.chk[n]=true;render();}
+function go(i){const a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
+function tg(){S.sg=!S.sg;render();}
+function submit(){qs().forEach(q=>{S.chk[q.n]=true;});S.graded=true;showR();}
+function showR(){S.scr='results';S.flt='all';render();scrollTo(0,0);}
+function reset(){S.scr='start';S.mode='practice';render();scrollTo(0,0);}
+function setF(f){S.flt=f;render();}
+function retry(){const a=qs().filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);if(!a.length){alert('No wrong answers to retry!');return;}S.shuf=a;S.ans={};S.chk={};S.txt={};S.graded=false;S.scr='quiz';S.i=0;S.mode='practice';render();scrollTo(0,0);}
+document.addEventListener('keydown',e=>{if(S.scr!=='quiz')return;if(e.key==='ArrowRight'){e.preventDefault();go(S.i+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(S.i-1);}const a=qs(),q=a[S.i];if(q.o.length>0&&!S.chk[q.n]){const k='ABCDEFGHIJ'.indexOf(e.key.toUpperCase());if(k>=0&&k<q.o.length)sel(q.n,k);}});
+render();
+
+/* === ENHANCEMENTS === */
+/* === HVAC STUDY TOOL ENHANCEMENTS === */
+
+/* --- ENHANCEMENT CSS --- */
+const ENHANCE_CSS = `
+/* Timer bar */
+.timer-bar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:8px 16px;margin-bottom:10px}
+.timer-display{font-family:monospace;font-size:1.3em;font-weight:700;min-width:70px}
+.timer-bar .timer-label{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.timer-bar.warn .timer-display{color:var(--no);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Reference panel */
+.ref-overlay{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:var(--bg);border-left:2px solid var(--border);z-index:1000;transition:right .3s;overflow-y:auto;padding:20px;box-shadow:-8px 0 32px rgba(0,0,0,.4)}
+.ref-overlay.open{right:0}
+.ref-close{position:absolute;top:12px;right:12px;background:var(--card2);border:1px solid var(--border);border-radius:6px;color:var(--text);width:32px;height:32px;cursor:pointer;font-size:1.1em;display:flex;align-items:center;justify-content:center}
+.ref-tabs{display:flex;gap:4px;margin-bottom:16px}
+.ref-tab{flex:1;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;font-size:.8em;text-align:center;font-family:inherit;font-weight:600}
+.ref-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.ref-content{font-size:.85em;line-height:1.6}
+.ref-content h3{color:var(--accent);font-size:1em;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.ref-content h3:first-child{margin-top:0}
+.ref-content table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.88em}
+.ref-content th{background:var(--card2);color:var(--accent);padding:6px 8px;text-align:left;font-size:.75em;text-transform:uppercase;letter-spacing:.03em}
+.ref-content td{padding:5px 8px;border-bottom:1px solid var(--border);font-family:monospace;font-size:.92em}
+.ref-content tr:hover td{background:var(--card2)}
+.formula{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin:8px 0;font-family:monospace;font-size:.95em;line-height:1.8}
+.formula .fname{color:var(--accent);font-weight:700}
+.formula .fdesc{color:var(--text2);font-size:.85em;font-family:-apple-system,sans-serif}
+
+/* Calculator */
+.calc-overlay{position:fixed;bottom:20px;right:20px;width:280px;background:var(--card);border:2px solid var(--border);border-radius:var(--r);z-index:999;box-shadow:0 8px 32px rgba(0,0,0,.4);display:none}
+.calc-overlay.open{display:block}
+.calc-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)}
+.calc-header span{font-size:.85em;font-weight:600;color:var(--text2)}
+.calc-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.2em}
+.calc-display{background:var(--bg);margin:8px;border-radius:6px;padding:12px;font-family:monospace;font-size:1.3em;text-align:right;color:var(--text);min-height:44px;word-break:break-all}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 8px 8px}
+.calc-btn{padding:12px;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:monospace;font-size:1em;cursor:pointer;text-align:center}
+.calc-btn:hover{background:var(--border)}
+.calc-btn.op{color:var(--accent);font-weight:700}
+.calc-btn.eq{background:var(--accent);color:#fff;border-color:var(--accent)}
+.calc-btn.clr{color:var(--no)}
+
+/* FAB buttons */
+.fab-container{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:998}
+.fab{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2em;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:.2s}
+.fab:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.1)}
+
+/* Stats badge on start screen */
+.stats-history{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;text-align:center}
+.stats-history h3{font-size:.85em;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.stats-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.stat-item{min-width:80px}
+.stat-item .sv{font-size:1.4em;font-weight:700;font-family:monospace}
+.stat-item .sl{font-size:.68em;color:var(--text2);text-transform:uppercase}
+
+/* Weak spots mode button */
+.mb.weak{border-color:var(--no);background:rgba(248,113,113,.04)}
+.mb.weak:hover{border-color:var(--no);background:rgba(248,113,113,.08)}
+.mb.weak h3{color:var(--no)}
+
+/* Timed toggle */
+.timer-toggle{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:16px}
+.timer-toggle label{font-size:.85em;color:var(--text2)}
+.toggle-switch{position:relative;width:44px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;transition:.2s}
+.toggle-switch.on{background:var(--accent)}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s}
+.toggle-switch.on::after{left:23px}
+.timer-input{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:monospace;width:50px;text-align:center;font-size:.9em}
+
+@media(max-width:600px){.ref-overlay{width:100%;right:-100%}.fab-container{bottom:12px;right:12px}.calc-overlay{width:260px;right:12px;bottom:12px}}
+`;
+
+/* --- ENHANCEMENT JS --- */
+function initEnhancements(toolId) {
+  // Inject CSS
+  const style = document.createElement('style');
+  style.textContent = ENHANCE_CSS;
+  document.head.appendChild(style);
+
+  // === PERSISTENT STORAGE ===
+  const STORE_KEY = 'hvac_stats_' + toolId;
+  
+  function loadStats() {
+    try {
+      return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+    } catch(e) { return {}; }
+  }
+  
+  function saveStats(stats) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(stats)); } catch(e) {}
+  }
+  
+  function recordAnswer(qn, correct) {
+    const stats = loadStats();
+    if (!stats[qn]) stats[qn] = { right: 0, wrong: 0, last: 0 };
+    if (correct) stats[qn].right++;
+    else stats[qn].wrong++;
+    stats[qn].last = Date.now();
+    saveStats(stats);
+  }
+  
+  function getWeakQuestions() {
+    const stats = loadStats();
+    return Q.filter(q => {
+      const s = stats[q.n];
+      return s && s.wrong > 0 && (s.wrong >= s.right);
+    });
+  }
+  
+  function getOverallStats() {
+    const stats = loadStats();
+    let totalRight = 0, totalWrong = 0, attempted = 0;
+    for (const k in stats) {
+      totalRight += stats[k].right;
+      totalWrong += stats[k].wrong;
+      if (stats[k].right + stats[k].wrong > 0) attempted++;
+    }
+    return { totalRight, totalWrong, attempted, total: Q.length };
+  }
+  
+  // === SPACED REPETITION WEIGHTING ===
+  function spacedShuffle(questions) {
+    const stats = loadStats();
+    const weighted = [];
+    questions.forEach(q => {
+      const s = stats[q.n];
+      let weight = 1;
+      if (s) {
+        if (s.wrong > s.right) weight = 3;
+        else if (s.wrong > 0 && s.wrong === s.right) weight = 2;
+        else if (s.right > 3) weight = 0.5;
+        // Recency: if answered recently and correct, lower weight
+        const daysSince = (Date.now() - (s.last || 0)) / 86400000;
+        if (daysSince < 1 && s.right > s.wrong) weight *= 0.5;
+      } else {
+        weight = 1.5; // never seen = slightly boost
+      }
+      for (let i = 0; i < Math.ceil(weight); i++) weighted.push(q);
+    });
+    // Shuffle the weighted array then deduplicate keeping first occurrence
+    const shuffled = weighted.sort(() => Math.random() - 0.5);
+    const seen = new Set();
+    return shuffled.filter(q => { if (seen.has(q.n)) return false; seen.add(q.n); return true; });
+  }
+
+  // === TIMER ===
+  let timerInterval = null;
+  let timerSeconds = 0;
+  let timerEnabled = false;
+  let timerMinutes = 75; // default seconds per question
+  
+  function startTimer(questionCount) {
+    stopTimer();
+    timerSeconds = Math.ceil(questionCount * 1.25) * 60; // 1.25 min per question
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      updateTimerDisplay();
+      if (timerSeconds <= 0) {
+        stopTimer();
+        if (typeof submit === 'function') submit();
+      }
+    }, 1000);
+  }
+  
+  function stopTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  
+  function updateTimerDisplay() {
+    const el = document.getElementById('timer-display');
+    if (!el) return;
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    el.textContent = m + ':' + String(s).padStart(2, '0');
+    const bar = document.querySelector('.timer-bar');
+    if (bar) bar.className = 'timer-bar' + (timerSeconds < 120 ? ' warn' : '');
+  }
+  
+  function getTimerHTML() {
+    if (!timerEnabled || !timerInterval) return '';
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    return '<div class="timer-bar"><span class="timer-label">Time Left</span><span class="timer-display" id="timer-display">' + m + ':' + String(s).padStart(2, '0') + '</span></div>';
+  }
+
+  // === REFERENCE PANEL ===
+  function createRefPanel() {
+    if (document.getElementById('ref-panel')) return;
+    const div = document.createElement('div');
+    div.id = 'ref-panel';
+    div.className = 'ref-overlay';
+    div.innerHTML = '<button class="ref-close" onclick="toggleRef()">\u2715</button>' +
+      '<div class="ref-tabs">' +
+      '<button class="ref-tab active" onclick="showRefTab(\'pt\',this)">PT Charts</button>' +
+      '<button class="ref-tab" onclick="showRefTab(\'formulas\',this)">Formulas</button>' +
+      '</div>' +
+      '<div id="ref-pt" class="ref-content">' + getPTContent() + '</div>' +
+      '<div id="ref-formulas" class="ref-content" style="display:none">' + getFormulaContent() + '</div>';
+    document.body.appendChild(div);
+  }
+  
+  window.toggleRef = function() {
+    createRefPanel();
+    document.getElementById('ref-panel').classList.toggle('open');
+    // Close calc if open
+    const calc = document.getElementById('calc-panel');
+    if (calc) calc.classList.remove('open');
+  };
+  
+  window.showRefTab = function(tab, btn) {
+    document.getElementById('ref-pt').style.display = tab === 'pt' ? '' : 'none';
+    document.getElementById('ref-formulas').style.display = tab === 'formulas' ? '' : 'none';
+    document.querySelectorAll('.ref-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  };
+
+  function getPTContent() {
+    return '<h3>R-410A</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-20,20.7],[0,48.8],[10,65.5],[20,84.2],[25,94.3],[30,105],[35,116],[40,128],[44,138],[50,152],[60,179],[70,208],[80,241],[90,268],[95,283],[100,296],[105,314],[110,331],[115,349],[120,367],[130,406]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>R-22</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-40,-0.5],[0,24],[10,33],[20,43],[30,54.9],[40,68.5],[50,84],[60,102],[70,122],[80,143.6],[90,167.4],[100,196],[110,226],[120,260],[130,296],[140,335]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>R-134a</h3><table><tr><th>Temp \u00b0F</th><th>Pressure (psig)</th></tr>' +
+      [[-20,-2.4],[0,6.5],[10,12],[20,18.4],[25,22],[30,26],[35,30.4],[40,35.1],[45,40.2],[50,45.7],[55,51.6],[60,57.9],[70,71.4],[80,86.4],[90,103],[98,117],[100,120],[110,138],[120,158]].map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('') +
+      '</table><h3>Quick Reference</h3><div class="formula"><div class="fdesc">Water: 0.433 psi per foot of head</div><div class="fdesc">1 ton = 12,000 BTU/hr</div><div class="fdesc">Atmospheric: 14.7 psi = 29.92" Hg</div><div class="fdesc">1" Hg \u2248 0.491 psi</div><div class="fdesc">Water density: 62.4 lbs/ft\u00b3 = 8.33 lbs/gal</div><div class="fdesc">7.48 gallons per ft\u00b3</div></div>';
+  }
+  
+  function getFormulaContent() {
+    return '<h3>Heat Calculations</h3>' +
+      '<div class="formula"><div class="fname">BTU = SH \u00d7 W \u00d7 \u0394T</div><div class="fdesc">Sensible heat: Specific Heat \u00d7 Weight (lbs) \u00d7 Temp Difference</div></div>' +
+      '<div class="formula"><div class="fname">BTU = LH \u00d7 W</div><div class="fdesc">Latent heat: Latent Heat value \u00d7 Weight (lbs)</div><div class="fdesc">Ice: 144 BTU/lb &bull; Steam: 970.4 BTU/lb</div></div>' +
+      '<div class="formula"><div class="fname">1 Ton = 12,000 BTU/hr</div><div class="fdesc">Tons = Total BTU \u00f7 12,000 (per hour)</div></div>' +
+      '<h3>Pressure & Head</h3>' +
+      '<div class="formula"><div class="fname">P = H \u00d7 0.433</div><div class="fdesc">Pressure (psi) = Height of water (ft) \u00d7 0.433 psi/ft</div></div>' +
+      '<div class="formula"><div class="fname">PSIA = PSIG + 14.7</div><div class="fdesc">Absolute = Gauge + Atmospheric</div></div>' +
+      '<div class="formula"><div class="fname">Compression Ratio = Discharge (psia) \u00f7 Suction (psia)</div><div class="fdesc">Always convert to ABSOLUTE first!</div></div>' +
+      '<h3>Refrigeration</h3>' +
+      '<div class="formula"><div class="fname">Superheat = Actual Temp \u2212 Saturation Temp</div><div class="fdesc">Measured at suction line leaving evaporator</div></div>' +
+      '<div class="formula"><div class="fname">Subcooling = Saturation Temp \u2212 Actual Temp</div><div class="fdesc">Measured at liquid line leaving condenser</div></div>' +
+      '<div class="formula"><div class="fname">Net Oil Pressure = Oil Gauge \u2212 Suction Pressure</div><div class="fdesc">Actual lubrication pressure above crankcase</div></div>' +
+      '<div class="formula"><div class="fname">Water Flow: 3 GPM/ton</div><div class="fdesc">Standard for recirculated water-cooled condensers (10\u00b0F \u0394T)</div></div>' +
+      '<h3>Volume & Density</h3>' +
+      '<div class="formula"><div class="fname">V = \u03c0r\u00b2h</div><div class="fdesc">Cylinder volume (ft\u00b3) &bull; \u00d7 7.48 for gallons</div></div>' +
+      '<div class="formula"><div class="fname">D = W \u00f7 V</div><div class="fdesc">Density = Weight \u00f7 Volume &bull; Water = 62.4 lbs/ft\u00b3</div></div>' +
+      '<h3>Temperature</h3>' +
+      '<div class="formula"><div class="fname">\u00b0C = (\u00b0F \u2212 32) \u00d7 5/9</div><div class="fdesc">Fahrenheit to Celsius</div></div>' +
+      '<div class="formula"><div class="fname">\u00b0F = (\u00b0C \u00d7 9/5) + 32</div><div class="fdesc">Celsius to Fahrenheit</div></div>' +
+      '<h3>Expansion</h3>' +
+      '<div class="formula"><div class="fname">EL = L \u00d7 \u0394T \u00d7 COE</div><div class="fdesc">Expansion (ft) = Length \u00d7 Temp Diff \u00d7 Coefficient</div><div class="fdesc">Steel COE \u2248 0.0000067 per \u00b0F</div></div>' +
+      '<h3>Steam</h3>' +
+      '<div class="formula"><div class="fname">BTU released = (h<sub>steam</sub> \u2212 h<sub>water</sub>) \u00d7 lbs</div><div class="fdesc">Use steam tables for enthalpy values at operating pressure</div></div>' +
+      '<div class="formula"><div class="fname">Vacuum: 1" Hg \u2248 1 ft water lift</div><div class="fdesc">28" Hg vacuum \u2248 28 ft lift capacity</div></div>';
+  }
+
+  // === CALCULATOR ===
+  let calcDisplay = '0';
+  let calcPrev = null;
+  let calcOp = null;
+  let calcNew = true;
+  
+  function createCalc() {
+    if (document.getElementById('calc-panel')) return;
+    const div = document.createElement('div');
+    div.id = 'calc-panel';
+    div.className = 'calc-overlay';
+    const btns = ['C','(',')','/','7','8','9','*','4','5','6','-','1','2','3','+','0','.','±','='];
+    div.innerHTML = '<div class="calc-header"><span>🖩 Calculator</span><button class="calc-close" onclick="toggleCalc()">\u2715</button></div>' +
+      '<div class="calc-display" id="calc-disp">0</div>' +
+      '<div class="calc-grid">' + btns.map(b => {
+        let cls = 'calc-btn';
+        if ('/*-+'.includes(b)) cls += ' op';
+        if (b === '=') cls += ' eq';
+        if (b === 'C') cls += ' clr';
+        return '<button class="' + cls + '" onclick="calcPress(\'' + b.replace("'","\\'") + '\')">' + b + '</button>';
+      }).join('') + '</div>';
+    document.body.appendChild(div);
+  }
+  
+  window.toggleCalc = function() {
+    createCalc();
+    document.getElementById('calc-panel').classList.toggle('open');
+  };
+  
+  window.calcPress = function(key) {
+    const disp = document.getElementById('calc-disp');
+    if (key === 'C') { calcDisplay = '0'; calcPrev = null; calcOp = null; calcNew = true; }
+    else if (key === '±') { 
+      if (calcDisplay !== '0') calcDisplay = calcDisplay.startsWith('-') ? calcDisplay.slice(1) : '-' + calcDisplay;
+    }
+    else if (key === '=') {
+      try { calcDisplay = String(eval(calcDisplay.replace(/×/g,'*').replace(/÷/g,'/'))); } 
+      catch(e) { calcDisplay = 'Error'; }
+      calcNew = true;
+    }
+    else if ('+-*/'.includes(key)) { calcDisplay += key; calcNew = false; }
+    else if (key === '(' || key === ')') { calcDisplay = (calcNew && calcDisplay === '0' ? '' : calcDisplay) + key; calcNew = false; }
+    else {
+      if (calcNew && calcDisplay === '0') calcDisplay = key;
+      else if (calcNew) { calcDisplay = key; calcNew = false; }
+      else calcDisplay += key;
+      calcNew = false;
+    }
+    disp.textContent = calcDisplay;
+  };
+
+  // === FAB BUTTONS ===
+  function createFABs() {
+    if (document.getElementById('fab-btns')) return;
+    const div = document.createElement('div');
+    div.id = 'fab-btns';
+    div.className = 'fab-container';
+    div.innerHTML = '<button class="fab" onclick="toggleCalc()" title="Calculator">🖩</button>' +
+      '<button class="fab" onclick="toggleRef()" title="Reference">📖</button>';
+    document.body.appendChild(div);
+  }
+
+  // === HOOK INTO EXISTING FUNCTIONS ===
+  
+  // Override the check function to record stats
+  const origChk = window.chk;
+  window.chk = function(n) {
+    origChk(n);
+    // Find the question and record result
+    const allQ = typeof qs === 'function' ? qs() : Q;
+    const q = allQ.find(qq => qq.n === n);
+    if (q && q.a !== -1) {
+      recordAnswer(n, S.ans[n] === q.a);
+    }
+  };
+  
+  // Override submit to record all answers
+  const origSubmit = window.submit;
+  window.submit = function() {
+    const allQ = typeof qs === 'function' ? qs() : Q;
+    allQ.forEach(q => {
+      if (q.a !== -1 && S.ans[q.n] !== undefined) {
+        S.chk[q.n] = true;
+        recordAnswer(q.n, S.ans[q.n] === q.a);
+      }
+    });
+    S.graded = true;
+    if (typeof showR === 'function') showR();
+    stopTimer();
+  };
+  
+  // Override shuffle to use spaced repetition
+  const origShuffle = window.shuffle;
+  window.shuffle = function(arr) {
+    if (S.mode === 'shuffle') return spacedShuffle(arr);
+    return origShuffle(arr);
+  };
+  
+  // Add weak spots mode
+  window.startWeak = function() {
+    const weak = getWeakQuestions();
+    if (!weak.length) { alert('No weak spots yet! Take some quizzes first.'); return; }
+    if (typeof filteredQ === 'function') S.activeQ = weak;
+    else S.shuf = weak;
+    S.scr = 'quiz'; S.i = 0; S.ans = {}; S.txt = {}; S.chk = {}; S.graded = false;
+    S.mode = 'practice';
+    render(); scrollTo(0, 0);
+  };
+  
+  // Enhanced startQ with timer
+  const origStartQ = window.startQ;
+  window.startQ = function() {
+    origStartQ();
+    if (timerEnabled && S.scr === 'quiz') {
+      const count = typeof qs === 'function' ? qs().length : Q.length;
+      startTimer(count);
+    }
+  };
+  
+  // Override reset to stop timer  
+  const origReset = window.reset;
+  window.reset = function() {
+    stopTimer();
+    origReset();
+  };
+  
+  // Override render to add enhancements
+  const origRender = window.render;
+  window.render = function() {
+    origRender();
+    
+    // Add FABs if in quiz mode
+    if (S.scr === 'quiz') {
+      createFABs();
+      document.getElementById('fab-btns').style.display = '';
+      // Add timer if enabled
+      if (timerEnabled && timerInterval) {
+        const hdr = document.querySelector('.hdr');
+        if (hdr && !document.getElementById('timer-display')) {
+          hdr.insertAdjacentHTML('afterend', getTimerHTML());
+        }
+      }
+    } else {
+      const fabs = document.getElementById('fab-btns');
+      if (fabs) fabs.style.display = 'none';
+      // Close panels
+      const ref = document.getElementById('ref-panel');
+      if (ref) ref.classList.remove('open');
+      const calc = document.getElementById('calc-panel');
+      if (calc) calc.classList.remove('open');
+    }
+    
+    // Add stats + weak spots + timer toggle to start screen
+    if (S.scr === 'start') {
+      const stats = getOverallStats();
+      const weak = getWeakQuestions();
+      const startDiv = document.querySelector('.start');
+      if (startDiv && !document.getElementById('enhance-stats')) {
+        // Find the modes div and insert before it
+        const modesDiv = startDiv.querySelector('.modes');
+        if (modesDiv) {
+          // Stats history
+          let statsHTML = '';
+          if (stats.attempted > 0) {
+            const pct = stats.totalRight + stats.totalWrong > 0 ? Math.round(stats.totalRight / (stats.totalRight + stats.totalWrong) * 100) : 0;
+            statsHTML = '<div class="stats-history" id="enhance-stats"><h3>Your History</h3><div class="stats-row">' +
+              '<div class="stat-item"><div class="sv" style="color:var(--ok)">' + stats.totalRight + '</div><div class="sl">Correct</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:var(--no)">' + stats.totalWrong + '</div><div class="sl">Wrong</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:var(--accent)">' + stats.attempted + '/' + stats.total + '</div><div class="sl">Attempted</div></div>' +
+              '<div class="stat-item"><div class="sv" style="color:' + (pct >= 70 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : 'var(--no)') + '">' + pct + '%</div><div class="sl">Accuracy</div></div>' +
+              '</div></div>';
+          }
+          
+          // Weak spots button
+          let weakHTML = '';
+          if (weak.length > 0) {
+            weakHTML = '<div class="mb weak" onclick="startWeak()"><h3>\u26a0\ufe0f Weak Spots (' + weak.length + ')</h3><p>Practice questions you\'ve missed. Spaced repetition focuses on your weakest areas.</p></div>';
+          }
+          
+          // Timer toggle
+          const timerHTML = '<div class="timer-toggle" id="timer-toggle">' +
+            '<label>Timed Mode</label>' +
+            '<div class="toggle-switch' + (timerEnabled ? ' on' : '') + '" onclick="toggleTimer()"></div>' +
+            '</div>';
+          
+          modesDiv.insertAdjacentHTML('beforebegin', statsHTML);
+          modesDiv.insertAdjacentHTML('afterend', timerHTML);
+          if (weakHTML) {
+            // Insert weak spots button after the last mode button
+            modesDiv.insertAdjacentHTML('beforeend', weakHTML);
+          }
+        }
+      }
+    }
+  };
+  
+  window.toggleTimer = function() {
+    timerEnabled = !timerEnabled;
+    const sw = document.querySelector('.toggle-switch');
+    if (sw) sw.classList.toggle('on', timerEnabled);
+  };
+  
+  window.clearHistory = function() {
+    if (confirm('Clear all study history for this tool?')) {
+      localStorage.removeItem(STORE_KEY);
+      render();
+    }
+  };
+}
+
+initEnhancements("steam");
+</script>
+</body>
+</html>
