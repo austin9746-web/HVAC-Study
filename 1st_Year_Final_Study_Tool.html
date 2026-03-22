@@ -127,6 +127,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <a href="index.html" class="back-btn">← Study Hub</a>
 <div class="app" id="app"></div>
 <script>
+
+/* Session check */
+(function(){
+  var user = localStorage.getItem('hvac_session');
+  if (!user) { window.location.href = 'index.html'; return; }
+  window._hvacUser = user;
+  var users = {};
+  try { users = JSON.parse(localStorage.getItem('hvac_users')) || {}; } catch(e) {}
+  window._hvacDisplayName = users[user] ? users[user].display : user;
+})();
 const Q=[{n:1,p:1,t:'mc',q:"The suction pressure is 68 psig and discharge is 225 psig. What is the compression ratio?",o:["3 to 1","2.9 to 1","5.8 to 1","2.3 to 1"],a:1,ex:["Incorrect. 3:1 would require different pressures.","CORRECT. Convert to absolute: suction = 82.7 psia, discharge = 239.7 psia. 239.7 ÷ 82.7 = 2.9 to 1. Always use absolute pressure (add 14.7).","Incorrect. 5.8:1 would be an extremely high ratio.","Incorrect. 2.3:1 results from dividing gauge pressures incorrectly."]},
 {n:2,p:1,t:'mc',q:"What is the latent heat of vaporization for water at standard atmospheric pressure?",o:["144 Btu/lb","180 Btu/lb","970.4 Btu/lb","180 Btu's"],a:2,ex:["Incorrect. 144 Btu/lb is the latent heat of fusion (freezing/melting), not vaporization.","Incorrect. 180 Btu is the sensible heat to raise water from 32°F to 212°F.","CORRECT. 970.4 Btu/lb is the standard value at 212°F — the energy to change liquid water to steam without temperature change.","Incorrect. 180 Btu's is the sensible heat range and has wrong units."]},
 {n:3,p:1,t:'mc',q:"The purpose of a crankcase heater on a compressor is to:",o:["Keep oil viscosity high so it flows easily","Keep the refrigerant boiled out of the oil","Carbonize the oil","Make starting easier by reducing starting torque"],a:1,ex:["Incorrect. Heat actually reduces oil viscosity.","CORRECT. Refrigerant migrates to the cold crankcase during off cycles and dissolves in oil. The heater prevents this, avoiding liquid slugging on startup.","Incorrect. Carbonizing oil would damage the compressor.","Incorrect. The heater's purpose is about refrigerant migration, not starting torque."]},
@@ -445,6 +455,7 @@ document.addEventListener('keydown',e=>{if(S.scr!=='quiz')return;if(e.key==='Arr
 render();
 
 /* === ENHANCEMENTS === */
+/* ENHANCEMENTS */
 /* === HVAC STUDY TOOL ENHANCEMENTS === */
 
 /* --- ENHANCEMENT CSS --- */
@@ -712,7 +723,7 @@ function initEnhancements(toolId) {
     div.id = 'calc-panel';
     div.className = 'calc-overlay';
     const btns = ['C','(',')','/','7','8','9','*','4','5','6','-','1','2','3','+','0','.','±','='];
-    div.innerHTML = '<div class="calc-header"><span>🖩 Calculator</span><button class="calc-close" onclick="toggleCalc()">\u2715</button></div>' +
+    div.innerHTML = '<div class="calc-header"><span>\U0001f5a9 Calculator</span><button class="calc-close" onclick="toggleCalc()">\u2715</button></div>' +
       '<div class="calc-display" id="calc-disp">0</div>' +
       '<div class="calc-grid">' + btns.map(b => {
         let cls = 'calc-btn';
@@ -757,8 +768,8 @@ function initEnhancements(toolId) {
     const div = document.createElement('div');
     div.id = 'fab-btns';
     div.className = 'fab-container';
-    div.innerHTML = '<button class="fab" onclick="toggleCalc()" title="Calculator">🖩</button>' +
-      '<button class="fab" onclick="toggleRef()" title="Reference">📖</button>';
+    div.innerHTML = '<button class="fab" onclick="toggleCalc()" title="Calculator">\U0001f5a9</button>' +
+      '<button class="fab" onclick="toggleRef()" title="Reference">\U0001f4d6</button>';
     document.body.appendChild(div);
   }
 
@@ -776,19 +787,36 @@ function initEnhancements(toolId) {
     }
   };
   
-  // Override submit to record all answers
+  // Override submit to record all answers + post to leaderboard
   const origSubmit = window.submit;
   window.submit = function() {
     const allQ = typeof qs === 'function' ? qs() : Q;
+    let cor = 0, wrg = 0, pts = 0, maxP = 0;
     allQ.forEach(q => {
       if (q.a !== -1 && S.ans[q.n] !== undefined) {
         S.chk[q.n] = true;
-        recordAnswer(q.n, S.ans[q.n] === q.a);
+        const correct = S.ans[q.n] === q.a;
+        recordAnswer(q.n, correct);
+        if (correct) { cor++; pts += q.p; }
+        else { wrg++; }
+        maxP += q.p;
       }
     });
     S.graded = true;
     if (typeof showR === 'function') showR();
     stopTimer();
+    // Post score to cloud leaderboard
+    try {
+      var scriptUrl = localStorage.getItem('hvac_script_url');
+      if (scriptUrl && window._hvacUser && window._hvacUser !== 'admin') {
+        var users = {}; try { users = JSON.parse(localStorage.getItem('hvac_users')||'{}'); } catch(e){}
+        var display = users[window._hvacUser] ? users[window._hvacUser].display : window._hvacUser;
+        fetch(scriptUrl, {
+          method: 'POST',
+          body: JSON.stringify({action:'submit_score',username:display,tool:toolId,correct:cor,wrong:wrg,total:cor+wrg,points:pts,maxPoints:maxP})
+        }).catch(function(){});
+      }
+    } catch(e){}
   };
   
   // Override shuffle to use spaced repetition

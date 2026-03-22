@@ -127,6 +127,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <a href="index.html" class="back-btn">← Study Hub</a>
 <div class="app" id="app"></div>
 <script>
+
+/* Session check */
+(function(){
+  var user = localStorage.getItem('hvac_session');
+  if (!user) { window.location.href = 'index.html'; return; }
+  window._hvacUser = user;
+  var users = {};
+  try { users = JSON.parse(localStorage.getItem('hvac_users')) || {}; } catch(e) {}
+  window._hvacDisplayName = users[user] ? users[user].display : user;
+})();
 const Q=[{n:1,p:2,t:'mc',q:'A down-fed system is __________.',o:['When the boiler is at the lowest level of the building','When the terminal unit is located above the steam main','When the terminal unit is located below the steam main','When the boiler is at the highest level of the building'],a:2,ex:['Describes an up-fed system where steam rises from the boiler in the basement.','Describes a standard up-fed branch connection, not the overall system type.','CORRECT — In a down-fed system, the steam main runs at a high elevation and feeds down to terminal units below it. Gravity assists condensate drainage.','The defining characteristic is the relationship between the steam main and terminal units, not the boiler\'s position.']},
 {n:2,p:2,t:'mc',q:'A drip is a __________.',o:['Vertical piece of pipe off the bottom of a steam pipe or terminal unit','Horizontal connection from a terminal unit to a riser','Vertical connection to a radiator valve or trap from the steam or condensate return','Vertical pipe below the trap or valve connection','Horizontal pipe connection from a main to a riser or terminal unit'],a:0,ex:['CORRECT — A drip (drip leg/drip pocket) extends downward from the bottom of a steam main to collect condensate for removal by a steam trap, preventing water hammer.','This describes a runout or branch line.','This describes a riser or drop connection, not a drip.','The drip is the pocket that collects condensate before the trap, not pipe after it.','This describes a branch takeoff.']},
 {n:3,p:2,t:'mc',q:'A vacuum can raise water or hold water to an elevation of ___________.',o:['1 foot per 1"Hg','2.31 feet per 1"Hg','.433 feet per 1"Hg','None of the above are correct'],a:0,ex:['CORRECT — 1"Hg of vacuum supports approximately 1.13 feet of water. In practice, this is rounded to ~1 foot per 1"Hg. Key value for vacuum return systems.','2.31 feet per 1 PSI is the conversion for pressure to water column height. This confuses psi with inches of mercury.','0.433 psi per foot of water is the inverse conversion — pressure created by a 1-foot water column. Related but different.','Answer A is correct.']},
@@ -468,6 +478,7 @@ document.addEventListener('keydown',e=>{if(S.scr!=='quiz')return;if(e.key==='Arr
 render();
 
 /* === ENHANCEMENTS === */
+/* ENHANCEMENTS */
 /* === HVAC STUDY TOOL ENHANCEMENTS === */
 
 /* --- ENHANCEMENT CSS --- */
@@ -735,7 +746,7 @@ function initEnhancements(toolId) {
     div.id = 'calc-panel';
     div.className = 'calc-overlay';
     const btns = ['C','(',')','/','7','8','9','*','4','5','6','-','1','2','3','+','0','.','±','='];
-    div.innerHTML = '<div class="calc-header"><span>🖩 Calculator</span><button class="calc-close" onclick="toggleCalc()">\u2715</button></div>' +
+    div.innerHTML = '<div class="calc-header"><span>\U0001f5a9 Calculator</span><button class="calc-close" onclick="toggleCalc()">\u2715</button></div>' +
       '<div class="calc-display" id="calc-disp">0</div>' +
       '<div class="calc-grid">' + btns.map(b => {
         let cls = 'calc-btn';
@@ -780,8 +791,8 @@ function initEnhancements(toolId) {
     const div = document.createElement('div');
     div.id = 'fab-btns';
     div.className = 'fab-container';
-    div.innerHTML = '<button class="fab" onclick="toggleCalc()" title="Calculator">🖩</button>' +
-      '<button class="fab" onclick="toggleRef()" title="Reference">📖</button>';
+    div.innerHTML = '<button class="fab" onclick="toggleCalc()" title="Calculator">\U0001f5a9</button>' +
+      '<button class="fab" onclick="toggleRef()" title="Reference">\U0001f4d6</button>';
     document.body.appendChild(div);
   }
 
@@ -799,19 +810,36 @@ function initEnhancements(toolId) {
     }
   };
   
-  // Override submit to record all answers
+  // Override submit to record all answers + post to leaderboard
   const origSubmit = window.submit;
   window.submit = function() {
     const allQ = typeof qs === 'function' ? qs() : Q;
+    let cor = 0, wrg = 0, pts = 0, maxP = 0;
     allQ.forEach(q => {
       if (q.a !== -1 && S.ans[q.n] !== undefined) {
         S.chk[q.n] = true;
-        recordAnswer(q.n, S.ans[q.n] === q.a);
+        const correct = S.ans[q.n] === q.a;
+        recordAnswer(q.n, correct);
+        if (correct) { cor++; pts += q.p; }
+        else { wrg++; }
+        maxP += q.p;
       }
     });
     S.graded = true;
     if (typeof showR === 'function') showR();
     stopTimer();
+    // Post score to cloud leaderboard
+    try {
+      var scriptUrl = localStorage.getItem('hvac_script_url');
+      if (scriptUrl && window._hvacUser && window._hvacUser !== 'admin') {
+        var users = {}; try { users = JSON.parse(localStorage.getItem('hvac_users')||'{}'); } catch(e){}
+        var display = users[window._hvacUser] ? users[window._hvacUser].display : window._hvacUser;
+        fetch(scriptUrl, {
+          method: 'POST',
+          body: JSON.stringify({action:'submit_score',username:display,tool:toolId,correct:cor,wrong:wrg,total:cor+wrg,points:pts,maxPoints:maxP})
+        }).catch(function(){});
+      }
+    } catch(e){}
   };
   
   // Override shuffle to use spaced repetition

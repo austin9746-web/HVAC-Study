@@ -85,6 +85,66 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
   .hero h1{font-size:1.8em}
   .page{padding:20px 14px}
 }
+
+.auth-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:2000;display:flex;align-items:center;justify-content:center}
+.auth-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:36px;width:100%;max-width:380px;text-align:center}
+.auth-card h2{font-size:1.6em;font-weight:700;margin-bottom:4px}
+.auth-card .auth-sub{color:var(--text2);font-size:.88em;margin-bottom:24px}
+.auth-input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:12px 16px;color:var(--text);font-size:.95em;font-family:inherit;margin-bottom:12px;outline:none;transition:.2s}
+.auth-input:focus{border-color:var(--accent)}
+.auth-input::placeholder{color:var(--text2)}
+.auth-btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:1em;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;margin-bottom:8px}
+.auth-btn.primary{background:var(--accent);color:#fff}
+.auth-btn.primary:hover{background:var(--accent2)}
+.auth-btn.secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.auth-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.auth-error{color:var(--no);font-size:.82em;margin-bottom:10px;min-height:20px}
+.auth-switch{color:var(--text2);font-size:.82em;margin-top:12px}
+.auth-switch a{color:var(--accent);cursor:pointer;text-decoration:none}
+.auth-switch a:hover{text-decoration:underline}
+.user-bar{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 16px;margin-bottom:20px}
+.user-bar .user-name{font-weight:600;font-size:.9em;display:flex;align-items:center;gap:6px}
+.user-bar .user-actions{display:flex;gap:8px;align-items:center}
+.user-bar button{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;color:var(--text2);font-size:.75em;cursor:pointer;font-family:inherit;transition:.15s}
+.user-bar button:hover{border-color:var(--accent);color:var(--text)}
+.user-bar .logout-btn:hover{border-color:var(--no);color:var(--no)}
+/* Admin panel */
+.admin-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:20px 0}
+.admin-panel h3{font-size:1em;font-weight:700;color:var(--accent);margin-bottom:12px}
+.admin-table{width:100%;border-collapse:collapse;font-size:.85em}
+.admin-table th{text-align:left;padding:8px 10px;background:var(--card2);color:var(--text2);font-size:.75em;text-transform:uppercase;letter-spacing:.04em}
+.admin-table td{padding:8px 10px;border-bottom:1px solid var(--border)}
+.admin-table tr:hover td{background:var(--card2)}
+.export-section{text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+
+
+.lb-section{margin:20px 0}
+.lb-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.lb-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)}
+.lb-header h3{font-size:1em;font-weight:700}
+.lb-refresh{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 12px;color:var(--text2);font-size:.75em;cursor:pointer;font-family:inherit}
+.lb-refresh:hover{border-color:var(--accent);color:var(--accent)}
+.lb-table{width:100%;border-collapse:collapse;font-size:.85em}
+.lb-table th{text-align:left;padding:10px 14px;color:var(--text2);font-size:.72em;text-transform:uppercase;letter-spacing:.04em;background:var(--card2)}
+.lb-table td{padding:10px 14px;border-bottom:1px solid var(--border)}
+.lb-table tr:hover td{background:rgba(74,158,255,.03)}
+.lb-rank{font-weight:800;font-size:1.1em;width:40px}
+.lb-rank.gold{color:#fbbf24}.lb-rank.silver{color:#94a3b8}.lb-rank.bronze{color:#cd7f32}
+.lb-name{font-weight:600}
+.lb-acc{font-family:monospace;font-weight:700}
+.lb-bar{width:80px;height:8px;background:var(--card2);border-radius:4px;display:inline-block;overflow:hidden;vertical-align:middle;margin-right:6px}
+.lb-fill{height:100%;border-radius:4px}
+.lb-tabs{display:flex;gap:4px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.lb-tab{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--text2);font-size:.8em;cursor:pointer;font-family:inherit}
+.lb-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.lb-empty{text-align:center;padding:32px;color:var(--text2);font-size:.9em}
+.lb-recent{font-size:.82em}
+.lb-recent td{padding:8px 14px}
+.lb-time{color:var(--text2);font-size:.85em}
+.lb-setup{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:16px 0;text-align:center}
+.lb-setup code{background:var(--card2);padding:2px 8px;border-radius:4px;font-size:.85em}
+.lb-url-input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:.85em;font-family:monospace;margin:10px 0}
+.lb-url-input:focus{border-color:var(--accent);outline:none}
 </style>
 </head>
 <body>
@@ -126,19 +186,279 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 </div>
 
 <script>
+/* === HVAC AUTH SYSTEM === */
+const AUTH_CSS = `
+.auth-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:2000;display:flex;align-items:center;justify-content:center}
+.auth-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:36px;width:100%;max-width:380px;text-align:center}
+.auth-card h2{font-size:1.6em;font-weight:700;margin-bottom:4px}
+.auth-card .auth-sub{color:var(--text2);font-size:.88em;margin-bottom:24px}
+.auth-input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:12px 16px;color:var(--text);font-size:.95em;font-family:inherit;margin-bottom:12px;outline:none;transition:.2s}
+.auth-input:focus{border-color:var(--accent)}
+.auth-input::placeholder{color:var(--text2)}
+.auth-btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:1em;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;margin-bottom:8px}
+.auth-btn.primary{background:var(--accent);color:#fff}
+.auth-btn.primary:hover{background:var(--accent2)}
+.auth-btn.secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.auth-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.auth-error{color:var(--no);font-size:.82em;margin-bottom:10px;min-height:20px}
+.auth-switch{color:var(--text2);font-size:.82em;margin-top:12px}
+.auth-switch a{color:var(--accent);cursor:pointer;text-decoration:none}
+.auth-switch a:hover{text-decoration:underline}
+.user-bar{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 16px;margin-bottom:20px}
+.user-bar .user-name{font-weight:600;font-size:.9em;display:flex;align-items:center;gap:6px}
+.user-bar .user-actions{display:flex;gap:8px;align-items:center}
+.user-bar button{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;color:var(--text2);font-size:.75em;cursor:pointer;font-family:inherit;transition:.15s}
+.user-bar button:hover{border-color:var(--accent);color:var(--text)}
+.user-bar .logout-btn:hover{border-color:var(--no);color:var(--no)}
+/* Admin panel */
+.admin-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:20px 0}
+.admin-panel h3{font-size:1em;font-weight:700;color:var(--accent);margin-bottom:12px}
+.admin-table{width:100%;border-collapse:collapse;font-size:.85em}
+.admin-table th{text-align:left;padding:8px 10px;background:var(--card2);color:var(--text2);font-size:.75em;text-transform:uppercase;letter-spacing:.04em}
+.admin-table td{padding:8px 10px;border-bottom:1px solid var(--border)}
+.admin-table tr:hover td{background:var(--card2)}
+.export-section{text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+`;
+
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + c;
+    hash |= 0;
+  }
+  return 'h' + Math.abs(hash).toString(36);
+}
+
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem('hvac_users')) || {}; } catch(e) { return {}; }
+}
+function saveUsers(u) { localStorage.setItem('hvac_users', JSON.stringify(u)); }
+function getSession() { return localStorage.getItem('hvac_session') || ''; }
+function setSession(u) { localStorage.setItem('hvac_session', u); }
+function clearSession() { localStorage.removeItem('hvac_session'); }
+function isAdmin() { return getSession() === 'admin'; }
+
+function createUser(username, password) {
+  const users = getUsers();
+  const uLower = username.toLowerCase().trim();
+  if (!uLower || uLower.length < 2) return 'Username must be at least 2 characters';
+  if (!password || password.length < 3) return 'Password must be at least 3 characters';
+  if (users[uLower]) return 'Username already taken';
+  users[uLower] = { hash: simpleHash(password), created: Date.now(), display: username.trim() };
+  saveUsers(users);
+  return null;
+}
+
+function loginUser(username, password) {
+  const users = getUsers();
+  const uLower = username.toLowerCase().trim();
+  if (!users[uLower]) return 'Username not found';
+  if (users[uLower].hash !== simpleHash(password)) return 'Incorrect password';
+  setSession(uLower);
+  return null;
+}
+
+function ensureAdmin() {
+  const users = getUsers();
+  if (!users['admin']) {
+    users['admin'] = { hash: simpleHash('admin2026'), created: Date.now(), display: 'Admin' };
+    saveUsers(users);
+  }
+}
+
+function getUserStatsAll(username) {
+  const toolIds = ['hydronics','steam','hvacr','firstyear','adv_refrig','practice','master'];
+  const result = {};
+  let totalRight = 0, totalWrong = 0;
+  toolIds.forEach(tid => {
+    try {
+      const key = 'hvac_stats_' + tid + '_' + username;
+      const data = JSON.parse(localStorage.getItem(key)) || {};
+      let right = 0, wrong = 0, attempted = 0;
+      for (const k in data) {
+        right += data[k].right || 0;
+        wrong += data[k].wrong || 0;
+        if ((data[k].right || 0) + (data[k].wrong || 0) > 0) attempted++;
+      }
+      result[tid] = { right, wrong, attempted };
+      totalRight += right;
+      totalWrong += wrong;
+    } catch(e) {}
+  });
+  result._total = { right: totalRight, wrong: totalWrong };
+  return result;
+}
+
+function exportProgress() {
+  const user = getSession();
+  if (!user) return;
+  const toolIds = ['hydronics','steam','hvacr','firstyear','adv_refrig','practice','master'];
+  const data = { user: user, exported: new Date().toISOString(), tools: {} };
+  toolIds.forEach(tid => {
+    const key = 'hvac_stats_' + tid + '_' + user;
+    const raw = localStorage.getItem(key);
+    if (raw) data.tools[tid] = JSON.parse(raw);
+  });
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'hvac_progress_' + user + '.json';
+  a.click();
+}
+
+function importProgress(file) {
+  const user = getSession();
+  if (!user) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.tools) {
+        for (const tid in data.tools) {
+          const key = 'hvac_stats_' + tid + '_' + user;
+          const existing = JSON.parse(localStorage.getItem(key) || '{}');
+          const imported = data.tools[tid];
+          for (const qn in imported) {
+            if (!existing[qn]) existing[qn] = imported[qn];
+            else {
+              existing[qn].right = Math.max(existing[qn].right || 0, imported[qn].right || 0);
+              existing[qn].wrong = Math.max(existing[qn].wrong || 0, imported[qn].wrong || 0);
+              existing[qn].last = Math.max(existing[qn].last || 0, imported[qn].last || 0);
+            }
+          }
+          localStorage.setItem(key, JSON.stringify(existing));
+        }
+        alert('Progress imported successfully!');
+        location.reload();
+      }
+    } catch(err) { alert('Error importing file: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+ensureAdmin();
+
+
+
+// === LEADERBOARD ===
+var SCRIPT_URL = localStorage.getItem('hvac_script_url') || '';
+var lbData = null;
+var lbTab = 'overall';
+
+function saveScriptUrl(url) {
+  url = url.trim();
+  localStorage.setItem('hvac_script_url', url);
+  SCRIPT_URL = url;
+  fetchLeaderboard();
+}
+
+function fetchLeaderboard() {
+  if (!SCRIPT_URL) return;
+  var el = document.getElementById('lb-content');
+  if (el) el.innerHTML = '<div class="lb-empty">Loading...</div>';
+  fetch(SCRIPT_URL + '?action=leaderboard')
+    .then(function(r) { return r.json(); })
+    .then(function(data) { lbData = data; renderLeaderboardContent(); })
+    .catch(function(err) { if(el) el.innerHTML = '<div class="lb-empty">Could not connect. Check your Script URL.</div>'; });
+}
+
+function submitScore(toolName, correct, wrong, total, points, maxPts) {
+  if (!SCRIPT_URL) return;
+  var user = getSession();
+  if (!user || user === 'admin') return;
+  var users = getUsers();
+  var display = users[user] ? users[user].display : user;
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      action: 'submit_score',
+      username: display,
+      tool: toolName,
+      correct: correct,
+      wrong: wrong,
+      total: total,
+      points: points,
+      maxPoints: maxPts
+    })
+  }).catch(function(){});
+}
+
+function setLbTab(t) { lbTab = t; renderLeaderboardContent(); }
+
+function renderLeaderboardContent() {
+  var el = document.getElementById('lb-content');
+  if (!el || !lbData) return;
+  
+  var html = '<div class="lb-tabs">';
+  html += '<button class="lb-tab ' + (lbTab==='overall'?'active':'') + '" onclick="setLbTab(\'overall\')">Overall Rankings</button>';
+  html += '<button class="lb-tab ' + (lbTab==='recent'?'active':'') + '" onclick="setLbTab(\'recent\')">Recent Scores</button>';
+  html += '</div>';
+  
+  if (lbTab === 'overall') {
+    if (!lbData.leaderboard || lbData.leaderboard.length === 0) {
+      html += '<div class="lb-empty">No scores yet. Be the first!</div>';
+    } else {
+      html += '<table class="lb-table"><tr><th>#</th><th>Student</th><th>Accuracy</th><th>Correct</th><th>Wrong</th><th>Quizzes</th></tr>';
+      lbData.leaderboard.forEach(function(u, i) {
+        var rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+        var color = u.accuracy >= 70 ? 'var(--ok)' : u.accuracy >= 50 ? 'var(--warn)' : 'var(--no)';
+        html += '<tr><td class="lb-rank ' + rankClass + '">' + (i+1) + '</td>';
+        html += '<td class="lb-name">' + u.username + '</td>';
+        html += '<td><div class="lb-bar"><div class="lb-fill" style="width:' + u.accuracy + '%;background:' + color + '"></div></div><span class="lb-acc" style="color:' + color + '">' + u.accuracy + '%</span></td>';
+        html += '<td style="color:var(--ok)">' + u.totalCorrect + '</td>';
+        html += '<td style="color:var(--no)">' + u.totalWrong + '</td>';
+        html += '<td>' + u.attempts + '</td></tr>';
+      });
+      html += '</table>';
+    }
+  } else {
+    if (!lbData.recent || lbData.recent.length === 0) {
+      html += '<div class="lb-empty">No recent scores.</div>';
+    } else {
+      html += '<table class="lb-table lb-recent"><tr><th>Student</th><th>Tool</th><th>Score</th><th>When</th></tr>';
+      lbData.recent.forEach(function(r) {
+        var color = r.pct >= 70 ? 'var(--ok)' : r.pct >= 50 ? 'var(--warn)' : 'var(--no)';
+        var when = '';
+        try { var d = new Date(r.date); var now = new Date(); var diff = Math.floor((now-d)/60000); when = diff < 60 ? diff+'m ago' : diff < 1440 ? Math.floor(diff/60)+'h ago' : Math.floor(diff/1440)+'d ago'; } catch(e){ when = ''; }
+        html += '<tr><td class="lb-name">' + r.username + '</td><td>' + r.tool + '</td><td><span class="lb-acc" style="color:' + color + '">' + r.correct + '/' + r.total + ' (' + r.pct + '%)</span></td><td class="lb-time">' + when + '</td></tr>';
+      });
+      html += '</table>';
+    }
+  }
+  
+  el.innerHTML = html;
+}
+
+function getLeaderboardHTML() {
+  if (!SCRIPT_URL) {
+    return '<div class="lb-section"><div class="section-head"><h2>🏅 Leaderboard</h2><div class="line"></div></div>' +
+      '<div class="lb-setup"><p style="margin-bottom:10px">Enter your Google Apps Script URL to enable the shared leaderboard:</p>' +
+      '<input class="lb-url-input" id="lb-url" placeholder="https://script.google.com/macros/s/your-id/exec">' +
+      '<button class="auth-btn primary" style="max-width:200px;margin:0 auto" onclick="saveScriptUrl(document.getElementById(\'lb-url\').value)">Connect</button>' +
+      '<p style="color:var(--text2);font-size:.75em;margin-top:10px">See setup instructions in the README</p></div></div>';
+  }
+  return '<div class="lb-section"><div class="section-head"><h2>🏅 Leaderboard</h2><div class="line"></div></div>' +
+    '<div class="lb-card"><div class="lb-header"><h3>Class Rankings</h3><button class="lb-refresh" onclick="fetchLeaderboard()">↻ Refresh</button></div>' +
+    '<div id="lb-content"><div class="lb-empty">Loading...</div></div></div></div>';
+}
+
 const TOOLS = [
-  { id: 'master', file: 'Master_HVAC_Exam.html', icon: '🏆', name: 'Master Exam', desc: 'All subjects combined with category and type selectors. The ultimate review tool.', questions: 544, types: '5 subjects', master: true },
+  { id: 'master', file: 'Master_HVAC_Exam.html', icon: '🏆', name: 'Master Exam', desc: 'All subjects combined with category and type selectors. The ultimate review tool.', questions: 561, types: '5 subjects', master: true },
   { id: 'hydronics', file: 'Hydronics_Final_Study_Tool.html', icon: '💧', name: 'Hydronics Final', desc: 'Hydronic heating/cooling systems — piping, valves, pumps, heat transfer.', questions: 119, types: 'MC, T/F, Short, Fill, Essay' },
   { id: 'steam', file: 'Steam_Exam_Study_Tool.html', icon: '⚙️', name: 'Steam Final', desc: 'Steam systems — boilers, traps, condensate, pressure, safety controls.', questions: 143, types: 'MC, T/F, Fill, Essay, Numerical' },
-  { id: 'hvacr', file: 'HVACR_Practice_Exam_Full.html', icon: '❄️', name: 'HVAC/R Refrigeration', desc: 'Core refrigeration — cycle, components, PT relationships, charging, piping.', questions: 120, types: 'Multiple Choice' },
-  { id: 'firstyear', file: '1st_Year_Final_Study_Tool.html', icon: '❄️', name: '1st Year Final', desc: 'First year service review — refrigeration fundamentals and troubleshooting.', questions: 120, types: 'Multiple Choice' },
-  { id: 'adv_refrig', file: 'Adv_Refrigeration_Final_Study_Tool.html', icon: '🔬', name: 'Adv. Refrigeration', desc: 'Advanced refrigeration — chillers, compressors, capacity control, system design.', questions: 174, types: 'MC, True/False' },
-  { id: 'practice', file: 'Practice_Test_Study_Tool.html', icon: '📐', name: 'Practice Test', desc: 'Fundamentals and calculations — BTU, pressure, volume, density, conversions.', questions: 61, types: 'Multiple Choice' },
+  { id: 'hvacr', file: 'HVACR_Practice_Exam_Full.html', icon: '❄️', name: 'HVAC/R Refrigeration', desc: 'Core refrigeration — cycle, components, PT relationships, charging.', questions: 120, types: 'Multiple Choice' },
+  { id: 'firstyear', file: '1st_Year_Final_Study_Tool.html', icon: '❄️', name: '1st Year Final', desc: 'First year review — refrigeration fundamentals and troubleshooting.', questions: 120, types: 'Multiple Choice' },
+  { id: 'adv_refrig', file: 'Adv_Refrigeration_Final_Study_Tool.html', icon: '🔬', name: 'Adv. Refrigeration', desc: 'Advanced refrigeration — chillers, compressors, capacity control.', questions: 174, types: 'MC, True/False' },
+  { id: 'practice', file: 'Practice_Test_Study_Tool.html', icon: '📐', name: 'Practice Test', desc: 'Fundamentals — BTU, pressure, volume, density, conversions.', questions: 61, types: 'Multiple Choice' },
 ];
 
 function getToolStats(toolId) {
+  const user = getSession();
+  if (!user) return { right: 0, wrong: 0, attempted: 0 };
   try {
-    const data = JSON.parse(localStorage.getItem('hvac_stats_' + toolId)) || {};
+    const data = JSON.parse(localStorage.getItem('hvac_stats_' + toolId + '_' + user)) || {};
     let right = 0, wrong = 0, attempted = 0;
     for (const k in data) {
       right += data[k].right || 0;
@@ -149,60 +469,117 @@ function getToolStats(toolId) {
   } catch(e) { return { right: 0, wrong: 0, attempted: 0 }; }
 }
 
-function renderTools() {
-  const grid = document.getElementById('tools-grid');
-  let totalRight = 0, totalWrong = 0, totalAttempted = 0;
+function renderAuth() {
+  const app = document.getElementById('app');
+  app.innerHTML = '<div class="auth-overlay"><div class="auth-card">' +
+    '<div style="font-size:48px;margin-bottom:8px">❄️</div>' +
+    '<h2>HVAC Study Hub</h2>' +
+    '<div class="auth-sub">Sign in to track your progress</div>' +
+    '<div class="auth-error" id="auth-error"></div>' +
+    '<div id="auth-form">' +
+      '<input class="auth-input" id="auth-user" placeholder="Username" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('auth-pass').focus()">' +
+      '<input class="auth-input" id="auth-pass" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">' +
+      '<button class="auth-btn primary" onclick="doLogin()">Sign In</button>' +
+      '<button class="auth-btn secondary" onclick="doSignup()">Create Account</button>' +
+    '</div>' +
+    '<div class="auth-switch">Default admin: <b>admin</b> / <b>admin2026</b></div>' +
+  '</div></div>';
+  document.getElementById('auth-user').focus();
+}
 
-  grid.innerHTML = TOOLS.map(tool => {
+function doLogin() {
+  const u = document.getElementById('auth-user').value;
+  const p = document.getElementById('auth-pass').value;
+  const err = loginUser(u, p);
+  if (err) document.getElementById('auth-error').textContent = err;
+  else renderApp();
+}
+
+function doSignup() {
+  const u = document.getElementById('auth-user').value;
+  const p = document.getElementById('auth-pass').value;
+  const err = createUser(u, p);
+  if (err) { document.getElementById('auth-error').textContent = err; return; }
+  loginUser(u, p);
+  renderApp();
+}
+
+function doLogout() {
+  clearSession();
+  renderAuth();
+}
+
+function renderApp() {
+  const user = getSession();
+  const users = getUsers();
+  const displayName = users[user] ? users[user].display : user;
+  const app = document.getElementById('app');
+  
+  let totalRight = 0, totalWrong = 0, totalAttempted = 0;
+  const toolCards = TOOLS.map(tool => {
     const stats = getToolStats(tool.id);
     totalRight += stats.right;
     totalWrong += stats.wrong;
     totalAttempted += stats.attempted;
-
     const pct = stats.right + stats.wrong > 0 ? Math.round(stats.right / (stats.right + stats.wrong) * 100) : 0;
     const progColor = pct >= 70 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : stats.attempted > 0 ? 'var(--no)' : 'var(--border)';
-
     let progressHTML = '';
     if (stats.attempted > 0) {
-      progressHTML = '<div class="tool-progress">' +
-        '<div class="tool-prog-bar"><div class="tool-prog-fill" style="width:' + Math.min(100, Math.round(stats.attempted / tool.questions * 100)) + '%;background:' + progColor + '"></div></div>' +
-        '<div class="tool-prog-pct" style="color:' + progColor + '">' + pct + '%</div></div>';
+      progressHTML = '<div class="tool-progress"><div class="tool-prog-bar"><div class="tool-prog-fill" style="width:' + Math.min(100, Math.round(stats.attempted / tool.questions * 100)) + '%;background:' + progColor + '"></div></div><div class="tool-prog-pct" style="color:' + progColor + '">' + pct + '%</div></div>';
     }
-
-    let histBadge = '';
-    if (stats.attempted > 0) {
-      histBadge = '<span class="tool-badge history">' + stats.attempted + '/' + tool.questions + ' seen</span>';
-    }
-
-    return '<a href="' + tool.file + '" class="tool-card' + (tool.master ? ' master' : '') + '">' +
-      '<div class="tool-icon">' + tool.icon + '</div>' +
-      '<div class="tool-name">' + tool.name + '</div>' +
-      '<div class="tool-desc">' + tool.desc + '</div>' +
-      '<div class="tool-meta">' +
-        '<span class="tool-badge questions">' + tool.questions + ' questions</span>' +
-        '<span class="tool-badge types">' + tool.types + '</span>' +
-        histBadge +
-      '</div>' +
-      progressHTML +
-    '</a>';
+    let histBadge = stats.attempted > 0 ? '<span class="tool-badge history">' + stats.attempted + '/' + tool.questions + ' seen</span>' : '';
+    return '<a href="' + tool.file + '" class="tool-card' + (tool.master ? ' master' : '') + '"><div class="tool-icon">' + tool.icon + '</div><div class="tool-name">' + tool.name + '</div><div class="tool-desc">' + tool.desc + '</div><div class="tool-meta"><span class="tool-badge questions">' + tool.questions + ' questions</span><span class="tool-badge types">' + tool.types + '</span>' + histBadge + '</div>' + progressHTML + '</a>';
   }).join('');
 
-  // Update overview stats
-  const totalQ = TOOLS.reduce((s, t) => s + t.questions, 0);
-  document.getElementById('ov-total').textContent = totalQ.toLocaleString();
+  const accuracy = totalRight + totalWrong > 0 ? Math.round(totalRight / (totalRight + totalWrong) * 100) : 0;
+  const accColor = accuracy >= 70 ? 'var(--ok)' : accuracy >= 50 ? 'var(--warn)' : totalRight + totalWrong > 0 ? 'var(--no)' : 'var(--text2)';
 
-  if (totalRight + totalWrong > 0) {
-    const accuracy = Math.round(totalRight / (totalRight + totalWrong) * 100);
-    const accColor = accuracy >= 70 ? 'var(--ok)' : accuracy >= 50 ? 'var(--warn)' : 'var(--no)';
-    document.getElementById('ov-correct').textContent = totalRight.toLocaleString();
-    document.getElementById('ov-correct').style.color = 'var(--ok)';
-    document.getElementById('ov-attempted').textContent = totalAttempted.toLocaleString();
-    document.getElementById('ov-accuracy').textContent = accuracy + '%';
-    document.getElementById('ov-accuracy').style.color = accColor;
+  // Admin dashboard
+  let adminHTML = '';
+  if (isAdmin()) {
+    const allUsers = getUsers();
+    let rows = '';
+    for (const uname in allUsers) {
+      if (uname === 'admin') continue;
+      const ustats = getUserStatsAll(uname);
+      const uTotal = ustats._total;
+      const uPct = uTotal.right + uTotal.wrong > 0 ? Math.round(uTotal.right / (uTotal.right + uTotal.wrong) * 100) : 0;
+      const uColor = uPct >= 70 ? 'var(--ok)' : uPct >= 50 ? 'var(--warn)' : uTotal.right + uTotal.wrong > 0 ? 'var(--no)' : 'var(--text2)';
+      rows += '<tr><td><b>' + allUsers[uname].display + '</b></td><td style="color:var(--ok)">' + uTotal.right + '</td><td style="color:var(--no)">' + uTotal.wrong + '</td><td style="color:' + uColor + '">' + (uTotal.right + uTotal.wrong > 0 ? uPct + '%' : '—') + '</td><td>' + new Date(allUsers[uname].created).toLocaleDateString() + '</td></tr>';
+    }
+    if (rows) {
+      adminHTML = '<div class="section-head"><h2>👑 Admin Dashboard</h2><div class="line"></div></div>' +
+        '<div class="admin-panel"><h3>All Students</h3><table class="admin-table"><tr><th>Student</th><th>Correct</th><th>Wrong</th><th>Accuracy</th><th>Joined</th></tr>' + rows + '</table></div>';
+    } else {
+      adminHTML = '<div class="section-head"><h2>👑 Admin Dashboard</h2><div class="line"></div></div>' +
+        '<div class="admin-panel"><h3>No students yet</h3><p style="color:var(--text2);font-size:.85em">Students will appear here once they create accounts and start studying.</p></div>';
+    }
   }
+
+  app.innerHTML = '<div class="page">' +
+    '<div class="user-bar"><div class="user-name">👤 ' + displayName + (isAdmin() ? ' <span style="font-size:.7em;color:var(--warn);background:rgba(251,191,36,.1);padding:2px 8px;border-radius:4px">ADMIN</span>' : '') + '</div>' +
+      '<div class="user-actions">' +
+        '<button onclick="exportProgress()" title="Download your progress">📥 Export</button>' +
+        '<label style="cursor:pointer"><button onclick="this.parentElement.querySelector(\'input\').click()" title="Upload progress from another device">📤 Import</button><input type="file" accept=".json" style="display:none" onchange="importProgress(this.files[0])"></label>' +
+        '<button class="logout-btn" onclick="doLogout()">Sign Out</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="hero"><span class="hero-icon">❄️</span><h1>HVAC Study Hub</h1><div class="tagline">Interactive Exam Prep — All Subjects, All Tools</div><div class="class-badge">UA Local 400 — Class of 2026</div></div>' +
+    '<div class="overview"><div class="ov-card"><div class="ov-val" style="color:var(--accent)">1,281</div><div class="ov-label">Total Questions</div></div>' +
+    '<div class="ov-card"><div class="ov-val" style="color:var(--ok)">' + (totalRight || '—') + '</div><div class="ov-label">Correct</div></div>' +
+    '<div class="ov-card"><div class="ov-val" style="color:var(--warn)">' + (totalAttempted || '—') + '</div><div class="ov-label">Attempted</div></div>' +
+    '<div class="ov-card"><div class="ov-val" style="color:' + accColor + '">' + (totalRight + totalWrong > 0 ? accuracy + '%' : '—') + '</div><div class="ov-label">Accuracy</div></div></div>' +
+    adminHTML +
+    '<div class="section-head"><h2>Study Tools</h2><div class="line"></div></div>' +
+    '<div class="tools-grid">' + toolCards + '</div>' +
+    getLeaderboardHTML()+'<div class="section-head"><h2>Features</h2><div class="line"></div></div>' +
+    '<div class="features"><div class="feat"><div class="feat-icon">🧠</div><div class="feat-name">Spaced Repetition</div><div class="feat-desc">Shuffle prioritizes missed questions</div></div><div class="feat"><div class="feat-icon">📖</div><div class="feat-name">PT Chart Reference</div><div class="feat-desc">R-410A, R-22, R-134a tables</div></div><div class="feat"><div class="feat-icon">🖩</div><div class="feat-name">Calculator</div><div class="feat-desc">BTU, pressure, volume calcs</div></div><div class="feat"><div class="feat-icon">⏱</div><div class="feat-name">Timed Mode</div><div class="feat-desc">Simulate real exam conditions</div></div><div class="feat"><div class="feat-icon">⚠️</div><div class="feat-name">Weak Spots</div><div class="feat-desc">Drill your problem areas</div></div><div class="feat"><div class="feat-icon">📊</div><div class="feat-name">Progress Sync</div><div class="feat-desc">Export/import between devices</div></div></div>' +
+    '<div class="footer">Built for HVAC/R exam prep &bull; 7 study tools &bull; 1,281 questions with detailed explanations</div></div>';
 }
 
-renderTools();
+// Init
+if (getSession()) { renderApp(); fetchLeaderboard(); }
+else renderAuth();
 </script>
 </body>
 </html>
