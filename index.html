@@ -392,8 +392,8 @@ function renderLeaderboardContent() {
   if (!el || !lbData) return;
   
   var html = '<div class="lb-tabs">';
-  html += '<button class="lb-tab ' + (lbTab==='overall'?'active':'') + '" onclick="setLbTab(\'overall\')">Overall Rankings</button>';
-  html += '<button class="lb-tab ' + (lbTab==='recent'?'active':'') + '" onclick="setLbTab(\'recent\')">Recent Scores</button>';
+  html += '<button class="lb-tab ' + (lbTab==='overall'?'active':'') + '" onclick="setLbTab(&quot;overall&quot;)">Overall Rankings</button>';
+  html += '<button class="lb-tab ' + (lbTab==='recent'?'active':'') + '" onclick="setLbTab(&quot;recent&quot;)">Recent Scores</button>';
   html += '</div>';
   
   if (lbTab === 'overall') {
@@ -436,7 +436,7 @@ function getLeaderboardHTML() {
     return '<div class="lb-section"><div class="section-head"><h2>🏅 Leaderboard</h2><div class="line"></div></div>' +
       '<div class="lb-setup"><p style="margin-bottom:10px">Enter your Google Apps Script URL to enable the shared leaderboard:</p>' +
       '<input class="lb-url-input" id="lb-url" placeholder="https://script.google.com/macros/s/your-id/exec">' +
-      '<button class="auth-btn primary" style="max-width:200px;margin:0 auto" onclick="saveScriptUrl(document.getElementById(\'lb-url\').value)">Connect</button>' +
+      '<button class="auth-btn primary" style="max-width:200px;margin:0 auto" onclick="saveScriptUrl(document.getElementById(&quot;lb-url&quot;).value)">Connect</button>' +
       '<p style="color:var(--text2);font-size:.75em;margin-top:10px">See setup instructions in the README</p></div></div>';
   }
   return '<div class="lb-section"><div class="section-head"><h2>🏅 Leaderboard</h2><div class="line"></div></div>' +
@@ -477,8 +477,8 @@ function renderAuth() {
     '<div class="auth-sub">Sign in to track your progress</div>' +
     '<div class="auth-error" id="auth-error"></div>' +
     '<div id="auth-form">' +
-      '<input class="auth-input" id="auth-user" placeholder="Username" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('auth-pass').focus()">' +
-      '<input class="auth-input" id="auth-pass" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">' +
+      '<input class="auth-input" id="auth-user" placeholder="Username" autocomplete="username" onkeydown="if(event.keyCode===13)document.getElementById("auth-pass").focus()">' +
+      '<input class="auth-input" id="auth-pass" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.keyCode===13)doLogin()">' +
       '<button class="auth-btn primary" onclick="doLogin()">Sign In</button>' +
       '<button class="auth-btn secondary" onclick="doSignup()">Create Account</button>' +
     '</div>' +
@@ -489,7 +489,7 @@ function renderAuth() {
 
 function doLogin() {
   const u = document.getElementById('auth-user').value;
-  const p = document.getElementById('auth-pass').value;
+  const p = document.getElementById("auth-pass").value;
   const err = loginUser(u, p);
   if (err) document.getElementById('auth-error').textContent = err;
   else renderApp();
@@ -497,7 +497,7 @@ function doLogin() {
 
 function doSignup() {
   const u = document.getElementById('auth-user').value;
-  const p = document.getElementById('auth-pass').value;
+  const p = document.getElementById("auth-pass").value;
   const err = createUser(u, p);
   if (err) { document.getElementById('auth-error').textContent = err; return; }
   loginUser(u, p);
