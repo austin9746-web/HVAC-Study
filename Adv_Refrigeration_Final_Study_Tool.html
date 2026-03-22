@@ -128,14 +128,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="app" id="app"></div>
 <script>
 
-/* Session check */
+/* Session check — guest mode if not logged in */
 (function(){
-  var user = localStorage.getItem('hvac_session');
-  if (!user) { window.location.href = 'index.html'; return; }
-  window._hvacUser = user;
-  var users = {};
-  try { users = JSON.parse(localStorage.getItem('hvac_users')) || {}; } catch(e) {}
-  window._hvacDisplayName = users[user] ? users[user].display : user;
+  try {
+    var user = localStorage.getItem('hvac_session');
+    window._hvacUser = user || 'guest';
+    if (user) {
+      var users = {};
+      try { users = JSON.parse(localStorage.getItem('hvac_users')) || {}; } catch(e) {}
+      window._hvacDisplayName = users[user] ? users[user].display : user;
+    } else {
+      window._hvacDisplayName = 'Guest';
+    }
+  } catch(e) {
+    window._hvacUser = 'guest';
+    window._hvacDisplayName = 'Guest';
+  }
 })();
 const Q=[{n:1,p:2,t:'mc',q:'The high side of the vapor compression cycle contains the:',o:['Condenser','Evaporator','Suction accumulator','Condenser and evaporator'],a:0,ex:['CORRECT — Condenser','Incorrect. Correct: Condenser','Incorrect. Correct: Condenser','Incorrect. Correct: Condenser']},
 {n:2,p:2,t:'mc',q:'A shaft seal is required in:',o:['A hermetic compressor','A semi-hermetic compressor','An open type compressor','Tin can type compressor'],a:2,ex:['CORRECT — The condenser is on the high side (high pressure/temperature) of the vapor compression cycle, receiving hot discharge gas from the compressor and rejecting heat to condense it back to liquid.','Incorrect. The evaporator is on the low side — it operates at low pressure and absorbs heat.','Incorrect. The suction accumulator is on the low side, installed in the suction line before the compressor.','Incorrect. Only the condenser is on the high side. The evaporator is on the low side separated by the metering device.']},

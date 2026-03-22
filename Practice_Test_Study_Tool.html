@@ -128,14 +128,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="app" id="app"></div>
 <script>
 
-/* Session check */
+/* Session check — guest mode if not logged in */
 (function(){
-  var user = localStorage.getItem('hvac_session');
-  if (!user) { window.location.href = 'index.html'; return; }
-  window._hvacUser = user;
-  var users = {};
-  try { users = JSON.parse(localStorage.getItem('hvac_users')) || {}; } catch(e) {}
-  window._hvacDisplayName = users[user] ? users[user].display : user;
+  try {
+    var user = localStorage.getItem('hvac_session');
+    window._hvacUser = user || 'guest';
+    if (user) {
+      var users = {};
+      try { users = JSON.parse(localStorage.getItem('hvac_users')) || {}; } catch(e) {}
+      window._hvacDisplayName = users[user] ? users[user].display : user;
+    } else {
+      window._hvacDisplayName = 'Guest';
+    }
+  } catch(e) {
+    window._hvacUser = 'guest';
+    window._hvacDisplayName = 'Guest';
+  }
 })();
 const Q=[{n:1,p:2,t:'mc',q:'A cylindrical tank has a radius of 2.5 ft and height of 8 ft. What is it\'s volume in gallons?',o:['1,174.96 gallons','942.48 gallons','1,570.80 gallons','589.05 gallons'],a:0,ex:['CORRECT — V = πr²h = π × 2.5² × 8 = π × 6.25 × 8 = 157.08 ft³. Convert: 157.08 × 7.48 gal/ft³ = 1,174.96 gallons.','Incorrect. Check: V = πr²h = 157.08 ft³ × 7.48 = 1,174.96 gal.','Incorrect. π × 2.5² × 8 = 157.08, not 210 ft³.','Incorrect. Use V = πr²h, then multiply by 7.48 gal/ft³.']},
 {n:2,p:2,t:'mc',q:'A 75-foot column of water exerts what pressure at the bottom?',o:['32.475 psi','21.65 psi','75 psi','43.3 psi'],a:0,ex:['CORRECT — P = H × 0.433 psi/ft = 75 × 0.433 = 32.475 psi.','Incorrect. 21.65 would be 50 ft × 0.433.','Incorrect. Must multiply by 0.433, not use height directly.','Incorrect. 43.3 would be 100 ft × 0.433.']},

@@ -146,14 +146,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <a href="index.html" class="back-btn">← Study Hub</a>
 <div class="app" id="app"></div>
 <script>
-/* Session check */
+/* Session check — guest mode if not logged in */
 (function(){
-  var user = localStorage.getItem('hvac_session');
-  if (!user) { window.location.href = 'index.html'; return; }
-  window._hvacUser = user;
-  var users = {};
-  try { users = JSON.parse(localStorage.getItem('hvac_users')) || {}; } catch(e) {}
-  window._hvacDisplayName = users[user] ? users[user].display : user;
+  try {
+    var user = localStorage.getItem('hvac_session');
+    window._hvacUser = user || 'guest';
+    if (user) {
+      var users = {};
+      try { users = JSON.parse(localStorage.getItem('hvac_users')) || {}; } catch(e) {}
+      window._hvacDisplayName = users[user] ? users[user].display : user;
+    } else {
+      window._hvacDisplayName = 'Guest';
+    }
+  } catch(e) {
+    window._hvacUser = 'guest';
+    window._hvacDisplayName = 'Guest';
+  }
 })();
 const Q=[{n:1,cat:'Hydronics',p:1,t:'mc',q:'Hydronic heating and cooling is efficient because the ___ of water circulating through the system is automatically increased or decreased to meet varying weather conditions.',o:['temperature','amount','pressure','speed'],a:0,ex:['CORRECT — Hydronic systems adjust WATER TEMPERATURE to match heating/cooling demand. As outdoor temps change, supply water temp is automatically raised or lowered via reset controls for optimal efficiency.','The volume of water stays relatively constant in a closed system. Flow rate may vary with zone valves, but \'amount\' isn\'t the primary efficiency mechanism.','System pressure stays relatively constant via the expansion tank and PRV. Pressure isn\'t varied to meet weather conditions.','While flow velocity may change with variable-speed pumps, the key efficiency feature is temperature adjustment of the circulating water.'],h:'temperature'},
 {n:2,cat:'Hydronics',p:1,t:'mc',q:'Since the greatest amount of body heat is lost by ___, it is logical that the system that most satisfactorily controls this loss is best able to create a comfort condition.',o:['conduction','convection','zoning','radiation'],a:3,ex:['Conduction requires direct contact between objects — accounts for a small fraction of body heat loss in typical indoor environments.','Convection (air movement) accounts for some heat loss but is secondary to radiation in typical comfort conditions.','Zoning is a system design strategy, not a method of body heat transfer.','CORRECT — The body loses the greatest amount of heat through RADIATION (infrared energy exchange with surrounding surfaces). Hydronic radiant systems directly address this by warming room surfaces, making them the most comfortable heating method.'],h:'radiation'},
