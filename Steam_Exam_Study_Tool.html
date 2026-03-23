@@ -607,7 +607,7 @@ function initEnhancements(toolId) {
   
   function saveSession() {
     try {
-      if (S.scr !== 'quiz') { localStorage.removeItem(SESSION_KEY); return; }
+      if (S.scr !== 'quiz') { return; }
       var state = { i: S.i, ans: S.ans, txt: S.txt, chk: S.chk, mode: S.mode, graded: S.graded, scr: S.scr };
       if (S.activeQ) state.activeQns = S.activeQ.map(function(q){return q.n;});
       if (S.shuf) state.shufQns = S.shuf.map(function(q){return q.n;});
