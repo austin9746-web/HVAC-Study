@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Refrigerant Charging Walkthrough</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:800px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.6em;font-weight:800;text-align:center;margin:44px 0 6px}
+.sub{text-align:center;color:var(--text2);margin-bottom:16px}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab{flex:1;padding:12px;border-radius:var(--r);border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;font-family:inherit;font-size:.85em;font-weight:600;transition:.2s}
+.tab:hover{border-color:var(--accent)}.tab.active{border-color:var(--accent);background:rgba(74,158,255,.06);color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:14px}
+.card h2{font-size:1.05em;font-weight:700;color:var(--accent);margin-bottom:8px}
+.desc{font-size:.85em;color:var(--text2);margin-bottom:14px;line-height:1.5}
+.ir{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:12px}
+.ig{flex:1;min-width:140px}
+.ig label{display:block;font-size:.73em;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:4px}
+.ig input,.ig select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:1em;font-family:monospace;outline:none}
+.ig input:focus{border-color:var(--accent)}
+.rb{border:2px solid;border-radius:var(--r);padding:16px;margin-top:14px}
+.rb h3{font-size:.85em;text-transform:uppercase;margin-bottom:8px}
+.ri{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.88em}
+.ri:last-child{border:none}
+.rl{color:var(--text2)}.rv{font-family:monospace;font-weight:700}
+.verdict{padding:16px;border-radius:var(--r);margin-top:14px;text-align:center;font-size:1.1em;font-weight:700}
+.step-list{counter-reset:steps}
+.step-item{counter-increment:steps;padding:12px 12px 12px 48px;border-bottom:1px solid var(--border);position:relative;font-size:.9em;line-height:1.6}
+.step-item:last-child{border:none}
+.step-item::before{content:counter(steps);position:absolute;left:8px;top:12px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.82em;font-weight:700}
+.note{background:rgba(251,191,36,.06);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:var(--text2);margin-top:12px;line-height:1.5}
+.note strong{color:var(--warn)}
+@media(max-width:600px){.ir{flex-direction:column}.app{padding:8px}h1{font-size:1.3em;margin-top:50px}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app">
+<h1>&#x2744;&#xfe0f; Charging Walkthrough</h1>
+<p class="sub">Step-by-step subcooling &amp; superheat method with live diagnosis</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="sT('sc')">Subcooling Method</button>
+  <button class="tab" onclick="sT('sh')">Superheat Method</button>
+  <button class="tab" onclick="sT('guide')">When to Use Which</button>
+</div>
+
+<div id="tab-sc" class="card">
+  <h2>Subcooling Method (TXV Systems)</h2>
+  <div class="desc">Used for systems with a TXV (thermostatic expansion valve). Measure liquid line pressure and temperature to determine charge level.</div>
+  <div class="ir">
+    <div class="ig"><label>Refrigerant</label><select id="sc-ref" onchange="calcSC()"><option value="r410a" selected>R-410A</option><option value="r454b">R-454B</option><option value="r22">R-22</option><option value="r134a">R-134a</option><option value="r407c">R-407C</option></select></div>
+    <div class="ig"><label>Liquid Line Pressure (PSIG)</label><input type="number" id="sc-press" value="350" step="1" oninput="calcSC()"></div>
+    <div class="ig"><label>Liquid Line Temp (°F)</label><input type="number" id="sc-temp" value="95" step="0.5" oninput="calcSC()"></div>
+    <div class="ig"><label>Target Subcooling (°F)</label><input type="number" id="sc-target" value="12" step="1" oninput="calcSC()"></div>
+  </div>
+  <div id="sc-result"></div>
+  <div class="step-list" style="margin-top:14px;background:var(--card2);border-radius:var(--r);padding:8px 0">
+    <div class="step-item">Connect gauges to service ports. Run system 10-15 minutes to stabilize.</div>
+    <div class="step-item">Read <strong>liquid (high side) pressure</strong> from your gauges.</div>
+    <div class="step-item">Look up the <strong>saturation temperature</strong> for that pressure on the PT chart.</div>
+    <div class="step-item">Measure <strong>actual liquid line temperature</strong> with a clamp thermometer near the condenser outlet.</div>
+    <div class="step-item">Calculate: <strong>Subcooling = Saturation Temp − Actual Liquid Temp</strong></div>
+    <div class="step-item">Compare to target (typically 10-15°F). Adjust charge as needed.</div>
+  </div>
+</div>
+
+<div id="tab-sh" class="card" style="display:none">
+  <h2>Superheat Method (Fixed Orifice Systems)</h2>
+  <div class="desc">Used for systems with a fixed metering device (piston, capillary tube). Measure suction line pressure and temperature.</div>
+  <div class="ir">
+    <div class="ig"><label>Refrigerant</label><select id="sh-ref" onchange="calcSH()"><option value="r410a" selected>R-410A</option><option value="r454b">R-454B</option><option value="r22">R-22</option><option value="r134a">R-134a</option><option value="r407c">R-407C</option></select></div>
+    <div class="ig"><label>Suction Pressure (PSIG)</label><input type="number" id="sh-press" value="118" step="1" oninput="calcSH()"></div>
+    <div class="ig"><label>Suction Line Temp (°F)</label><input type="number" id="sh-temp" value="55" step="0.5" oninput="calcSH()"></div>
+    <div class="ig"><label>Target Superheat (°F)</label><input type="number" id="sh-target" value="12" step="1" oninput="calcSH()"></div>
+  </div>
+  <div id="sh-result"></div>
+  <div class="step-list" style="margin-top:14px;background:var(--card2);border-radius:var(--r);padding:8px 0">
+    <div class="step-item">Connect gauges. Run system 10-15 minutes to stabilize.</div>
+    <div class="step-item">Read <strong>suction (low side) pressure</strong> from gauges.</div>
+    <div class="step-item">Look up <strong>saturation temperature</strong> for that pressure on PT chart.</div>
+    <div class="step-item">Measure <strong>actual suction line temp</strong> with clamp thermometer 6" from compressor.</div>
+    <div class="step-item">Calculate: <strong>Superheat = Actual Suction Temp − Saturation Temp</strong></div>
+    <div class="step-item">Compare to target. For fixed orifice, also check outdoor temp charging chart from manufacturer.</div>
+  </div>
+</div>
+
+<div id="tab-guide" class="card" style="display:none">
+  <h2>When to Use Which Method</h2>
+  <div style="background:var(--card2);border-radius:var(--r);padding:16px;margin-bottom:14px">
+    <h3 style="color:var(--accent);font-size:.9em;margin-bottom:8px">Subcooling Method</h3>
+    <p style="font-size:.88em;color:var(--text2)">Use when: <strong>TXV (thermostatic expansion valve)</strong> is the metering device. The TXV automatically adjusts superheat, so you use subcooling to set the charge. Target: <strong>10-15°F</strong> subcooling (check manufacturer specs).</p>
+  </div>
+  <div style="background:var(--card2);border-radius:var(--r);padding:16px;margin-bottom:14px">
+    <h3 style="color:var(--warn);font-size:.9em;margin-bottom:8px">Superheat Method</h3>
+    <p style="font-size:.88em;color:var(--text2)">Use when: <strong>Fixed orifice (piston or cap tube)</strong> is the metering device. With no TXV to regulate, superheat directly indicates charge level. Target: <strong>8-12°F</strong> (varies by conditions — use manufacturer charging chart).</p>
+  </div>
+  <div class="note"><strong>Key Rule:</strong> Low subcooling or high superheat = undercharged (add refrigerant). High subcooling or low superheat = overcharged (recover refrigerant). Always weigh charge in when possible — it's the most accurate method.</div>
+  <div class="note" style="margin-top:8px"><strong>A2L Systems (R-454B):</strong> Same charging methods apply, but use A2L-rated recovery equipment, leak detectors, and follow charge limits. Do NOT mix with R-410A.</div>
+</div>
+</div>
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+// Simplified PT lookup (key pressures → sat temp)
+var PT={
+  r410a:[[48.5,0],[79,20],[120.4,40],[174.9,60],[244.9,80],[333.4,100],[443.2,120],[577,140]],
+  r454b:[[45.3,0],[74,20],[112,40],[160.8,60],[223.3,80],[300.8,100],[395.9,120],[511.3,140]],
+  r22:[[29.2,0],[49.4,20],[74.8,40],[106.5,60],[145.3,80],[192.3,100],[248.8,120],[316.1,140]],
+  r134a:[[9.2,0],[25.2,20],[46.1,40],[73.1,60],[107.6,80],[151.1,100],[205.3,120],[271.8,140]],
+  r407c:[[36.2,0],[63.1,20],[98.4,40],[143.3,60],[199.4,80],[268.2,100],[351.8,120]]
+};
+
+function satTemp(ref, psig){
+  var data=PT[ref];if(!data)return null;
+  for(var i=0;i<data.length-1;i++){
+    if(psig>=data[i][0]&&psig<=data[i+1][0]){
+      var frac=(psig-data[i][0])/(data[i+1][0]-data[i][0]);
+      return data[i][1]+frac*(data[i+1][1]-data[i][1]);
+    }
+  }
+  if(psig<=data[0][0])return data[0][1];
+  if(psig>=data[data.length-1][0])return data[data.length-1][1];
+  return null;
+}
+
+function sT(id){['sc','sh','guide'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===id?'':'none';});document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',['sc','sh','guide'][i]===id);});}
+
+function calcSC(){
+  var ref=document.getElementById('sc-ref').value;
+  var press=parseFloat(document.getElementById('sc-press').value)||0;
+  var temp=parseFloat(document.getElementById('sc-temp').value)||0;
+  var target=parseFloat(document.getElementById('sc-target').value)||12;
+  var sat=satTemp(ref, press);
+  if(sat===null){document.getElementById('sc-result').innerHTML='<div class="rb" style="border-color:var(--no)">Pressure out of range for '+ref.toUpperCase()+'</div>';return;}
+  var sc=sat-temp;
+  var diff=sc-target;
+  var color=Math.abs(diff)<=2?'var(--ok)':diff<-2?'var(--no)':'var(--warn)';
+  var verdict='';
+  if(Math.abs(diff)<=2){verdict='<div class="verdict" style="background:rgba(52,211,153,.08);color:var(--ok)">&#x2705; Charge is good (within 2°F of target)</div>';}
+  else if(sc<target){verdict='<div class="verdict" style="background:rgba(248,113,113,.08);color:var(--no)">&#x26a0; UNDERCHARGED — Subcooling is '+Math.abs(diff).toFixed(1)+'°F below target. Add refrigerant slowly and recheck.</div>';}
+  else{verdict='<div class="verdict" style="background:rgba(251,191,36,.08);color:var(--warn)">&#x26a0; OVERCHARGED — Subcooling is '+diff.toFixed(1)+'°F above target. Recover refrigerant and recheck.</div>';}
+  document.getElementById('sc-result').innerHTML=
+    '<div class="rb" style="border-color:'+color+'"><h3 style="color:'+color+'">Subcooling Analysis</h3>'+
+    '<div class="ri"><span class="rl">Liquid pressure</span><span class="rv">'+press+' psig</span></div>'+
+    '<div class="ri"><span class="rl">Saturation temp (from PT chart)</span><span class="rv">'+sat.toFixed(1)+'°F</span></div>'+
+    '<div class="ri"><span class="rl">Actual liquid line temp</span><span class="rv">'+temp+'°F</span></div>'+
+    '<div class="ri"><span class="rl">Subcooling (sat − actual)</span><span class="rv" style="color:'+color+';font-size:1.1em">'+sc.toFixed(1)+'°F</span></div>'+
+    '<div class="ri"><span class="rl">Target</span><span class="rv">'+target+'°F</span></div>'+
+    '</div>'+verdict;
+}
+
+function calcSH(){
+  var ref=document.getElementById('sh-ref').value;
+  var press=parseFloat(document.getElementById('sh-press').value)||0;
+  var temp=parseFloat(document.getElementById('sh-temp').value)||0;
+  var target=parseFloat(document.getElementById('sh-target').value)||12;
+  var sat=satTemp(ref, press);
+  if(sat===null){document.getElementById('sh-result').innerHTML='<div class="rb" style="border-color:var(--no)">Pressure out of range</div>';return;}
+  var sh=temp-sat;
+  var diff=sh-target;
+  var color=Math.abs(diff)<=2?'var(--ok)':diff>2?'var(--no)':'var(--warn)';
+  var verdict='';
+  if(Math.abs(diff)<=2){verdict='<div class="verdict" style="background:rgba(52,211,153,.08);color:var(--ok)">&#x2705; Charge is good (within 2°F of target)</div>';}
+  else if(sh>target){verdict='<div class="verdict" style="background:rgba(248,113,113,.08);color:var(--no)">&#x26a0; UNDERCHARGED — Superheat is '+diff.toFixed(1)+'°F above target. Add refrigerant slowly and recheck.</div>';}
+  else{verdict='<div class="verdict" style="background:rgba(251,191,36,.08);color:var(--warn)">&#x26a0; OVERCHARGED — Superheat is '+Math.abs(diff).toFixed(1)+'°F below target. Risk of liquid slugging! Recover refrigerant.</div>';}
+  document.getElementById('sh-result').innerHTML=
+    '<div class="rb" style="border-color:'+color+'"><h3 style="color:'+color+'">Superheat Analysis</h3>'+
+    '<div class="ri"><span class="rl">Suction pressure</span><span class="rv">'+press+' psig</span></div>'+
+    '<div class="ri"><span class="rl">Saturation temp (from PT chart)</span><span class="rv">'+sat.toFixed(1)+'°F</span></div>'+
+    '<div class="ri"><span class="rl">Actual suction line temp</span><span class="rv">'+temp+'°F</span></div>'+
+    '<div class="ri"><span class="rl">Superheat (actual − sat)</span><span class="rv" style="color:'+color+';font-size:1.1em">'+sh.toFixed(1)+'°F</span></div>'+
+    '<div class="ri"><span class="rl">Target</span><span class="rv">'+target+'°F</span></div>'+
+    '</div>'+verdict;
+}
+calcSC();calcSH();
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>

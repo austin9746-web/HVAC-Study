@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Electrical Symbols — HVAC Flashcards</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{max-width:700px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.6em;font-weight:800;text-align:center;margin:44px 0 6px}
+.sub{text-align:center;color:var(--text2);margin-bottom:20px}
+.fc-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:32px;margin:16px 0;min-height:280px;cursor:pointer;transition:.3s;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.fc-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.fc-card.flipped{border-color:var(--ok)}
+.fc-label{position:absolute;top:12px;left:16px;font-size:.7em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);font-weight:600}
+.fc-tap{position:absolute;bottom:12px;right:16px;font-size:.75em;color:var(--text2)}
+.fc-cat{position:absolute;top:12px;right:16px;font-size:.68em;padding:2px 8px;border-radius:8px;background:rgba(74,158,255,.1);color:var(--accent);font-weight:600}
+.fc-symbol{margin:16px 0}
+.fc-answer{margin-top:16px;padding-top:16px;border-top:2px solid var(--border);text-align:center;width:100%}
+.fc-name{font-size:1.2em;font-weight:700;color:var(--ok);margin-bottom:6px}
+.fc-desc{font-size:.88em;color:var(--text2);line-height:1.5}
+.fc-controls{display:flex;gap:10px;justify-content:center;margin-top:16px}
+.fc-btn{padding:10px 24px;border-radius:8px;border:2px solid;cursor:pointer;font-family:inherit;font-size:.88em;font-weight:600;transition:.2s}
+.fc-knew{border-color:var(--ok);color:var(--ok);background:rgba(52,211,153,.06)}.fc-knew:hover{background:rgba(52,211,153,.15)}
+.fc-didnt{border-color:var(--no);color:var(--no);background:rgba(248,113,113,.06)}.fc-didnt:hover{background:rgba(248,113,113,.15)}
+.fc-progress{display:flex;gap:20px;justify-content:center;margin:12px 0;font-size:.85em}
+.fc-stat{text-align:center}.fc-sv{font-size:1.3em;font-weight:700;font-family:monospace}
+.pb{height:6px;background:var(--card2);border-radius:3px;margin:8px 0;overflow:hidden}.pf{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+.nav{display:flex;justify-content:space-between;margin-top:12px}.nb{padding:10px 20px;border:2px solid var(--border);background:var(--card);color:var(--text);border-radius:8px;cursor:pointer;font-family:inherit;font-size:.88em;font-weight:600;transition:.2s}.nb:hover{border-color:var(--accent)}
+.res{text-align:center;padding:24px}.sc{width:120px;height:120px;border-radius:50%;border:4px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:16px auto}
+.pct{font-size:2em;font-weight:800}.of{font-size:.8em;color:var(--text2)}
+.modes{display:flex;gap:10px;margin:16px 0;justify-content:center;flex-wrap:wrap}
+.mb{padding:12px 20px;border:2px solid var(--border);border-radius:var(--r);cursor:pointer;background:var(--card);text-align:center;transition:.2s;min-width:120px}
+.mb:hover{border-color:var(--accent)}.mb.on{border-color:var(--accent);background:rgba(74,158,255,.06)}
+.mb h3{font-size:.9em;margin-bottom:2px}.mb p{font-size:.75em;color:var(--text2)}
+.go{background:var(--accent);color:#fff;border:none;padding:14px 48px;border-radius:var(--r);font-size:1em;font-weight:700;cursor:pointer;margin-top:16px;font-family:inherit}
+.grid-view{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:16px 0}
+.grid-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;transition:.2s}
+.grid-item:hover{border-color:var(--accent)}
+.grid-item .gi-name{font-size:.78em;color:var(--text2);margin-top:6px}
+@media(max-width:600px){.fc-card{padding:24px 16px;min-height:240px}.nav{position:sticky;bottom:0;background:var(--bg);padding:10px;border-top:1px solid var(--border)}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app" id="app"></div>
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+// SVG symbols - each is a small inline SVG
+var SYMBOLS = [
+  {cat:'Switches',name:'Normally Open (NO) Switch',desc:'Open in rest position. Closes when activated. Used for push buttons, pressure switches that close on rise.',
+   svg:'<svg viewBox="0 0 120 60" width="120"><line x1="10" y1="40" x2="45" y2="40" stroke="currentColor" stroke-width="3"/><line x1="75" y1="40" x2="110" y2="40" stroke="currentColor" stroke-width="3"/><circle cx="45" cy="40" r="4" fill="currentColor"/><circle cx="75" cy="40" r="4" fill="currentColor"/><line x1="45" y1="40" x2="72" y2="22" stroke="currentColor" stroke-width="3"/></svg>'},
+  {cat:'Switches',name:'Normally Closed (NC) Switch',desc:'Closed at rest. Opens when activated. Safety switches (HPS, LPS, overloads) are typically NC — they open to break the circuit on a fault.',
+   svg:'<svg viewBox="0 0 120 60" width="120"><line x1="10" y1="40" x2="45" y2="40" stroke="currentColor" stroke-width="3"/><line x1="75" y1="40" x2="110" y2="40" stroke="currentColor" stroke-width="3"/><circle cx="45" cy="40" r="4" fill="currentColor"/><circle cx="75" cy="40" r="4" fill="currentColor"/><line x1="45" y1="38" x2="75" y2="30" stroke="currentColor" stroke-width="3"/></svg>'},
+  {cat:'Switches',name:'SPDT Switch (Single Pole Double Throw)',desc:'One input, two possible outputs. Used in changeover switches and some thermostats — connects to one of two circuits.',
+   svg:'<svg viewBox="0 0 120 70" width="120"><line x1="10" y1="40" x2="45" y2="40" stroke="currentColor" stroke-width="3"/><circle cx="45" cy="40" r="4" fill="currentColor"/><circle cx="85" cy="25" r="4" fill="currentColor"/><circle cx="85" cy="55" r="4" fill="currentColor"/><line x1="85" y1="25" x2="110" y2="25" stroke="currentColor" stroke-width="3"/><line x1="85" y1="55" x2="110" y2="55" stroke="currentColor" stroke-width="3"/><line x1="45" y1="40" x2="82" y2="25" stroke="currentColor" stroke-width="3"/></svg>'},
+  {cat:'Switches',name:'Pressure Switch',desc:'Opens or closes based on system pressure. Circle with "P" inside or attached to switch symbol. HPS and LPS are pressure switches.',
+   svg:'<svg viewBox="0 0 120 70" width="120"><line x1="10" y1="40" x2="40" y2="40" stroke="currentColor" stroke-width="3"/><line x1="80" y1="40" x2="110" y2="40" stroke="currentColor" stroke-width="3"/><circle cx="40" cy="40" r="4" fill="currentColor"/><circle cx="80" cy="40" r="4" fill="currentColor"/><line x1="40" y1="40" x2="77" y2="25" stroke="currentColor" stroke-width="3"/><circle cx="60" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><text x="60" y="17" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">P</text></svg>'},
+  {cat:'Coils & Relays',name:'Relay / Contactor Coil',desc:'Electromagnetic coil. When energized (24V), creates a magnetic field that pulls in the relay or contactor contacts. Drawn as a circle or rectangle.',
+   svg:'<svg viewBox="0 0 120 60" width="120"><line x1="10" y1="30" x2="35" y2="30" stroke="currentColor" stroke-width="3"/><circle cx="60" cy="30" r="22" fill="none" stroke="currentColor" stroke-width="2.5"/><text x="60" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">C</text><line x1="82" y1="30" x2="110" y2="30" stroke="currentColor" stroke-width="3"/></svg>'},
+  {cat:'Coils & Relays',name:'Solenoid Valve',desc:'Electromagnetic valve. Coil energizes to open (or close) a valve. Used for gas valves, reversing valves, liquid line solenoids.',
+   svg:'<svg viewBox="0 0 120 70" width="120"><line x1="10" y1="35" x2="35" y2="35" stroke="currentColor" stroke-width="3"/><rect x="35" y="15" width="50" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/><line x1="48" y1="22" x2="48" y2="48" stroke="currentColor" stroke-width="2"/><line x1="60" y1="22" x2="60" y2="48" stroke="currentColor" stroke-width="2"/><line x1="72" y1="22" x2="72" y2="48" stroke="currentColor" stroke-width="2"/><line x1="85" y1="35" x2="110" y2="35" stroke="currentColor" stroke-width="3"/><line x1="60" y1="55" x2="60" y2="65" stroke="currentColor" stroke-width="2"/><polygon points="54,65 66,65 60,58" fill="currentColor"/></svg>'},
+  {cat:'Coils & Relays',name:'Overload (Thermal)',desc:'Thermal protection device. Opens on excessive heat/current. Drawn as a zigzag or heater element. Protects motors from burnout.',
+   svg:'<svg viewBox="0 0 120 60" width="120"><line x1="10" y1="30" x2="25" y2="30" stroke="currentColor" stroke-width="3"/><path d="M25 30 L32 20 L39 40 L46 20 L53 40 L60 20 L67 40 L74 20 L81 40 L88 30" fill="none" stroke="currentColor" stroke-width="2.5"/><line x1="88" y1="30" x2="110" y2="30" stroke="currentColor" stroke-width="3"/></svg>'},
+  {cat:'Motors',name:'Motor (General)',desc:'Circle with "M" inside. Any electric motor — compressor, fan, pump. May have additional markings for single or three phase.',
+   svg:'<svg viewBox="0 0 120 60" width="120"><line x1="10" y1="30" x2="27" y2="30" stroke="currentColor" stroke-width="3"/><circle cx="60" cy="30" r="25" fill="none" stroke="currentColor" stroke-width="2.5"/><text x="60" y="37" text-anchor="middle" font-size="20" font-weight="700" fill="currentColor">M</text><line x1="85" y1="30" x2="110" y2="30" stroke="currentColor" stroke-width="3"/></svg>'},
+  {cat:'Motors',name:'Compressor (Hermetic)',desc:'Circle with internal detail. Represents hermetic compressor motor. Terminals labeled C (common), S (start), R (run).',
+   svg:'<svg viewBox="0 0 120 80" width="120"><circle cx="60" cy="40" r="28" fill="none" stroke="currentColor" stroke-width="2.5"/><line x1="45" y1="40" x2="55" y2="28" stroke="currentColor" stroke-width="2.5"/><line x1="55" y1="28" x2="55" y2="52" stroke="currentColor" stroke-width="2.5"/><line x1="55" y1="52" x2="75" y2="40" stroke="currentColor" stroke-width="2.5"/><text x="40" y="22" font-size="9" fill="currentColor" font-weight="600">C</text><text x="54" y="14" font-size="9" fill="currentColor" font-weight="600">S</text><text x="75" y="22" font-size="9" fill="currentColor" font-weight="600">R</text></svg>'},
+  {cat:'Capacitors',name:'Capacitor',desc:'Two parallel lines (plates). Stores electrical charge. Run capacitors stay in circuit. Start capacitors disconnect after motor starts. Rated in MFD.',
+   svg:'<svg viewBox="0 0 120 60" width="120"><line x1="10" y1="30" x2="48" y2="30" stroke="currentColor" stroke-width="3"/><line x1="48" y1="10" x2="48" y2="50" stroke="currentColor" stroke-width="3"/><line x1="62" y1="10" x2="62" y2="50" stroke="currentColor" stroke-width="3"/><line x1="62" y1="30" x2="110" y2="30" stroke="currentColor" stroke-width="3"/></svg>'},
+  {cat:'Power',name:'Transformer',desc:'Two coils side by side. Steps voltage up or down. In HVAC: typically 240V primary to 24V secondary for control circuits.',
+   svg:'<svg viewBox="0 0 120 70" width="120"><line x1="10" y1="20" x2="30" y2="20" stroke="currentColor" stroke-width="2"/><line x1="10" y1="50" x2="30" y2="50" stroke="currentColor" stroke-width="2"/><path d="M30 15 Q38 22 30 30 Q38 37 30 45 Q38 52 30 55" fill="none" stroke="currentColor" stroke-width="2.5"/><line x1="50" y1="15" x2="50" y2="55" stroke="currentColor" stroke-width="1.5"/><line x1="55" y1="15" x2="55" y2="55" stroke="currentColor" stroke-width="1.5"/><path d="M75 15 Q67 22 75 30 Q67 37 75 45 Q67 52 75 55" fill="none" stroke="currentColor" stroke-width="2.5"/><line x1="75" y1="20" x2="110" y2="20" stroke="currentColor" stroke-width="2"/><line x1="75" y1="50" x2="110" y2="50" stroke="currentColor" stroke-width="2"/></svg>'},
+  {cat:'Power',name:'Fuse',desc:'Thin line through a rectangle or S-shape. Melts and breaks circuit on overcurrent. One-time protection — must be replaced after blowing.',
+   svg:'<svg viewBox="0 0 120 50" width="120"><line x1="10" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3"/><rect x="35" y="12" width="50" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><line x1="45" y1="25" x2="75" y2="25" stroke="currentColor" stroke-width="1.5"/><line x1="85" y1="25" x2="110" y2="25" stroke="currentColor" stroke-width="3"/></svg>'},
+  {cat:'Power',name:'Circuit Breaker',desc:'Switch symbol with a small rectangle or dot. Resettable overcurrent protection. Trips on overload, can be reset without replacement.',
+   svg:'<svg viewBox="0 0 120 60" width="120"><line x1="10" y1="35" x2="40" y2="35" stroke="currentColor" stroke-width="3"/><circle cx="40" cy="35" r="4" fill="currentColor"/><circle cx="80" cy="35" r="4" fill="currentColor"/><line x1="40" y1="35" x2="77" y2="18" stroke="currentColor" stroke-width="3"/><rect x="55" y="22" width="8" height="5" fill="currentColor"/><line x1="80" y1="35" x2="110" y2="35" stroke="currentColor" stroke-width="3"/></svg>'},
+  {cat:'Power',name:'Ground',desc:'Three horizontal lines decreasing in size, or a single line to a triangle. Every HVAC system requires proper grounding for safety.',
+   svg:'<svg viewBox="0 0 80 60" width="80"><line x1="40" y1="5" x2="40" y2="25" stroke="currentColor" stroke-width="3"/><line x1="20" y1="25" x2="60" y2="25" stroke="currentColor" stroke-width="3"/><line x1="26" y1="33" x2="54" y2="33" stroke="currentColor" stroke-width="2.5"/><line x1="32" y1="41" x2="48" y2="41" stroke="currentColor" stroke-width="2"/></svg>'},
+  {cat:'Controls',name:'Thermostat',desc:'Circle with "T" or temperature symbol. The brain of the system — senses temperature and switches circuits to call for heating or cooling.',
+   svg:'<svg viewBox="0 0 120 60" width="120"><line x1="10" y1="30" x2="32" y2="30" stroke="currentColor" stroke-width="3"/><circle cx="60" cy="30" r="22" fill="none" stroke="currentColor" stroke-width="2.5"/><text x="60" y="37" text-anchor="middle" font-size="20" font-weight="700" fill="currentColor">T</text><line x1="82" y1="30" x2="110" y2="30" stroke="currentColor" stroke-width="3"/></svg>'},
+  {cat:'Controls',name:'Flow Switch',desc:'Switch with a flag or paddle symbol. Detects fluid flow (water or air). Opens or closes based on flow presence. Used for freeze protection.',
+   svg:'<svg viewBox="0 0 120 70" width="120"><line x1="10" y1="40" x2="40" y2="40" stroke="currentColor" stroke-width="3"/><circle cx="40" cy="40" r="4" fill="currentColor"/><circle cx="80" cy="40" r="4" fill="currentColor"/><line x1="40" y1="40" x2="77" y2="25" stroke="currentColor" stroke-width="3"/><line x1="80" y1="40" x2="110" y2="40" stroke="currentColor" stroke-width="3"/><path d="M55 20 L65 10 L65 30 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>'},
+  {cat:'Misc',name:'Disconnect',desc:'Box with switch blade inside. Main power shutoff for equipment. Must be within sight of the unit per code. Lockout/tagout point.',
+   svg:'<svg viewBox="0 0 100 70" width="100"><rect x="15" y="10" width="70" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/><line x1="30" y1="35" x2="55" y2="20" stroke="currentColor" stroke-width="3"/><circle cx="30" cy="35" r="4" fill="currentColor"/><circle cx="60" cy="35" r="4" fill="currentColor"/><line x1="60" y1="35" x2="75" y2="35" stroke="currentColor" stroke-width="2"/></svg>'},
+  {cat:'Misc',name:'Junction / Connection',desc:'Filled dot where wires connect. If wires cross WITHOUT a dot, they do NOT connect. This distinction is critical for reading schematics correctly.',
+   svg:'<svg viewBox="0 0 80 60" width="80"><line x1="10" y1="30" x2="70" y2="30" stroke="currentColor" stroke-width="3"/><line x1="40" y1="5" x2="40" y2="55" stroke="currentColor" stroke-width="3"/><circle cx="40" cy="30" r="6" fill="currentColor"/></svg>'},
+  {cat:'Misc',name:'No Connection (Crossover)',desc:'Wires cross but do NOT connect. Shown as a bridge/hop or simply crossing lines without a dot. Critical to identify on schematics.',
+   svg:'<svg viewBox="0 0 80 60" width="80"><line x1="10" y1="30" x2="30" y2="30" stroke="currentColor" stroke-width="3"/><path d="M30 30 Q40 15 50 30" fill="none" stroke="currentColor" stroke-width="3"/><line x1="50" y1="30" x2="70" y2="30" stroke="currentColor" stroke-width="3"/><line x1="40" y1="5" x2="40" y2="55" stroke="currentColor" stroke-width="3"/></svg>'},
+];
+
+var state = {scr:'start',cards:[],i:0,flipped:false,knew:0,didnt:0,mode:'flash'};
+
+function shuffle(a){var b=[...a];for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+
+function render(){
+  var el=document.getElementById('app');
+  if(state.scr==='start')rStart(el);
+  else if(state.scr==='flash')rFlash(el);
+  else if(state.scr==='results')rResults(el);
+  else if(state.scr==='grid')rGrid(el);
+}
+
+function rStart(el){
+  el.innerHTML='<h1>&#x26a1; Electrical Symbols</h1><p class="sub">'+SYMBOLS.length+' HVAC Schematic Symbols — Flashcard Study</p>'+
+    '<div class="modes">'+
+    '<div class="mb on" onclick="startFlash()"><h3>Flashcards</h3><p>See symbol, guess the name</p></div>'+
+    '<div class="mb" onclick="state.scr=\'grid\';render()"><h3>Reference Grid</h3><p>View all symbols at once</p></div></div>'+
+    '<button class="go" onclick="startFlash()">Start Flashcards</button>';
+}
+
+function startFlash(){
+  state.cards=shuffle(SYMBOLS);state.i=0;state.flipped=false;state.knew=0;state.didnt=0;state.scr='flash';render();scrollTo(0,0);
+}
+
+function rFlash(el){
+  var s=state.cards[state.i];var total=state.cards.length;var pct=Math.round(state.i/total*100);
+  var ansHTML='';
+  if(state.flipped){
+    ansHTML='<div class="fc-answer"><div class="fc-name">'+s.name+'</div><div class="fc-desc">'+s.desc+'</div></div>';
+  }
+  el.innerHTML='<div style="text-align:center"><span style="color:var(--text2);font-size:.85em">'+(state.i+1)+' / '+total+'</span></div>'+
+    '<div class="pb"><div class="pf" style="width:'+pct+'%"></div></div>'+
+    '<div class="fc-progress"><div class="fc-stat"><div class="fc-sv" style="color:var(--ok)">'+state.knew+'</div><div style="font-size:.7em;color:var(--text2)">Knew</div></div><div class="fc-stat"><div class="fc-sv" style="color:var(--no)">'+state.didnt+'</div><div style="font-size:.7em;color:var(--text2)">Missed</div></div></div>'+
+    '<div class="fc-card'+(state.flipped?' flipped':'')+'" onclick="'+(state.flipped?'':'flip()')+'">'+
+    '<span class="fc-label">Symbol '+(state.i+1)+'</span>'+
+    '<span class="fc-cat">'+s.cat+'</span>'+
+    '<div class="fc-symbol">'+s.svg+'</div>'+
+    ansHTML+
+    (state.flipped?'':'<span class="fc-tap">Tap to reveal</span>')+
+    '</div>'+
+    (state.flipped?'<div class="fc-controls"><button class="fc-btn fc-knew" onclick="fcKnew()">Knew It</button><button class="fc-btn fc-didnt" onclick="fcDidnt()">Didn\'t Know</button></div>':'')+
+    '<div class="nav"><button class="nb" onclick="state.scr=\'start\';render()">Exit</button><button class="nb" onclick="skip()">Skip</button></div>';
+}
+
+function flip(){state.flipped=true;render();}
+function fcKnew(){state.knew++;next();}
+function fcDidnt(){state.didnt++;next();}
+function skip(){next();}
+function next(){state.i++;state.flipped=false;if(state.i>=state.cards.length){state.scr='results';}render();scrollTo(0,0);}
+
+function rResults(el){
+  var total=state.cards.length;var pct=total>0?Math.round(state.knew/total*100):0;var cc=pct>=70?'var(--ok)':pct>=50?'var(--warn)':'var(--no)';
+  el.innerHTML='<div class="res"><h2>Results</h2><div class="sc" style="border-color:'+cc+'"><div class="pct" style="color:'+cc+'">'+pct+'%</div><div class="of">Recall Rate</div></div>'+
+    '<div class="fc-progress"><div class="fc-stat"><div class="fc-sv" style="color:var(--ok)">'+state.knew+'</div><div style="font-size:.7em;color:var(--text2)">Knew</div></div><div class="fc-stat"><div class="fc-sv" style="color:var(--no)">'+state.didnt+'</div><div style="font-size:.7em;color:var(--text2)">Missed</div></div><div class="fc-stat"><div class="fc-sv" style="color:var(--text2)">'+(total-state.knew-state.didnt)+'</div><div style="font-size:.7em;color:var(--text2)">Skipped</div></div></div>'+
+    '<div style="margin-top:16px"><button class="go" onclick="startFlash()">Try Again</button><br><button class="nb" style="margin-top:10px" onclick="state.scr=\'grid\';render()">View All Symbols</button></div></div>';
+}
+
+function rGrid(el){
+  var html='<h1>&#x26a1; All Symbols</h1><p class="sub">Tap any symbol to see its name and description</p>'+
+    '<button class="nb" onclick="state.scr=\'start\';render()" style="margin-bottom:12px">&larr; Back</button>'+
+    '<div class="grid-view">';
+  SYMBOLS.forEach(function(s,i){
+    html+='<div class="grid-item" onclick="showSymbol('+i+')"><div>'+s.svg+'</div><div class="gi-name">'+s.name+'</div></div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+function showSymbol(i){
+  var s=SYMBOLS[i];
+  alert(s.name+'\n\n'+s.desc+'\n\nCategory: '+s.cat);
+}
+
+render();
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>

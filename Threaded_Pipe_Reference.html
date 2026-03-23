@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Threaded Pipe Fitting Reference</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:960px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.7em;font-weight:800;text-align:center;margin:44px 0 6px}
+.sub{text-align:center;color:var(--text2);margin-bottom:20px}
+.tabs{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap}
+.tab{flex:1;min-width:100px;padding:10px;border-radius:var(--r);border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;font-family:inherit;font-size:.8em;font-weight:600;transition:.2s}
+.tab:hover{border-color:var(--accent)}.tab.active{border-color:var(--accent);background:rgba(74,158,255,.06);color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.card h2{font-size:1.05em;font-weight:700;color:var(--accent);margin-bottom:8px}
+.card .desc{font-size:.85em;color:var(--text2);margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:.82em}
+th{padding:8px 6px;background:var(--card2);color:var(--accent);font-size:.72em;text-transform:uppercase;text-align:center;position:sticky;top:0}
+td{padding:7px 6px;border-bottom:1px solid var(--border);text-align:center;font-family:monospace}
+tr:hover td{background:rgba(74,158,255,.04)}
+.ir{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:14px}
+.ig{flex:1;min-width:130px}
+.ig label{display:block;font-size:.73em;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:4px}
+.ig input,.ig select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:1em;font-family:monospace;outline:none}
+.ig input:focus,.ig select:focus{border-color:var(--accent)}
+.rb{background:rgba(74,158,255,.06);border:2px solid var(--accent);border-radius:var(--r);padding:16px;margin-top:14px}
+.rb h3{font-size:.82em;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+.ri{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.88em}
+.ri:last-child{border:none}
+.rl{color:var(--text2)}.rv{font-family:monospace;font-weight:700;color:var(--ok)}
+.note{background:rgba(251,191,36,.06);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:var(--text2);margin-top:12px;line-height:1.5}
+.note strong{color:var(--warn)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:600px){.app{padding:8px}h1{font-size:1.3em;margin-top:50px}td,th{padding:5px 3px;font-size:.75em}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app">
+<h1>&#x1f6e0;&#xfe0f; Threaded Pipe Reference</h1>
+<p class="sub">Fitting Take-Offs, Thread Engagement &amp; Cut Lengths</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="sT('calc')">Calculator</button>
+  <button class="tab" onclick="sT('takeoff')">Take-Off Tables</button>
+  <button class="tab" onclick="sT('thread')">Thread Data</button>
+  <button class="tab" onclick="sT('ref')">Quick Reference</button>
+</div>
+
+<div id="tab-calc" class="card">
+  <h2>Cut Length Calculator</h2>
+  <div class="desc">Enter the center-to-center (or end-to-center) measurement from your print. Select pipe size and fitting types to calculate the exact cut length including thread engagement.</div>
+  <div class="ir">
+    <div class="ig"><label>Pipe Size</label><select id="p-size" onchange="calcPipe()"><option value="0.5" selected>1/2"</option><option value="0.75">3/4"</option><option value="1">1"</option><option value="1.25">1-1/4"</option><option value="1.5">1-1/2"</option><option value="2">2"</option><option value="2.5">2-1/2"</option><option value="3">3"</option><option value="4">4"</option></select></div>
+    <div class="ig"><label>Center-to-Center (inches)</label><input type="number" id="p-ctc" value="48" step="0.125" oninput="calcPipe()"></div>
+  </div>
+  <div class="ir">
+    <div class="ig"><label>Fitting End A</label><select id="p-fitA" onchange="calcPipe()"><option value="90el" selected>90° Elbow</option><option value="45el">45° Elbow</option><option value="tee">Tee</option><option value="coupling">Coupling</option><option value="union">Union</option><option value="none">None (threaded end)</option></select></div>
+    <div class="ig"><label>Fitting End B</label><select id="p-fitB" onchange="calcPipe()"><option value="90el" selected>90° Elbow</option><option value="45el">45° Elbow</option><option value="tee">Tee</option><option value="coupling">Coupling</option><option value="union">Union</option><option value="none">None (threaded end)</option></select></div>
+  </div>
+  <div id="p-result"></div>
+  <div class="note"><strong>Formula:</strong> Cut Length = C-to-C − Take-off A − Take-off B + Makeup A + Makeup B</div>
+</div>
+
+<div id="tab-takeoff" class="card" style="display:none">
+  <h2>Fitting Take-Off Dimensions (inches)</h2>
+  <div class="desc">Center-to-end (C-E) dimensions for standard malleable iron threaded fittings. Subtract these from your center-to-center measurement.</div>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Pipe Size</th><th>90° Elbow<br>C-E</th><th>45° Elbow<br>C-E</th><th>Tee<br>C-E</th><th>Coupling<br>½ length</th><th>Union<br>½ length</th></tr>
+    <tr><td>1/2"</td><td>3/4"</td><td>5/8"</td><td>3/4"</td><td>9/16"</td><td>1-1/16"</td></tr>
+    <tr><td>3/4"</td><td>7/8"</td><td>11/16"</td><td>7/8"</td><td>5/8"</td><td>1-5/16"</td></tr>
+    <tr><td>1"</td><td>1"</td><td>3/4"</td><td>1"</td><td>11/16"</td><td>1-1/2"</td></tr>
+    <tr><td>1-1/4"</td><td>1-1/8"</td><td>13/16"</td><td>1-1/8"</td><td>3/4"</td><td>1-5/8"</td></tr>
+    <tr><td>1-1/2"</td><td>1-1/4"</td><td>7/8"</td><td>1-1/4"</td><td>13/16"</td><td>1-3/4"</td></tr>
+    <tr><td>2"</td><td>1-1/2"</td><td>1-1/16"</td><td>1-1/2"</td><td>7/8"</td><td>2"</td></tr>
+    <tr><td>2-1/2"</td><td>1-3/4"</td><td>1-1/4"</td><td>1-3/4"</td><td>1"</td><td>2-1/4"</td></tr>
+    <tr><td>3"</td><td>2"</td><td>1-3/8"</td><td>2"</td><td>1-1/16"</td><td>2-1/2"</td></tr>
+    <tr><td>4"</td><td>2-1/2"</td><td>1-11/16"</td><td>2-1/2"</td><td>1-5/16"</td><td>3"</td></tr>
+  </table></div>
+  <div class="note"><strong>Take-off</strong> = distance from the center of the fitting to the end of the pipe thread. This is what you subtract from center-to-center to start figuring cut length.</div>
+</div>
+
+<div id="tab-thread" class="card" style="display:none">
+  <h2>Thread Engagement &amp; NPT Data</h2>
+  <div class="desc">How far the pipe screws into the fitting (makeup/engagement), plus NPT thread specifications.</div>
+  <div class="tbl-wrap">
+  <table>
+    <tr><th>Pipe Size</th><th>Threads/Inch<br>(TPI)</th><th>Thread Engagement<br>(Makeup)</th><th>Approx. Hand Tight<br>Turns</th><th>Approx. Wrench<br>Turns</th></tr>
+    <tr><td>1/2"</td><td>14</td><td>1/2"</td><td>3-4</td><td>2-3</td></tr>
+    <tr><td>3/4"</td><td>14</td><td>9/16"</td><td>3-4</td><td>2-3</td></tr>
+    <tr><td>1"</td><td>11.5</td><td>11/16"</td><td>3-4</td><td>2-3</td></tr>
+    <tr><td>1-1/4"</td><td>11.5</td><td>11/16"</td><td>3</td><td>2-3</td></tr>
+    <tr><td>1-1/2"</td><td>11.5</td><td>11/16"</td><td>3</td><td>2-3</td></tr>
+    <tr><td>2"</td><td>11.5</td><td>3/4"</td><td>3</td><td>2-3</td></tr>
+    <tr><td>2-1/2"</td><td>8</td><td>15/16"</td><td>3</td><td>2-3</td></tr>
+    <tr><td>3"</td><td>8</td><td>1"</td><td>3</td><td>2-3</td></tr>
+    <tr><td>4"</td><td>8</td><td>1-1/16"</td><td>3</td><td>2-3</td></tr>
+  </table></div>
+</div>
+
+<div id="tab-ref" class="card" style="display:none">
+  <h2>Quick Reference</h2>
+  <div class="card" style="border-color:var(--accent);margin-top:12px">
+    <h2>Pipe Dimensions</h2>
+    <div class="tbl-wrap"><table>
+      <tr><th>Nominal</th><th>OD</th><th>ID (Sch 40)</th><th>Wall (Sch 40)</th><th>Weight/ft</th></tr>
+      <tr><td>1/2"</td><td>0.840"</td><td>0.622"</td><td>0.109"</td><td>0.85 lb</td></tr>
+      <tr><td>3/4"</td><td>1.050"</td><td>0.824"</td><td>0.113"</td><td>1.13 lb</td></tr>
+      <tr><td>1"</td><td>1.315"</td><td>1.049"</td><td>0.133"</td><td>1.68 lb</td></tr>
+      <tr><td>1-1/4"</td><td>1.660"</td><td>1.380"</td><td>0.140"</td><td>2.27 lb</td></tr>
+      <tr><td>1-1/2"</td><td>1.900"</td><td>1.610"</td><td>0.145"</td><td>2.72 lb</td></tr>
+      <tr><td>2"</td><td>2.375"</td><td>2.067"</td><td>0.154"</td><td>3.65 lb</td></tr>
+      <tr><td>3"</td><td>3.500"</td><td>3.068"</td><td>0.216"</td><td>7.58 lb</td></tr>
+      <tr><td>4"</td><td>4.500"</td><td>4.026"</td><td>0.237"</td><td>10.79 lb</td></tr>
+    </table></div>
+  </div>
+  <div class="note" style="margin-top:14px"><strong>Remember:</strong> Nominal pipe size ≠ actual OD or ID. A "1-inch pipe" has an OD of 1.315". Always use actual dimensions for calculations. Teflon tape: wrap clockwise (when looking at thread end). 3-5 wraps for most joints.</div>
+</div>
+
+</div>
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+// Take-off data: [90el, 45el, tee, coupling_half, union_half]
+var TO={'0.5':[0.75,0.625,0.75,0.5625,1.0625],'0.75':[0.875,0.6875,0.875,0.625,1.3125],'1':[1.0,0.75,1.0,0.6875,1.5],'1.25':[1.125,0.8125,1.125,0.75,1.625],'1.5':[1.25,0.875,1.25,0.8125,1.75],'2':[1.5,1.0625,1.5,0.875,2.0],'2.5':[1.75,1.25,1.75,1.0,2.25],'3':[2.0,1.375,2.0,1.0625,2.5],'4':[2.5,1.6875,2.5,1.3125,3.0]};
+// Thread engagement (makeup)
+var MU={'0.5':0.5,'0.75':0.5625,'1':0.6875,'1.25':0.6875,'1.5':0.6875,'2':0.75,'2.5':0.9375,'3':1.0,'4':1.0625};
+var FIT_IDX={'90el':0,'45el':1,'tee':2,'coupling':3,'union':4,'none':-1};
+
+function toF(d){if(d===0)return'0"';var neg=d<0;if(neg)d=-d;var w=Math.floor(d),f=d-w,best='',bd=1,ds=[1,2,4,8,16];for(var i=0;i<ds.length;i++){var n=Math.round(f*ds[i]);if(n===ds[i]){w++;best='';break;}var df=Math.abs(f-n/ds[i]);if(df<bd){bd=df;best=n>0?n+'/'+ds[i]:'';}}var r='';if(w>0&&best)r=w+' '+best+'"';else if(w>0)r=w+'"';else if(best)r=best+'"';else r=d.toFixed(3)+'"';return neg?'-'+r:r;}
+
+function sT(id){['calc','takeoff','thread','ref'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===id?'':'none';});document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',['calc','takeoff','thread','ref'][i]===id);});}
+
+function calcPipe(){
+  var sz=document.getElementById('p-size').value;
+  var ctc=parseFloat(document.getElementById('p-ctc').value)||0;
+  var fitA=document.getElementById('p-fitA').value;
+  var fitB=document.getElementById('p-fitB').value;
+  var to=TO[sz]||TO['0.5'];
+  var mu=MU[sz]||0.5;
+  var toA=FIT_IDX[fitA]>=0?to[FIT_IDX[fitA]]:0;
+  var toB=FIT_IDX[fitB]>=0?to[FIT_IDX[fitB]]:0;
+  var muA=fitA!=='none'?mu:0;
+  var muB=fitB!=='none'?mu:0;
+  var cut=ctc-toA-toB+muA+muB;
+  var fitNameA=fitA==='none'?'Open end':fitA.replace('90el','90° Elbow').replace('45el','45° Elbow').replace('tee','Tee').replace('coupling','Coupling').replace('union','Union');
+  var fitNameB=fitB==='none'?'Open end':fitB.replace('90el','90° Elbow').replace('45el','45° Elbow').replace('tee','Tee').replace('coupling','Coupling').replace('union','Union');
+  document.getElementById('p-result').innerHTML=
+    '<div class="rb"><h3>Cut Length Calculation</h3>'+
+    '<div class="ri"><span class="rl">Center-to-Center</span><span class="rv">'+toF(ctc)+'</span></div>'+
+    '<div class="ri"><span class="rl">End A: '+fitNameA+' take-off</span><span class="rv">&minus; '+toF(toA)+'</span></div>'+
+    '<div class="ri"><span class="rl">End B: '+fitNameB+' take-off</span><span class="rv">&minus; '+toF(toB)+'</span></div>'+
+    '<div class="ri"><span class="rl">End A: thread engagement (makeup)</span><span class="rv">+ '+toF(muA)+'</span></div>'+
+    '<div class="ri"><span class="rl">End B: thread engagement (makeup)</span><span class="rv">+ '+toF(muB)+'</span></div>'+
+    '<div class="ri" style="border-top:2px solid var(--accent);padding-top:10px"><span class="rl" style="font-weight:700;font-size:1.05em">CUT LENGTH</span><span class="rv" style="font-size:1.2em">'+cut.toFixed(3)+'" = '+toF(cut)+'</span></div>'+
+    '</div>';
+}
+calcPipe();
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>

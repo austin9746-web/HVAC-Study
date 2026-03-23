@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EMT Conduit Bending Calculator</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#f59e0b;--accent2:#d97706;--ok:#34d399;--no:#f87171;--warn:#4a9eff;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#d97706;--ok:#16a34a;--no:#dc2626;--warn:#2563eb}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:900px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.8em;font-weight:800;text-align:center;margin:44px 0 6px}
+.sub{text-align:center;color:var(--text2);margin-bottom:20px;font-size:.9em}
+.tabs{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap}
+.tab{flex:1;min-width:90px;padding:10px 6px;border-radius:var(--r);border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;font-family:inherit;font-size:.78em;font-weight:600;transition:.2s}
+.tab:hover{border-color:var(--accent)}.tab.active{border-color:var(--accent);background:rgba(245,158,11,.06);color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px}
+.card h2{font-size:1.1em;font-weight:700;color:var(--accent);margin-bottom:4px}
+.card .desc{font-size:.85em;color:var(--text2);margin-bottom:16px;line-height:1.5}
+.ir{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:14px}
+.ig{flex:1;min-width:130px}
+.ig label{display:block;font-size:.73em;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.ig input,.ig select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:1em;font-family:monospace;outline:none}
+.ig input:focus,.ig select:focus{border-color:var(--accent)}
+.rb{background:rgba(245,158,11,.06);border:2px solid var(--accent);border-radius:var(--r);padding:16px;margin-top:14px}
+.rb h3{font-size:.82em;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.ri{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.88em}
+.ri:last-child{border:none}
+.rl{color:var(--text2)}.rv{font-family:monospace;font-weight:700;color:var(--ok)}
+.step-box{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:14px}
+.step{display:flex;align-items:start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88em}
+.step:last-child{border:none}
+.sn{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-size:.78em;font-weight:700;flex-shrink:0}
+.sv{margin-left:auto;font-family:monospace;font-weight:700;color:var(--accent);min-width:60px;text-align:right}
+.note{background:rgba(74,158,255,.06);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:var(--text2);margin-top:12px;line-height:1.5}
+.note strong{color:var(--warn)}
+.diagram{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-top:14px;text-align:center;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.86em;margin-top:8px}
+th{text-align:left;padding:7px 10px;background:var(--card2);color:var(--accent);font-size:.73em;text-transform:uppercase}
+td{padding:7px 10px;border-bottom:1px solid var(--border);font-family:monospace}
+.fc{background:var(--card);border:2px solid var(--accent);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.fc h3{font-size:.9em;font-weight:700;color:var(--accent);margin-bottom:8px}
+.fm{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:.86em;flex-wrap:wrap;gap:4px}
+.fm:last-child{border:none}
+.fn{font-weight:700}.ff{font-family:monospace;color:var(--accent)}
+@media(max-width:600px){.ir{flex-direction:column}.app{padding:8px}h1{font-size:1.3em;margin-top:50px}.tabs{gap:3px}.tab{min-width:70px;padding:8px 4px;font-size:.72em}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app">
+<h1>&#x1f4a1; EMT Conduit Bending</h1>
+<p class="sub">Hand Bender Calculator &amp; Reference</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="sT('stub')">Stub-Up</button>
+  <button class="tab" onclick="sT('b2b')">Back-to-Back</button>
+  <button class="tab" onclick="sT('offset')">Offset</button>
+  <button class="tab" onclick="sT('saddle3')">3pt Saddle</button>
+  <button class="tab" onclick="sT('saddle4')">4pt Saddle</button>
+  <button class="tab" onclick="sT('kick')">Kick</button>
+  <button class="tab" onclick="sT('ref')">Reference</button>
+</div>
+
+<!-- STUB-UP -->
+<div id="tab-stub" class="card">
+  <h2>Stub-Up (90&deg; Bend)</h2>
+  <div class="desc">A 90&deg; bend to make a stub that rises straight up. Subtract the take-up (deduct) from your desired stub height to find where to place the bender arrow.</div>
+  <div class="ir">
+    <div class="ig"><label>EMT Size</label><select id="s-size" onchange="cStub()"><option value="0.5" selected>1/2"</option><option value="0.75">3/4"</option><option value="1">1"</option><option value="1.25">1-1/4"</option></select></div>
+    <div class="ig"><label>Desired Stub Height (inches)</label><input type="number" id="s-height" value="12" step="0.125" oninput="cStub()"></div>
+  </div>
+  <div id="s-result"></div>
+  <div id="s-diagram" class="diagram"></div>
+  <div class="note"><strong>How to bend:</strong> Make your mark, place the bender ARROW on the mark, foot on bender, pull handle to 90&deg; using the spirit level on the bender.</div>
+</div>
+
+<!-- BACK-TO-BACK -->
+<div id="tab-b2b" class="card" style="display:none">
+  <h2>Back-to-Back 90&deg; Bends</h2>
+  <div class="desc">Two 90&deg; bends creating a U-shape. After making the first stub, flip the conduit and use the STAR/NOTCH mark on the bender to line up the second bend.</div>
+  <div class="ir">
+    <div class="ig"><label>EMT Size</label><select id="b-size" onchange="cB2B()"><option value="0.5" selected>1/2"</option><option value="0.75">3/4"</option><option value="1">1"</option><option value="1.25">1-1/4"</option></select></div>
+    <div class="ig"><label>Distance Between Bends (inches)</label><input type="number" id="b-dist" value="24" step="0.125" oninput="cB2B()"></div>
+    <div class="ig"><label>First Stub Height (inches)</label><input type="number" id="b-stub1" value="10" step="0.125" oninput="cB2B()"></div>
+  </div>
+  <div id="b-result"></div>
+  <div class="note"><strong>Procedure:</strong> 1) Make first stub. 2) Measure desired distance between bends from the back of the first bend. 3) Mark that point. 4) Flip conduit in bender, align STAR/NOTCH mark on the bender with your mark. 5) Bend to 90&deg;.</div>
+</div>
+
+<!-- OFFSET -->
+<div id="tab-offset" class="card" style="display:none">
+  <h2>Offset Bend</h2>
+  <div class="desc">Two equal-angle bends to move conduit around an obstacle. Enter the depth of offset and your bend angle to get the distance between bend marks.</div>
+  <div class="ir">
+    <div class="ig"><label>Offset Depth (inches)</label><input type="number" id="o-depth" value="4" step="0.125" oninput="cOff()"></div>
+    <div class="ig"><label>Bend Angle</label><select id="o-angle" onchange="cOff()"><option value="10">10&deg;</option><option value="22.5">22.5&deg;</option><option value="30" selected>30&deg;</option><option value="45">45&deg;</option><option value="60">60&deg;</option></select></div>
+    <div class="ig"><label>EMT Size</label><select id="o-size" onchange="cOff()"><option value="0.5" selected>1/2"</option><option value="0.75">3/4"</option><option value="1">1"</option><option value="1.25">1-1/4"</option></select></div>
+  </div>
+  <div id="o-result"></div>
+  <div id="o-diagram" class="diagram"></div>
+  <div class="note"><strong>Procedure:</strong> 1) Calculate travel (distance between marks). 2) Make two marks on conduit at that distance apart. 3) Place first mark at arrow, bend to angle. 4) Flip conduit 180&deg;, place second mark at arrow, bend to same angle. Keep bends in the same plane (anti-dog).</div>
+</div>
+
+<!-- 3-POINT SADDLE -->
+<div id="tab-saddle3" class="card" style="display:none">
+  <h2>3-Point Saddle Bend</h2>
+  <div class="desc">Goes over an obstacle without cutting the conduit. Three bends: a center bend at the full angle, two outer bends at half the angle, all in opposite directions.</div>
+  <div class="ir">
+    <div class="ig"><label>Saddle Depth (inches)</label><input type="number" id="s3-depth" value="2" step="0.125" oninput="cS3()"></div>
+    <div class="ig"><label>Center Angle</label><select id="s3-angle" onchange="cS3()"><option value="45" selected>45&deg;</option><option value="60">60&deg;</option></select></div>
+    <div class="ig"><label>Center of Obstruction (inches from end)</label><input type="number" id="s3-center" value="36" step="0.125" oninput="cS3()"></div>
+  </div>
+  <div id="s3-result"></div>
+  <div class="note"><strong>Procedure:</strong> 1) Mark center of obstruction on conduit. 2) Mark outer bend distances from center. 3) Bend center mark first (full angle). 4) Flip and bend each outer mark (half angle). Compensate for shrink!</div>
+</div>
+
+<!-- 4-POINT SADDLE -->
+<div id="tab-saddle4" class="card" style="display:none">
+  <h2>4-Point Saddle Bend</h2>
+  <div class="desc">For larger obstructions. Four bends create a flat-topped saddle. Uses two offset bends — one going up and one coming back down.</div>
+  <div class="ir">
+    <div class="ig"><label>Saddle Depth (inches)</label><input type="number" id="s4-depth" value="3" step="0.125" oninput="cS4()"></div>
+    <div class="ig"><label>Bend Angle</label><select id="s4-angle" onchange="cS4()"><option value="22.5">22.5&deg;</option><option value="30" selected>30&deg;</option><option value="45">45&deg;</option></select></div>
+    <div class="ig"><label>Width of Obstruction (inches)</label><input type="number" id="s4-width" value="6" step="0.125" oninput="cS4()"></div>
+    <div class="ig"><label>Center of Obstruction (from end)</label><input type="number" id="s4-center" value="36" step="0.125" oninput="cS4()"></div>
+  </div>
+  <div id="s4-result"></div>
+  <div class="note"><strong>Procedure:</strong> Essentially two offset bends. Four marks total. Bend 1&amp;2 are the first offset (up), bends 3&amp;4 are the second offset (back down). Account for shrink on both offsets.</div>
+</div>
+
+<!-- KICK (SINGLE BEND) -->
+<div id="tab-kick" class="card" style="display:none">
+  <h2>Kick / Single Bend</h2>
+  <div class="desc">A single bend at any angle. Used to change direction of a conduit run at a specific point.</div>
+  <div class="ir">
+    <div class="ig"><label>Bend Angle (degrees)</label><input type="number" id="k-angle" value="30" step="1" oninput="cKick()"></div>
+    <div class="ig"><label>Distance to Obstruction (inches)</label><input type="number" id="k-dist" value="12" step="0.125" oninput="cKick()"></div>
+    <div class="ig"><label>EMT Size</label><select id="k-size" onchange="cKick()"><option value="0.5" selected>1/2"</option><option value="0.75">3/4"</option><option value="1">1"</option><option value="1.25">1-1/4"</option></select></div>
+  </div>
+  <div id="k-result"></div>
+</div>
+
+<!-- REFERENCE -->
+<div id="tab-ref" class="card" style="display:none">
+  <h2>EMT Bending Reference</h2>
+  
+  <div class="fc">
+    <h3>Take-Up (Deduct) by EMT Size</h3>
+    <table><tr><th>EMT Size</th><th>Take-Up / Deduct</th><th>Bender Radius</th><th>Gain (90&deg;)</th></tr>
+    <tr><td>1/2"</td><td>5"</td><td>4"</td><td>3"</td></tr>
+    <tr><td>3/4"</td><td>6"</td><td>4-1/2"</td><td>3-1/4"</td></tr>
+    <tr><td>1"</td><td>8"</td><td>5-3/4"</td><td>3-5/8"</td></tr>
+    <tr><td>1-1/4"</td><td>11"</td><td>7-1/4"</td><td>3-1/4"</td></tr></table>
+    <div class="note" style="margin-top:8px"><strong>Take-Up</strong> = how far short the stub will be compared to your mark. Subtract from desired stub height to find your mark.</div>
+  </div>
+
+  <div class="fc">
+    <h3>Offset Multipliers &amp; Shrink</h3>
+    <table><tr><th>Angle</th><th>Multiplier</th><th>Shrink per inch</th></tr>
+    <tr><td>10&deg;</td><td>5.759</td><td>1/16"</td></tr>
+    <tr><td>22.5&deg;</td><td>2.613</td><td>3/16"</td></tr>
+    <tr><td>30&deg;</td><td>2.000</td><td>1/4"</td></tr>
+    <tr><td>45&deg;</td><td>1.414</td><td>3/8"</td></tr>
+    <tr><td>60&deg;</td><td>1.155</td><td>1/2"</td></tr></table>
+  </div>
+
+  <div class="fc">
+    <h3>Saddle Shrink Constants</h3>
+    <table><tr><th>Center Angle</th><th>Outer Angles</th><th>Shrink per inch depth</th><th>Spread multiplier</th></tr>
+    <tr><td>45&deg;</td><td>22.5&deg;</td><td>3/16"</td><td>2.613 &times; depth</td></tr>
+    <tr><td>60&deg;</td><td>30&deg;</td><td>1/4"</td><td>2.000 &times; depth</td></tr></table>
+  </div>
+
+  <div class="fc">
+    <h3>Bender Marks</h3>
+    <table><tr><th>Mark</th><th>What it is</th><th>Used for</th></tr>
+    <tr><td>Arrow &#x2191;</td><td>Front of shoe</td><td>Stub-ups (line up your mark here)</td></tr>
+    <tr><td>Star / Notch &#x2605;</td><td>Back of bend</td><td>Back-to-back bends</td></tr>
+    <tr><td>Rim Notch</td><td>Center of bend</td><td>Offsets, saddles</td></tr>
+    <tr><td>Degree Scale</td><td>Side of bender</td><td>Reading bend angle during pull</td></tr></table>
+  </div>
+
+  <div class="fc">
+    <h3>Common Formulas</h3>
+    <div class="fm"><span class="fn">Stub-Up Mark</span><span class="ff">Stub Height &minus; Take-Up</span></div>
+    <div class="fm"><span class="fn">Offset Travel</span><span class="ff">Depth &times; Multiplier</span></div>
+    <div class="fm"><span class="fn">Offset Shrink</span><span class="ff">Depth &times; Shrink Constant</span></div>
+    <div class="fm"><span class="fn">3pt Saddle Spread</span><span class="ff">Multiplier &times; Depth (from center)</span></div>
+    <div class="fm"><span class="fn">Rolling Offset</span><span class="ff">&radic;(rise&sup2; + run&sup2;) &times; Multiplier</span></div>
+    <div class="fm"><span class="fn">Gain (90&deg;)</span><span class="ff">2 &times; Radius &minus; (&pi;/2 &times; Radius)</span></div>
+  </div>
+
+  <div class="fc">
+    <h3>Fraction &harr; Decimal</h3>
+    <table><tr><th>Frac</th><th>Dec</th><th>Frac</th><th>Dec</th><th>Frac</th><th>Dec</th><th>Frac</th><th>Dec</th></tr>
+    <tr><td>1/16</td><td>.0625</td><td>5/16</td><td>.3125</td><td>9/16</td><td>.5625</td><td>13/16</td><td>.8125</td></tr>
+    <tr><td>1/8</td><td>.125</td><td>3/8</td><td>.375</td><td>5/8</td><td>.625</td><td>7/8</td><td>.875</td></tr>
+    <tr><td>3/16</td><td>.1875</td><td>7/16</td><td>.4375</td><td>11/16</td><td>.6875</td><td>15/16</td><td>.9375</td></tr>
+    <tr><td>1/4</td><td>.25</td><td>1/2</td><td>.5</td><td>3/4</td><td>.75</td><td>1</td><td>1.0</td></tr></table>
+  </div>
+</div>
+
+</div>
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+var DEDUCT={'0.5':5,'0.75':6,'1':8,'1.25':11};
+var RADIUS={'0.5':4,'0.75':4.5,'1':5.75,'1.25':7.25};
+var GAIN90={'0.5':3,'0.75':3.25,'1':3.625,'1.25':3.25};
+var MULT={'10':5.759,'22.5':2.613,'30':2.0,'45':1.414,'60':1.155};
+var SHRINK={'10':0.0625,'22.5':0.1875,'30':0.25,'45':0.375,'60':0.5};
+
+function toF(d){if(d===0)return'0"';var neg=d<0;if(neg)d=-d;var w=Math.floor(d),f=d-w,best='',bd=1,ds=[1,2,4,8,16];for(var i=0;i<ds.length;i++){var n=Math.round(f*ds[i]);if(n===ds[i]){w++;best='';break;}var df=Math.abs(f-n/ds[i]);if(df<bd){bd=df;best=n>0?n+'/'+ds[i]:'';}}var r='';if(w>0&&best)r=w+' '+best+'"';else if(w>0)r=w+'"';else if(best)r=best+'"';else r=d.toFixed(3)+'"';return neg?'-'+r:r;}
+
+function sT(id){['stub','b2b','offset','saddle3','saddle4','kick','ref'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===id?'':'none';});document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',['stub','b2b','offset','saddle3','saddle4','kick','ref'][i]===id);});}
+
+function cStub(){
+  var sz=document.getElementById('s-size').value;
+  var ht=parseFloat(document.getElementById('s-height').value)||0;
+  var ded=DEDUCT[sz]||5;
+  var mark=ht-ded;
+  document.getElementById('s-result').innerHTML=
+    '<div class="rb"><h3>Stub-Up Layout</h3>'+
+    '<div class="ri"><span class="rl">Desired stub height</span><span class="rv">'+toF(ht)+'</span></div>'+
+    '<div class="ri"><span class="rl">Take-up (deduct) for '+sz+'" EMT</span><span class="rv">'+toF(ded)+'</span></div>'+
+    '<div class="ri"><span class="rl" style="font-weight:700">&#x2192; Mark from end of conduit</span><span class="rv" style="font-size:1.1em">'+toF(mark)+'</span></div></div>';
+  // Diagram
+  var w=350,h=200;
+  var svg='<svg viewBox="0 0 '+w+' '+h+'" style="max-width:100%;height:auto">';
+  svg+='<line x1="40" y1="160" x2="200" y2="160" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>';
+  svg+='<path d="M200 160 Q220 160 220 140" stroke="var(--accent)" stroke-width="4" fill="none"/>';
+  svg+='<line x1="220" y1="140" x2="220" y2="30" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>';
+  // Stub height dimension
+  svg+='<line x1="240" y1="30" x2="240" y2="160" stroke="var(--ok)" stroke-width="1.5"/>';
+  svg+='<text x="252" y="100" font-size="11" font-weight="700" fill="var(--ok)">'+toF(ht)+'</text>';
+  // Mark
+  svg+='<line x1="'+(40+mark*4)+'" y1="152" x2="'+(40+mark*4)+'" y2="168" stroke="var(--no)" stroke-width="3"/>';
+  svg+='<text x="'+(40+mark*4)+'" y="182" text-anchor="middle" font-size="9" font-weight="700" fill="var(--no)">Mark: '+toF(mark)+'</text>';
+  // Arrow
+  svg+='<text x="'+(40+mark*4)+'" y="148" text-anchor="middle" font-size="14" fill="var(--no)">&#x2191;</text>';
+  svg+='<text x="120" y="190" text-anchor="middle" font-size="8" fill="var(--text2)">Place bender arrow on mark</text>';
+  svg+='</svg>';
+  document.getElementById('s-diagram').innerHTML=svg;
+}
+
+function cB2B(){
+  var sz=document.getElementById('b-size').value;
+  var dist=parseFloat(document.getElementById('b-dist').value)||0;
+  var stub1=parseFloat(document.getElementById('b-stub1').value)||0;
+  var ded=DEDUCT[sz]||5;
+  var mark1=stub1-ded;
+  document.getElementById('b-result').innerHTML=
+    '<div class="rb"><h3>Back-to-Back Layout</h3>'+
+    '<div class="ri"><span class="rl">First stub mark (from end)</span><span class="rv">'+toF(mark1)+'</span></div>'+
+    '<div class="ri"><span class="rl">Bend first stub to 90&deg; (arrow on mark)</span><span class="rv">Stub 1: '+toF(stub1)+'</span></div>'+
+    '<div class="ri"><span class="rl">Measure from back of 1st bend</span><span class="rv">'+toF(dist)+'</span></div>'+
+    '<div class="ri"><span class="rl" style="font-weight:700">&#x2192; Flip conduit, align STAR on this mark</span><span class="rv" style="font-size:1.05em">Bend to 90&deg;</span></div></div>';
+}
+
+function cOff(){
+  var depth=parseFloat(document.getElementById('o-depth').value)||0;
+  var angle=document.getElementById('o-angle').value;
+  var sz=document.getElementById('o-size').value;
+  var mult=MULT[angle]||2.0;
+  var shrink=depth*(SHRINK[angle]||0.25);
+  var travel=depth*mult;
+  document.getElementById('o-result').innerHTML=
+    '<div class="rb"><h3>Offset Results</h3>'+
+    '<div class="ri"><span class="rl">Distance between marks (travel)</span><span class="rv" style="font-size:1.1em">'+travel.toFixed(3)+'" = '+toF(travel)+'</span></div>'+
+    '<div class="ri"><span class="rl">Multiplier ('+angle+'&deg;)</span><span class="rv">'+mult+'</span></div>'+
+    '<div class="ri"><span class="rl">Shrink (add to total length)</span><span class="rv">'+shrink.toFixed(3)+'" = '+toF(shrink)+'</span></div>'+
+    '<div class="ri"><span class="rl">Depth of offset</span><span class="rv">'+toF(depth)+'</span></div></div>';
+  // Diagram
+  var w=400,h=180,ox=depth*8;if(ox>80)ox=80;
+  var svg='<svg viewBox="0 0 '+w+' '+h+'" style="max-width:100%;height:auto">';
+  svg+='<line x1="30" y1="130" x2="120" y2="130" stroke="var(--accent)" stroke-width="4"/>';
+  svg+='<line x1="120" y1="130" x2="200" y2="'+(130-ox)+'" stroke="var(--accent)" stroke-width="4"/>';
+  svg+='<line x1="200" y1="'+(130-ox)+'" x2="280" y2="'+(130-ox)+'" stroke="var(--accent)" stroke-width="4"/>';
+  svg+='<line x1="280" y1="'+(130-ox)+'" x2="360" y2="130" stroke="var(--accent)" stroke-width="4" stroke-dasharray=""/>';
+  // Actually this is wrong for a 2-bend offset - let me fix
+  // An offset is just 2 bends, not 4
+  svg='<svg viewBox="0 0 '+w+' '+h+'" style="max-width:100%;height:auto">';
+  svg+='<line x1="30" y1="130" x2="130" y2="130" stroke="var(--accent)" stroke-width="4"/>';
+  svg+='<line x1="130" y1="130" x2="'+(130+travel*2.5)+'" y2="'+(130-ox)+'" stroke="var(--accent)" stroke-width="4"/>';
+  svg+='<line x1="'+(130+travel*2.5)+'" y1="'+(130-ox)+'" x2="370" y2="'+(130-ox)+'" stroke="var(--accent)" stroke-width="4"/>';
+  // Marks
+  svg+='<circle cx="130" cy="130" r="4" fill="var(--no)"/>';
+  svg+='<circle cx="'+(130+travel*2.5)+'" cy="'+(130-ox)+'" r="4" fill="var(--no)"/>';
+  svg+='<text x="130" y="150" text-anchor="middle" font-size="8" fill="var(--no)">Mark 1</text>';
+  svg+='<text x="'+(130+travel*2.5)+'" y="'+(130-ox-10)+'" text-anchor="middle" font-size="8" fill="var(--no)">Mark 2</text>';
+  // Travel dimension
+  svg+='<line x1="130" y1="160" x2="'+(130+travel*2.5)+'" y2="160" stroke="var(--ok)" stroke-width="1.5"/>';
+  svg+='<text x="'+((130+130+travel*2.5)/2)+'" y="173" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ok)">Travel: '+toF(travel)+'</text>';
+  // Depth
+  svg+='<line x1="375" y1="'+(130-ox)+'" x2="375" y2="130" stroke="var(--warn)" stroke-width="1.5"/>';
+  svg+='<text x="385" y="'+(130-ox/2+4)+'" font-size="9" fill="var(--warn)">'+toF(depth)+'</text>';
+  svg+='</svg>';
+  document.getElementById('o-diagram').innerHTML=svg;
+}
+
+function cS3(){
+  var depth=parseFloat(document.getElementById('s3-depth').value)||0;
+  var angle=document.getElementById('s3-angle').value;
+  var center=parseFloat(document.getElementById('s3-center').value)||0;
+  var outerAngle=angle==='45'?22.5:30;
+  var spreadMult=angle==='45'?2.613:2.0;
+  var shrinkPerInch=angle==='45'?0.1875:0.25;
+  var spread=depth*spreadMult;
+  var shrink=depth*shrinkPerInch;
+  var mark1=center-spread;
+  var mark2=center;
+  var mark3=center+spread;
+  document.getElementById('s3-result').innerHTML=
+    '<div class="rb"><h3>3-Point Saddle Layout</h3>'+
+    '<div class="ri"><span class="rl">Center mark (on obstruction center)</span><span class="rv">'+toF(center)+' from end</span></div>'+
+    '<div class="ri"><span class="rl">Spread from center to outer marks</span><span class="rv">'+spread.toFixed(3)+'" = '+toF(spread)+'</span></div>'+
+    '<div class="ri"><span class="rl">Outer mark 1</span><span class="rv">'+toF(mark1)+' from end</span></div>'+
+    '<div class="ri"><span class="rl">Outer mark 2</span><span class="rv">'+toF(mark3)+' from end</span></div>'+
+    '<div class="ri"><span class="rl">Center bend angle</span><span class="rv">'+angle+'&deg;</span></div>'+
+    '<div class="ri"><span class="rl">Outer bend angles</span><span class="rv">'+outerAngle+'&deg; each</span></div>'+
+    '<div class="ri"><span class="rl">Shrink (adjust center mark)</span><span class="rv">'+shrink.toFixed(3)+'" = '+toF(shrink)+'</span></div></div>';
+}
+
+function cS4(){
+  var depth=parseFloat(document.getElementById('s4-depth').value)||0;
+  var angle=document.getElementById('s4-angle').value;
+  var width=parseFloat(document.getElementById('s4-width').value)||0;
+  var center=parseFloat(document.getElementById('s4-center').value)||0;
+  var mult=MULT[angle]||2.0;
+  var shrinkConst=SHRINK[angle]||0.25;
+  var travel=depth*mult;
+  var shrink=depth*shrinkConst*2;
+  var m1=center-width/2-travel;
+  var m2=center-width/2;
+  var m3=center+width/2;
+  var m4=center+width/2+travel;
+  document.getElementById('s4-result').innerHTML=
+    '<div class="rb"><h3>4-Point Saddle Layout</h3>'+
+    '<div class="ri"><span class="rl">Bend angle (all 4 bends)</span><span class="rv">'+angle+'&deg;</span></div>'+
+    '<div class="ri"><span class="rl">Travel between each pair</span><span class="rv">'+toF(travel)+'</span></div>'+
+    '<div class="ri"><span class="rl">Mark 1 (from end)</span><span class="rv">'+toF(m1)+'</span></div>'+
+    '<div class="ri"><span class="rl">Mark 2</span><span class="rv">'+toF(m2)+'</span></div>'+
+    '<div class="ri"><span class="rl">Mark 3</span><span class="rv">'+toF(m3)+'</span></div>'+
+    '<div class="ri"><span class="rl">Mark 4</span><span class="rv">'+toF(m4)+'</span></div>'+
+    '<div class="ri"><span class="rl">Total shrink (both offsets)</span><span class="rv">'+toF(shrink)+'</span></div></div>';
+}
+
+function cKick(){
+  var angle=parseFloat(document.getElementById('k-angle').value)||0;
+  var dist=parseFloat(document.getElementById('k-dist').value)||0;
+  var sz=document.getElementById('k-size').value;
+  var rad=RADIUS[sz]||4;
+  var travel=Math.tan(angle*Math.PI/180)*dist;
+  var shrink=dist-(dist/Math.cos(angle*Math.PI/180))*-1;
+  document.getElementById('k-result').innerHTML=
+    '<div class="rb"><h3>Kick Bend</h3>'+
+    '<div class="ri"><span class="rl">Bend angle</span><span class="rv">'+angle+'&deg;</span></div>'+
+    '<div class="ri"><span class="rl">Kick height at '+toF(dist)+' from bend</span><span class="rv">'+toF(travel)+'</span></div>'+
+    '<div class="ri"><span class="rl">Place mark at distance, bend to '+angle+'&deg;</span><span class="rv">&check;</span></div></div>';
+}
+
+// Init
+cStub();cB2B();cOff();cS3();cS4();cKick();
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>

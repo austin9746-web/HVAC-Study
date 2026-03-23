@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Gas Pipe &amp; Duct Sizing</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#fb923c;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#ea580c;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:860px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.6em;font-weight:800;text-align:center;margin:44px 0 6px}
+.sub{text-align:center;color:var(--text2);margin-bottom:16px}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab{flex:1;padding:12px;border-radius:var(--r);border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;font-family:inherit;font-size:.85em;font-weight:600;transition:.2s}
+.tab:hover{border-color:var(--accent)}.tab.active{border-color:var(--accent);background:rgba(251,146,60,.06);color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:14px}
+.card h2{font-size:1.05em;font-weight:700;color:var(--accent);margin-bottom:8px}
+.desc{font-size:.85em;color:var(--text2);margin-bottom:14px;line-height:1.5}
+.ir{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:12px}
+.ig{flex:1;min-width:140px}
+.ig label{display:block;font-size:.73em;color:var(--text2);font-weight:600;text-transform:uppercase;margin-bottom:4px}
+.ig input,.ig select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:1em;font-family:monospace;outline:none}
+.ig input:focus,.ig select:focus{border-color:var(--accent)}
+.rb{border:2px solid var(--accent);border-radius:var(--r);padding:16px;margin-top:14px;background:rgba(251,146,60,.04)}
+.rb h3{font-size:.85em;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+.ri{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.88em}
+.ri:last-child{border:none}
+.rl{color:var(--text2)}.rv{font-family:monospace;font-weight:700;color:var(--ok)}
+table{width:100%;border-collapse:collapse;font-size:.82em;margin-top:8px}
+th{padding:7px 6px;background:var(--card2);color:var(--accent);font-size:.72em;text-transform:uppercase;text-align:center}
+td{padding:6px;border-bottom:1px solid var(--border);text-align:center;font-family:monospace}
+tr:hover td{background:rgba(251,146,60,.04)}
+.note{background:rgba(251,191,36,.06);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:var(--text2);margin-top:12px;line-height:1.5}
+.note strong{color:var(--warn)}
+.tbl-wrap{overflow-x:auto}
+@media(max-width:600px){.ir{flex-direction:column}.app{padding:8px}h1{font-size:1.3em;margin-top:50px}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app">
+<h1>&#x1f525; Gas Pipe &amp; Duct Sizing</h1>
+<p class="sub">Sizing calculators with code tables</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="sT('gas')">Gas Pipe Sizing</button>
+  <button class="tab" onclick="sT('duct')">Duct Sizing</button>
+  <button class="tab" onclick="sT('ref')">Reference</button>
+</div>
+
+<!-- GAS PIPE -->
+<div id="tab-gas" class="card">
+  <h2>Gas Pipe Sizing</h2>
+  <div class="desc">Enter total BTU/hr demand, longest pipe run, and gas type. Uses IFGC capacity tables for natural gas at standard pressure (under 2 PSI, typically 7" WC).</div>
+  <div class="ir">
+    <div class="ig"><label>Total BTU/hr Demand</label><input type="number" id="g-btu" value="200000" step="1000" oninput="calcGas()"></div>
+    <div class="ig"><label>Longest Run (feet)</label><input type="number" id="g-length" value="50" step="5" oninput="calcGas()"></div>
+    <div class="ig"><label>Gas Type</label><select id="g-type" onchange="calcGas()"><option value="nat" selected>Natural Gas (1,000 BTU/ft³)</option><option value="lp">Propane/LP (2,500 BTU/ft³)</option></select></div>
+    <div class="ig"><label>Pressure Drop</label><select id="g-press" onchange="calcGas()"><option value="0.5" selected>0.5" WC (standard)</option><option value="0.3">0.3" WC (low loss)</option><option value="1.0">1.0" WC</option><option value="3.0">3.0" WC (2 PSI system)</option></select></div>
+  </div>
+  <div id="g-result"></div>
+  
+  <div style="margin-top:16px"><h3 style="font-size:.9em;color:var(--accent);margin-bottom:8px">Natural Gas Capacity Table — 0.5" WC Pressure Drop (CFH)</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Pipe Size</th><th>10 ft</th><th>20 ft</th><th>30 ft</th><th>50 ft</th><th>75 ft</th><th>100 ft</th><th>150 ft</th><th>200 ft</th></tr>
+    <tr><td>1/2"</td><td>175</td><td>120</td><td>97</td><td>73</td><td>59</td><td>50</td><td>40</td><td>35</td></tr>
+    <tr><td>3/4"</td><td>360</td><td>250</td><td>200</td><td>152</td><td>122</td><td>104</td><td>84</td><td>72</td></tr>
+    <tr><td>1"</td><td>680</td><td>470</td><td>380</td><td>285</td><td>230</td><td>195</td><td>160</td><td>135</td></tr>
+    <tr><td>1-1/4"</td><td>1400</td><td>950</td><td>770</td><td>580</td><td>470</td><td>400</td><td>320</td><td>275</td></tr>
+    <tr><td>1-1/2"</td><td>2100</td><td>1460</td><td>1180</td><td>890</td><td>720</td><td>610</td><td>490</td><td>420</td></tr>
+    <tr><td>2"</td><td>3950</td><td>2750</td><td>2200</td><td>1670</td><td>1350</td><td>1150</td><td>920</td><td>790</td></tr>
+  </table></div></div>
+  <div class="note"><strong>Usage:</strong> Convert BTU/hr to CFH (divide by 1,000 for nat gas or 2,500 for LP). Find the column for your pipe length. Read down to find a pipe size with capacity ≥ your CFH.</div>
+</div>
+
+<!-- DUCT SIZING -->
+<div id="tab-duct" class="card" style="display:none">
+  <h2>Duct Sizing Calculator</h2>
+  <div class="desc">Enter required CFM and desired friction rate to determine duct size. Uses equal friction method at standard conditions.</div>
+  <div class="ir">
+    <div class="ig"><label>Required CFM</label><input type="number" id="d-cfm" value="800" step="25" oninput="calcDuct()"></div>
+    <div class="ig"><label>Friction Rate (in.WC per 100ft)</label><select id="d-fric" onchange="calcDuct()"><option value="0.06">0.06 (quiet residential)</option><option value="0.08" selected>0.08 (standard residential)</option><option value="0.1">0.10 (commercial)</option></select></div>
+    <div class="ig"><label>Max Velocity (FPM)</label><select id="d-vel" onchange="calcDuct()"><option value="700">700 (bedroom)</option><option value="900" selected>900 (main trunk)</option><option value="1200">1200 (commercial)</option></select></div>
+  </div>
+  <div id="d-result"></div>
+
+  <div style="margin-top:16px"><h3 style="font-size:.9em;color:var(--accent);margin-bottom:8px">Round Duct Capacity (CFM at 0.08" WC/100ft)</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Diameter</th><th>CFM</th><th>Velocity (FPM)</th><th>Area (sq ft)</th></tr>
+    <tr><td>4"</td><td>20</td><td>230</td><td>0.087</td></tr>
+    <tr><td>5"</td><td>40</td><td>290</td><td>0.136</td></tr>
+    <tr><td>6"</td><td>75</td><td>380</td><td>0.196</td></tr>
+    <tr><td>7"</td><td>110</td><td>410</td><td>0.267</td></tr>
+    <tr><td>8"</td><td>160</td><td>460</td><td>0.349</td></tr>
+    <tr><td>9"</td><td>225</td><td>510</td><td>0.442</td></tr>
+    <tr><td>10"</td><td>300</td><td>550</td><td>0.545</td></tr>
+    <tr><td>12"</td><td>525</td><td>670</td><td>0.785</td></tr>
+    <tr><td>14"</td><td>800</td><td>750</td><td>1.069</td></tr>
+    <tr><td>16"</td><td>1150</td><td>820</td><td>1.396</td></tr>
+    <tr><td>18"</td><td>1550</td><td>880</td><td>1.767</td></tr>
+    <tr><td>20"</td><td>2050</td><td>940</td><td>2.182</td></tr>
+    <tr><td>24"</td><td>3200</td><td>1020</td><td>3.142</td></tr>
+  </table></div></div>
+  <div class="note"><strong>Rule of thumb:</strong> 400 CFM per ton. A 3-ton system needs ~1,200 CFM total supply. Reduce noise by keeping velocity under 900 FPM in living spaces.</div>
+</div>
+
+<!-- REFERENCE -->
+<div id="tab-ref" class="card" style="display:none">
+  <h2>Quick Reference</h2>
+  <div class="card" style="border-color:var(--accent)"><h2>Gas Piping</h2>
+    <div class="ri"><span class="rl">Natural gas BTU content</span><span class="rv">~1,000 BTU/ft³</span></div>
+    <div class="ri"><span class="rl">LP/Propane BTU content</span><span class="rv">~2,500 BTU/ft³</span></div>
+    <div class="ri"><span class="rl">Standard delivery pressure</span><span class="rv">7" WC (¼ PSI)</span></div>
+    <div class="ri"><span class="rl">Max pressure drop</span><span class="rv">0.5" WC (typical code)</span></div>
+    <div class="ri"><span class="rl">BTU/hr to CFH (natural)</span><span class="rv">BTU/hr ÷ 1,000</span></div>
+    <div class="ri"><span class="rl">BTU/hr to CFH (LP)</span><span class="rv">BTU/hr ÷ 2,500</span></div>
+  </div>
+  <div class="card" style="border-color:var(--accent);margin-top:12px"><h2>Duct Equivalent Lengths</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>Fitting</th><th>Equivalent Length</th></tr>
+    <tr><td>90° elbow (round)</td><td>15-20 ft</td></tr>
+    <tr><td>45° elbow</td><td>8-10 ft</td></tr>
+    <tr><td>Tee (branch)</td><td>25-35 ft</td></tr>
+    <tr><td>Register boot</td><td>25-40 ft</td></tr>
+    <tr><td>Reducer</td><td>5-10 ft</td></tr>
+    <tr><td>Filter grille</td><td>30-50 ft</td></tr>
+  </table></div>
+  <div class="note"><strong>TEL:</strong> Add equivalent lengths of all fittings to the actual duct run for total effective length (TEL). Use TEL for friction rate calculations.</div>
+  </div>
+  <div class="card" style="border-color:var(--accent);margin-top:12px"><h2>Rectangular to Round Equivalents</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>Rectangular (W×H)</th><th>Round Equivalent</th><th>Area (sq in)</th></tr>
+    <tr><td>8×8</td><td>9"</td><td>64</td></tr>
+    <tr><td>10×8</td><td>10"</td><td>80</td></tr>
+    <tr><td>12×8</td><td>11"</td><td>96</td></tr>
+    <tr><td>14×8</td><td>11.5"</td><td>112</td></tr>
+    <tr><td>12×10</td><td>12"</td><td>120</td></tr>
+    <tr><td>14×10</td><td>13"</td><td>140</td></tr>
+    <tr><td>16×10</td><td>14"</td><td>160</td></tr>
+    <tr><td>18×10</td><td>14.5"</td><td>180</td></tr>
+    <tr><td>20×10</td><td>15"</td><td>200</td></tr>
+    <tr><td>24×10</td><td>16.5"</td><td>240</td></tr>
+    <tr><td>20×12</td><td>16.5"</td><td>240</td></tr>
+    <tr><td>24×12</td><td>18"</td><td>288</td></tr>
+  </table></div></div>
+</div>
+</div>
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+// Gas pipe capacity data [pipe_size_label, capacity at various lengths]
+var GAS_CAP = [
+  {size:'1/2"',caps:{10:175,20:120,30:97,50:73,75:59,100:50,150:40,200:35}},
+  {size:'3/4"',caps:{10:360,20:250,30:200,50:152,75:122,100:104,150:84,200:72}},
+  {size:'1"',caps:{10:680,20:470,30:380,50:285,75:230,100:195,150:160,200:135}},
+  {size:'1-1/4"',caps:{10:1400,20:950,30:770,50:580,75:470,100:400,150:320,200:275}},
+  {size:'1-1/2"',caps:{10:2100,20:1460,30:1180,50:890,75:720,100:610,150:490,200:420}},
+  {size:'2"',caps:{10:3950,20:2750,30:2200,50:1670,75:1350,100:1150,150:920,200:790}},
+];
+var GAS_LENGTHS = [10,20,30,50,75,100,150,200];
+
+function sT(id){['gas','duct','ref'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===id?'':'none';});document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',['gas','duct','ref'][i]===id);});}
+
+function calcGas(){
+  var btu=parseFloat(document.getElementById('g-btu').value)||0;
+  var len=parseFloat(document.getElementById('g-length').value)||0;
+  var type=document.getElementById('g-type').value;
+  var cfh=type==='nat'?btu/1000:btu/2500;
+  
+  // Find nearest length bracket (round up)
+  var bracket=200;
+  for(var i=0;i<GAS_LENGTHS.length;i++){if(len<=GAS_LENGTHS[i]){bracket=GAS_LENGTHS[i];break;}}
+  
+  // Find minimum pipe size
+  var rec='Need larger than 2"';
+  for(var j=0;j<GAS_CAP.length;j++){
+    var cap=GAS_CAP[j].caps[bracket];
+    if(cap&&cap>=cfh){rec=GAS_CAP[j].size;break;}
+  }
+  
+  document.getElementById('g-result').innerHTML=
+    '<div class="rb"><h3>Gas Pipe Sizing Result</h3>'+
+    '<div class="ri"><span class="rl">Total demand</span><span class="rv">'+btu.toLocaleString()+' BTU/hr</span></div>'+
+    '<div class="ri"><span class="rl">Flow rate (CFH)</span><span class="rv">'+cfh.toFixed(0)+' CFH</span></div>'+
+    '<div class="ri"><span class="rl">Pipe run</span><span class="rv">'+len+' ft (using '+bracket+' ft column)</span></div>'+
+    '<div class="ri" style="border-top:2px solid var(--accent);padding-top:10px"><span class="rl" style="font-weight:700;font-size:1.05em">Minimum Pipe Size</span><span class="rv" style="font-size:1.3em">'+rec+'</span></div>'+
+    '</div>';
+}
+
+// Duct sizing data [diameter, cfm at 0.08]
+var DUCT=[{d:4,cfm:20},{d:5,cfm:40},{d:6,cfm:75},{d:7,cfm:110},{d:8,cfm:160},{d:9,cfm:225},{d:10,cfm:300},{d:12,cfm:525},{d:14,cfm:800},{d:16,cfm:1150},{d:18,cfm:1550},{d:20,cfm:2050},{d:24,cfm:3200}];
+
+function calcDuct(){
+  var cfm=parseFloat(document.getElementById('d-cfm').value)||0;
+  var maxVel=parseFloat(document.getElementById('d-vel').value)||900;
+  
+  // Find by CFM capacity
+  var rec=null;
+  for(var i=0;i<DUCT.length;i++){
+    if(DUCT[i].cfm>=cfm){rec=DUCT[i];break;}
+  }
+  if(!rec)rec=DUCT[DUCT.length-1];
+  
+  // Check velocity
+  var area=Math.PI*Math.pow(rec.d/24,2); // sq ft
+  var vel=cfm/area;
+  var velOK=vel<=maxVel;
+  
+  // If velocity too high, size up
+  var finalRec=rec;
+  if(!velOK){
+    for(var j=0;j<DUCT.length;j++){
+      var a2=Math.PI*Math.pow(DUCT[j].d/24,2);
+      if(cfm/a2<=maxVel){finalRec=DUCT[j];break;}
+    }
+  }
+  var finalArea=Math.PI*Math.pow(finalRec.d/24,2);
+  var finalVel=cfm/finalArea;
+  
+  document.getElementById('d-result').innerHTML=
+    '<div class="rb"><h3>Duct Sizing Result</h3>'+
+    '<div class="ri"><span class="rl">Required CFM</span><span class="rv">'+cfm+'</span></div>'+
+    '<div class="ri"><span class="rl">Max velocity</span><span class="rv">'+maxVel+' FPM</span></div>'+
+    '<div class="ri" style="border-top:2px solid var(--accent);padding-top:10px"><span class="rl" style="font-weight:700;font-size:1.05em">Round Duct Size</span><span class="rv" style="font-size:1.3em">'+finalRec.d+'" diameter</span></div>'+
+    '<div class="ri"><span class="rl">Actual velocity</span><span class="rv" style="color:'+(finalVel<=maxVel?'var(--ok)':'var(--no)')+'">'+Math.round(finalVel)+' FPM</span></div>'+
+    '<div class="ri"><span class="rl">Duct area</span><span class="rv">'+finalArea.toFixed(3)+' sq ft</span></div>'+
+    '</div>';
+}
+calcGas();calcDuct();
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>

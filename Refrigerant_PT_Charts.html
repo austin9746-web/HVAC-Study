@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Refrigerant PT Charts — All Refrigerants</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:960px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.7em;font-weight:800;text-align:center;margin:44px 0 6px}
+.sub{text-align:center;color:var(--text2);margin-bottom:16px}
+.ref-tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.ref-tab{padding:8px 12px;border-radius:8px;border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;font-family:inherit;font-size:.78em;font-weight:600;transition:.2s;white-space:nowrap}
+.ref-tab:hover{border-color:var(--accent)}.ref-tab.active{border-color:var(--accent);background:rgba(74,158,255,.06);color:var(--accent)}
+.ref-tab.a2l{border-color:rgba(251,191,36,.3)}.ref-tab.a2l.active{border-color:var(--warn);background:rgba(251,191,36,.06);color:var(--warn)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.card h2{font-size:1.05em;font-weight:700;color:var(--accent);margin-bottom:4px}
+.props{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:12px 0}
+.prop{background:var(--card2);border-radius:8px;padding:10px 12px}
+.prop .pl{font-size:.7em;color:var(--text2);text-transform:uppercase;letter-spacing:.03em}
+.prop .pv{font-family:monospace;font-weight:700;font-size:1em;color:var(--ok)}
+.a2l-badge{display:inline-block;background:rgba(251,191,36,.12);color:var(--warn);font-size:.72em;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px}
+.a1-badge{display:inline-block;background:rgba(52,211,153,.1);color:var(--ok);font-size:.72em;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.82em}
+th{padding:7px 6px;background:var(--card2);color:var(--accent);font-size:.72em;text-transform:uppercase;text-align:center;position:sticky;top:0;z-index:1}
+td{padding:6px;border-bottom:1px solid var(--border);text-align:center;font-family:monospace}
+tr:hover td{background:rgba(74,158,255,.04)}
+.note{background:rgba(251,191,36,.06);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:var(--text2);margin-top:12px;line-height:1.5}
+.note strong{color:var(--warn)}
+.search-row{margin-bottom:14px}
+.search-row input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:1em;font-family:monospace;outline:none}
+.search-row input:focus{border-color:var(--accent)}
+.compare-card{background:var(--card);border:2px solid var(--accent);border-radius:var(--r);padding:20px;margin-bottom:14px}
+@media(max-width:600px){.app{padding:8px}h1{font-size:1.3em;margin-top:50px}td,th{padding:4px 3px;font-size:.72em}.props{grid-template-columns:1fr 1fr}}
+
+.step-toggle{display:flex;gap:0;margin:10px 0;border:2px solid var(--border);border-radius:8px;overflow:hidden;width:fit-content}
+.step-btn{padding:8px 18px;background:var(--card);color:var(--text2);border:none;cursor:pointer;font-family:inherit;font-size:.82em;font-weight:600;transition:.2s}
+.step-btn:hover{background:var(--card2)}
+.step-btn.active{background:var(--accent);color:#fff}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app">
+<h1>&#x2744;&#xfe0f; Refrigerant PT Charts</h1>
+<p class="sub">Comprehensive Pressure-Temperature Data — Traditional, A2L &amp; Natural Refrigerants</p>
+
+<div class="search-row"><input type="number" id="temp-lookup" placeholder="Enter °F to look up pressures across all refrigerants..." oninput="doLookup()"></div>
+<div id="lookup-result"></div>
+
+<div class="ref-tabs" id="ref-tabs"></div>
+<div id="chart-area"></div>
+</div>
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+// PT DATA: [temp°F, psig] pairs
+var REFS = [
+  {id:'r410a',name:'R-410A',type:'HFC',safety:'A1',badge:'a1',gwp:2088,odp:0,bp:-60.8,
+   note:'Current residential AC standard. Being replaced by R-454B in new equipment (2025+).',
+   pt:[[-40,11.8],[-30,18.8],[-20,27.2],[-10,37.0],[0,48.5],[5,55.2],[10,62.5],[15,70.4],[20,79.0],[25,88.2],[30,98.2],[35,108.9],[40,120.4],[45,132.7],[50,145.8],[55,159.9],[60,174.9],[65,190.8],[70,207.8],[75,225.8],[80,244.9],[85,265.2],[90,286.7],[95,309.4],[100,333.4],[105,358.7],[110,385.4],[115,413.6],[120,443.2],[125,474.3],[130,507.0],[140,577.0],[150,653.3]]},
+  {id:'r454b',name:'R-454B',type:'HFO/HFC',safety:'A2L',badge:'a2l',gwp:466,odp:0,bp:-58.9,
+   note:'R-410A replacement (Puron Advance / Opteon XL41). Mandated for new systems 2025+. Mildly flammable — requires A2L rated components.',
+   pt:[[-40,9.5],[-30,16.3],[-20,24.3],[-10,34.0],[0,45.3],[5,51.7],[10,58.6],[15,66.0],[20,74.0],[25,82.5],[30,91.7],[35,101.5],[40,112.0],[45,123.1],[50,135.0],[55,147.5],[60,160.8],[65,174.9],[70,190.4],[75,206.4],[80,223.3],[85,241.1],[90,260.0],[95,279.9],[100,300.8],[105,322.8],[110,346.0],[115,370.4],[120,395.9],[125,422.8],[130,450.9],[140,511.3],[150,577.4]]},
+  {id:'r32',name:'R-32',type:'HFC',safety:'A2L',badge:'a2l',gwp:675,odp:0,bp:-61.1,
+   note:'Pure component used in R-454B blend (68.9%). Higher pressure than R-410A. Used standalone in some mini-splits.',
+   pt:[[-40,14.4],[-30,22.2],[-20,31.4],[-10,42.2],[0,54.8],[10,69.4],[20,86.4],[30,105.8],[40,128.0],[50,153.2],[60,181.6],[70,213.8],[80,249.8],[90,290.2],[100,335.2],[110,385.4],[120,441.2],[130,503.0],[140,571.2],[150,646.2]]},
+  {id:'r22',name:'R-22',type:'HCFC',safety:'A1',badge:'a1',gwp:1810,odp:0.055,bp:-41.4,
+   note:'Legacy refrigerant. No longer manufactured (phased out 2020). Service-only with reclaimed refrigerant.',
+   pt:[[-40,0.5],[-30,6.5],[-20,13.2],[-10,20.7],[0,29.2],[10,38.7],[20,49.4],[30,61.4],[40,74.8],[50,89.8],[60,106.5],[70,124.9],[80,145.3],[90,167.7],[100,192.3],[110,219.3],[120,248.8],[130,281.1],[140,316.1],[150,354.1]]},
+  {id:'r134a',name:'R-134a',type:'HFC',safety:'A1',badge:'a1',gwp:1430,odp:0,bp:-15.1,
+   note:'Medium-pressure refrigerant. Used in chillers, automotive AC, refrigerators.',
+   pt:[[-40,-11.7],[-20,-2.4],[0,9.2],[10,16.7],[20,25.2],[30,34.9],[40,46.1],[50,58.7],[60,73.1],[70,89.3],[80,107.6],[90,128.2],[100,151.1],[110,176.8],[120,205.3],[130,236.9],[140,271.8],[150,310.3]]},
+  {id:'r404a',name:'R-404A',type:'HFC',safety:'A1',badge:'a1',gwp:3922,odp:0,bp:-51.0,
+   note:'Commercial refrigeration (walk-ins, reach-ins). Very high GWP — being phased down.',
+   pt:[[-40,5.5],[-30,12.0],[-20,19.9],[-10,29.2],[0,40.2],[10,52.8],[20,67.4],[30,83.9],[40,102.7],[50,123.8],[60,147.4],[70,173.7],[80,203.0],[90,235.3],[100,271.0],[110,310.2],[120,353.2],[130,400.3]]},
+  {id:'r407c',name:'R-407C',type:'HFC',safety:'A1',badge:'a1',gwp:1774,odp:0,bp:-46.4,
+   note:'Drop-in replacement for R-22 in some systems. Zeotropic blend with temperature glide.',
+   pt:[[-40,2.6],[-30,8.8],[-20,16.4],[-10,25.5],[0,36.2],[10,48.7],[20,63.1],[30,79.6],[40,98.4],[50,119.5],[60,143.3],[70,169.8],[80,199.4],[90,232.1],[100,268.2],[110,308.0],[120,351.8]]},
+  {id:'r1234yf',name:'R-1234yf',type:'HFO',safety:'A2L',badge:'a2l',gwp:4,odp:0,bp:-22.0,
+   note:'Ultra-low GWP (4!). Automotive AC replacement for R-134a. Also used in some commercial chillers.',
+   pt:[[-20,-1.6],[0,8.7],[10,15.3],[20,23.0],[30,31.8],[40,42.0],[50,53.7],[60,67.0],[70,82.0],[80,99.0],[90,118.1],[100,139.5],[110,163.5],[120,190.3],[130,220.0],[140,253.0]]},
+  {id:'r744',name:'R-744 (CO2)',type:'Natural',safety:'A1',badge:'a1',gwp:1,odp:0,bp:-69.9,
+   note:'Transcritical refrigerant. Very high pressures. Used in commercial refrigeration, heat pumps. Critical point: 88°F / 1,056 psia.',
+   pt:[[-40,131],[-30,170],[-20,216],[-10,268],[0,327],[10,395],[20,471],[30,557],[40,653],[50,761],[60,882],[70,1018],[80,1171]]},
+  {id:'r717',name:'R-717 (Ammonia)',type:'Natural',safety:'B2L',badge:'a2l',gwp:0,odp:0,bp:-28.0,
+   note:'Industrial refrigeration workhorse. Excellent efficiency. Toxic and flammable — requires engine room and safety equipment.',
+   pt:[[-40,-0.5],[-20,13.5],[0,30.4],[10,40.7],[20,52.5],[30,66.1],[40,81.5],[50,99.0],[60,118.8],[70,141.1],[80,166.1],[90,193.9],[100,224.8],[110,259.0],[120,296.7]]},
+];
+
+var activeRef = 'r410a';
+var ptStep = 10; // 1 or 10
+
+function interpPT(pt, step) {
+  if (!pt || pt.length < 2) return pt;
+  var minT = pt[0][0], maxT = pt[pt.length-1][0];
+  var result = [];
+  for (var t = minT; t <= maxT; t += step) {
+    // Find surrounding points
+    var found = false;
+    for (var i = 0; i < pt.length - 1; i++) {
+      if (t >= pt[i][0] && t <= pt[i+1][0]) {
+        var frac = (t - pt[i][0]) / (pt[i+1][0] - pt[i][0]);
+        var p = pt[i][1] + frac * (pt[i+1][1] - pt[i][1]);
+        result.push([t, Math.round(p * 10) / 10]);
+        found = true;
+        break;
+      }
+    }
+    if (!found && t === pt[pt.length-1][0]) {
+      result.push([t, pt[pt.length-1][1]]);
+    }
+  }
+  return result;
+}
+
+function setStep(s) {
+  ptStep = s;
+  document.querySelectorAll('.step-btn').forEach(function(b) {
+    b.classList.toggle('active', parseInt(b.dataset.step) === s);
+  });
+  showRef(activeRef);
+}
+
+function stepToggleHTML() {
+  return '<div class="step-toggle">' +
+    '<button class="step-btn' + (ptStep===1?' active':'') + '" data-step="1" onclick="setStep(1)">1&deg;F</button>' +
+    '<button class="step-btn' + (ptStep===5?' active':'') + '" data-step="5" onclick="setStep(5)">5&deg;F</button>' +
+    '<button class="step-btn' + (ptStep===10?' active':'') + '" data-step="10" onclick="setStep(10)">10&deg;F</button>' +
+    '</div>';
+}
+
+function buildTabs(){
+  var h = '';
+  REFS.forEach(function(r){
+    h += '<button class="ref-tab '+(r.badge==='a2l'?'a2l ':'')+'" id="tab-'+r.id+'" onclick="showRef(\''+r.id+'\')">'+r.name+'</button>';
+  });
+  h += '<button class="ref-tab" id="tab-compare" onclick="showRef(\'compare\')" style="border-color:var(--ok)">Compare All</button>';
+  document.getElementById('ref-tabs').innerHTML = h;
+}
+
+function showRef(id){
+  activeRef = id;
+  document.querySelectorAll('.ref-tab').forEach(function(t){t.classList.remove('active');});
+  var btn = document.getElementById('tab-'+id);
+  if(btn) btn.classList.add('active');
+  
+  if(id==='compare'){renderCompare();return;}
+  var r = REFS.find(function(x){return x.id===id;});
+  if(!r) return;
+  
+  var badge = r.safety==='A2L'||r.safety==='B2L' ? '<span class="a2l-badge">'+r.safety+' — Mildly Flammable</span>' : '<span class="a1-badge">'+r.safety+' — Non-Flammable</span>';
+  
+  var html = '<div class="card"><h2>'+r.name+' '+badge+'</h2><p style="color:var(--text2);font-size:.85em;margin:4px 0 12px">'+r.type+' | '+r.note+'</p>';
+  html += '<div class="props">';
+  html += '<div class="prop"><div class="pl">GWP</div><div class="pv">'+r.gwp+'</div></div>';
+  html += '<div class="prop"><div class="pl">ODP</div><div class="pv">'+r.odp+'</div></div>';
+  html += '<div class="prop"><div class="pl">Boiling Point</div><div class="pv">'+r.bp+'°F</div></div>';
+  html += '<div class="prop"><div class="pl">Safety Group</div><div class="pv">'+r.safety+'</div></div>';
+  html += '</div>';
+  
+  html += stepToggleHTML();
+  var displayPT = interpPT(r.pt, ptStep);
+  html += '<div class="tbl-wrap"><table><tr><th>Temp (°F)</th><th>Pressure (PSIG)</th><th>Pressure (PSIA)</th></tr>';
+  displayPT.forEach(function(row){
+    var psig = typeof row[1] === 'number' ? row[1].toFixed(1) : row[1];
+    var psia = (parseFloat(psig) + 14.7).toFixed(1);
+    var isVac = parseFloat(psig) < 0;
+    html += '<tr><td>'+row[0]+'</td><td style="color:'+(isVac?'var(--warn)':'var(--ok)')+'">'+psig+(isVac?' (vacuum)':'')+'</td><td>'+psia+'</td></tr>';
+  });
+  html += '</table></div></div>';
+  
+  if(r.safety==='A2L'||r.safety==='B2L'){
+    html += '<div class="note"><strong>A2L Safety:</strong> Mildly flammable. Requires leak detectors, A2L-rated recovery equipment, proper ventilation, and compliance with local codes. No open flames or ignition sources when servicing. Maximum charge limits apply per room size.</div>';
+  }
+  
+  document.getElementById('chart-area').innerHTML = html;
+}
+
+function renderCompare(){
+  var temps = [-40,-20,0,20,40,50,60,70,80,90,100,110,120,130,140,150];
+  var html = '<div class="compare-card"><h2>Side-by-Side Comparison (PSIG at Temperature)</h2><div class="tbl-wrap"><table><tr><th>°F</th>';
+  REFS.forEach(function(r){
+    html += '<th>'+r.name+'<br><span style="font-weight:400;font-size:.85em">('+r.safety+')</span></th>';
+  });
+  html += '</tr>';
+  temps.forEach(function(t){
+    html += '<tr><td style="font-weight:700">'+t+'</td>';
+    REFS.forEach(function(r){
+      var found = null;
+      for(var i=0;i<r.pt.length;i++){
+        if(r.pt[i][0]===t){found=r.pt[i][1];break;}
+      }
+      if(found!==null){
+        var isVac = found < 0;
+        html += '<td style="color:'+(isVac?'var(--warn)':'var(--text)')+'">'+found.toFixed(1)+'</td>';
+      } else {
+        html += '<td style="color:var(--border)">—</td>';
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</table></div></div>';
+  
+  html += '<div class="card"><h2>Refrigerant Properties Summary</h2><div class="tbl-wrap"><table><tr><th>Refrigerant</th><th>Type</th><th>Safety</th><th>GWP</th><th>ODP</th><th>BP (°F)</th><th>Status</th></tr>';
+  REFS.forEach(function(r){
+    var status = r.id==='r22'?'Phase-out (service only)':r.id==='r404a'?'Phase-down':r.id==='r454b'||r.id==='r32'?'New standard (2025+)':r.id==='r1234yf'?'Automotive standard':'Active';
+    html += '<tr><td style="font-weight:700">'+r.name+'</td><td>'+r.type+'</td><td>'+r.safety+'</td><td>'+r.gwp+'</td><td>'+r.odp+'</td><td>'+r.bp+'</td><td style="font-size:.8em">'+status+'</td></tr>';
+  });
+  html += '</table></div></div>';
+  
+  document.getElementById('chart-area').innerHTML = html;
+}
+
+function doLookup(){
+  var temp = parseFloat(document.getElementById('temp-lookup').value);
+  if(isNaN(temp)){document.getElementById('lookup-result').innerHTML='';return;}
+  
+  var html = '<div class="card" style="border-color:var(--accent)"><h2>Pressures at '+temp+'°F</h2><div class="tbl-wrap"><table><tr><th>Refrigerant</th><th>Safety</th><th>PSIG</th><th>PSIA</th></tr>';
+  REFS.forEach(function(r){
+    // Interpolate
+    var psig = null;
+    for(var i=0;i<r.pt.length-1;i++){
+      if(temp>=r.pt[i][0]&&temp<=r.pt[i+1][0]){
+        var frac=(temp-r.pt[i][0])/(r.pt[i+1][0]-r.pt[i][0]);
+        psig=r.pt[i][1]+frac*(r.pt[i+1][1]-r.pt[i][1]);
+        break;
+      }
+    }
+    if(psig===null&&r.pt.length>0&&temp===r.pt[r.pt.length-1][0])psig=r.pt[r.pt.length-1][1];
+    if(psig!==null){
+      var isVac=psig<0;
+      html += '<tr><td style="font-weight:700">'+r.name+'</td><td>'+r.safety+'</td><td style="color:'+(isVac?'var(--warn)':'var(--ok)')+'">'+psig.toFixed(1)+(isVac?' (vac)':'')+'</td><td>'+(psig+14.7).toFixed(1)+'</td></tr>';
+    } else {
+      html += '<tr><td>'+r.name+'</td><td>'+r.safety+'</td><td style="color:var(--border)">out of range</td><td>—</td></tr>';
+    }
+  });
+  html += '</table></div></div>';
+  document.getElementById('lookup-result').innerHTML = html;
+}
+
+buildTabs();
+showRef('r410a');
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>

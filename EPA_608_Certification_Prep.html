@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EPA 608 Certification Prep</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--accent2:#2d7dd2;--ok:#34d399;--ok-bg:rgba(52,211,153,.08);--no:#f87171;--no-bg:rgba(248,113,113,.08);--warn:#fbbf24;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:880px;margin:0 auto;padding:16px}
+.start{text-align:center;padding:48px 16px}
+.start h1{font-size:2.2em;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.start .sub{color:var(--text2);margin-bottom:32px}
+.stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.sb{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 22px;min-width:110px}
+.sb .v{font-size:1.7em;font-weight:700;color:var(--accent)}
+.sb .l{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.modes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.mb{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px 20px;cursor:pointer;text-align:left;min-width:220px;transition:.2s}
+.mb:hover{border-color:var(--accent);background:var(--card2)}
+.mb.on{border-color:var(--accent);background:rgba(74,158,255,.06)}
+.mb h3{font-size:.95em;margin-bottom:2px}
+.mb p{font-size:.78em;color:var(--text2)}
+.go{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:12px 44px;font-size:1.05em;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;margin-top:8px}
+.go:hover{background:var(--accent2);transform:translateY(-1px)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;margin-bottom:0;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
+.hdr .t{font-size:.85em;font-weight:600;color:var(--text2)}
+.hdr .pi{font-size:.82em;color:var(--text2);font-family:monospace}
+
+/* === SCORE BAR === */
+.score-bar{display:flex;align-items:center;gap:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin:10px 0;overflow:hidden;min-height:48px}
+.score-bar .sc-section{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 16px;min-width:70px;border-right:1px solid var(--border)}
+.score-bar .sc-section:last-child{border-right:none}
+.score-bar .sc-val{font-size:1.2em;font-weight:700;font-family:monospace;line-height:1.2}
+.score-bar .sc-lbl{font-size:.62em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);line-height:1.2}
+.sc-pct-wrap{flex:1;padding:8px 16px;display:flex;align-items:center;gap:12px;min-width:120px}
+.sc-pct-bar{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;position:relative}
+.sc-pct-fill{height:100%;border-radius:4px;transition:width .4s,background .3s}
+.sc-pct-num{font-size:1.3em;font-weight:700;font-family:monospace;min-width:52px;text-align:right}
+.score-bar.exam-mode{opacity:.5;filter:blur(3px);pointer-events:none;user-select:none}
+.score-bar.no-data .sc-val{color:var(--text2)}
+@media(max-width:500px){.score-bar .sc-section{padding:6px 10px;min-width:54px}.score-bar .sc-val{font-size:1em}.sc-pct-wrap{padding:6px 10px}.sc-pct-num{font-size:1.1em;min-width:44px}}
+
+.pb{height:4px;background:var(--card2);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));border-radius:2px;transition:width .4s}
+.qc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:14px}
+.qm{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.qn{font-family:monospace;font-size:.8em;font-weight:600;color:var(--accent);background:rgba(74,158,255,.1);padding:3px 9px;border-radius:6px}
+.qt{font-size:.75em;color:var(--text2);background:var(--card2);padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+.qp{font-size:.75em;color:var(--warn);margin-left:auto;font-weight:600}
+.qq{font-size:1.05em;line-height:1.6;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.op{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--card2);border:2px solid transparent;border-radius:8px;cursor:pointer;transition:.15s;font-size:.92em;line-height:1.5}
+.op:hover{border-color:var(--border);background:#252a35}
+.op.sel{border-color:var(--accent);background:rgba(74,158,255,.05)}
+.op.cor{border-color:var(--ok);background:var(--ok-bg)}
+.op.wrg{border-color:var(--no);background:var(--no-bg)}
+.op.shw{border-color:var(--ok);background:var(--ok-bg)}
+.op.dis{cursor:default}
+.ol{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.75em;font-weight:600;color:var(--text2);transition:.15s}
+.op.sel .ol{background:var(--accent);color:#fff}
+.op.cor .ol{background:var(--ok);color:#000}
+.op.wrg .ol{background:var(--no);color:#fff}
+.op.shw .ol{background:var(--ok);color:#000}
+.ot{padding-top:2px;flex:1}
+.ex-box{margin-top:8px;padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5;color:var(--text)}
+.ex-box.ex-ok{border-left-color:var(--ok);background:var(--ok-bg)}
+.ex-box.ex-no{border-left-color:var(--no);background:var(--no-bg)}
+.ti{width:100%;background:var(--card2);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:.92em;resize:vertical;min-height:44px}
+.ti:focus{outline:none;border-color:var(--accent)}
+.hint{background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.2);border-radius:8px;padding:12px 14px;margin-top:10px}
+.hint .hl{font-size:.75em;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.hint .ht{font-size:.88em;line-height:1.5}
+.fill-exps{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fill-exp{padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5}
+.nav{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.nb{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 18px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;font-weight:500}
+.nb:hover{background:var(--card2);border-color:var(--text2)}
+.nb.pr{background:var(--accent);border-color:var(--accent);color:#fff}
+.nb.pr:hover{background:var(--accent2)}
+.nb:disabled{opacity:.3;cursor:not-allowed}
+.nc{display:flex;gap:6px;align-items:center}
+.ck{background:var(--warn);border:none;color:#000;font-weight:600}
+.ck:hover{background:#e5a900}
+.gt{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);cursor:pointer;font-size:.8em;font-family:inherit;transition:.15s}
+.gt:hover{border-color:var(--text2);color:var(--text)}
+.gp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:3px}
+.gd{width:100%;aspect-ratio:1;border-radius:5px;border:1px solid var(--border);background:var(--card2);cursor:pointer;font-size:.7em;font-weight:600;display:flex;align-items:center;justify-content:center;transition:.15s;color:var(--text2)}
+.gd:hover{border-color:var(--text2)}
+.gd.cur{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 2px rgba(74,158,255,.15)}
+.gd.ans{background:rgba(74,158,255,.12);border-color:var(--accent);color:var(--accent)}
+.gd.gc{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.gd.gw{background:var(--no-bg);border-color:var(--no);color:var(--no)}
+.res{text-align:center;padding:32px 16px}
+.res h2{font-size:1.8em;margin-bottom:6px}
+.sc{width:160px;height:160px;border-radius:50%;border:5px solid var(--ok);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px auto}
+.sc .pct{font-size:2.8em;font-weight:700}
+.sc .of{font-size:.82em;color:var(--text2)}
+.rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:20px 0}
+.rs{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.rs .rv{font-size:1.4em;font-weight:700}
+.rs .rl{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.ra{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.ft{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.fb{padding:5px 12px;border-radius:18px;border:1px solid var(--border);background:none;color:var(--text2);font-size:.8em;cursor:pointer;font-family:inherit;transition:.15s}
+.fb.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fb:hover{border-color:var(--text2)}
+.disclaimer{margin-top:12px;font-size:.75em;color:var(--text2);opacity:.7}
+@media(max-width:600px){.app{padding:8px}.qc{padding:16px}.start h1{font-size:1.5em}.mb{min-width:100%}.gr{grid-template-columns:repeat(auto-fill,minmax(30px,1fr))}}
+
+/* Back to hub button */
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;text-decoration:none;display:flex;align-items:center;gap:5px;transition:.2s}
+.back-btn:hover{border-color:var(--accent);color:var(--text);background:var(--card2)}
+/* Print results button */
+.print-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 22px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.print-btn:hover{border-color:var(--accent);background:var(--card2)}
+@media print{.back-btn,.fab-container,.calc-overlay,.ref-overlay,.nav,.hdr,.go,.modes,.timer-toggle,.stats-history,.print-btn,.nb{display:none!important}.app{padding:0}.qc{break-inside:avoid;border:1px solid #ccc;margin:8px 0}.start{display:none}.res,.opts,.qc{display:block!important}body{background:#fff;color:#000}.score-bar,.pb{display:none}:root{--card:#fff;--card2:#f5f5f5;--border:#ddd;--text:#000;--text2:#666;--ok:#22c55e;--no:#dc2626;--accent:#2563eb}}
+.save-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 16px;color:var(--text2);font-family:inherit;font-size:.82em;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px}.save-btn:hover{border-color:var(--ok);color:var(--ok)}.save-btn.saved{border-color:var(--ok);color:var(--ok);background:rgba(52,211,153,.08)}
+
+/* Flashcard mode */
+.fc-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:32px 28px;margin:16px 0;min-height:250px;cursor:pointer;transition:.3s;position:relative;display:flex;flex-direction:column;justify-content:center}
+.fc-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.fc-card.flipped{border-color:var(--ok);background:rgba(52,211,153,.03)}
+.fc-label{position:absolute;top:12px;left:16px;font-size:.7em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);font-weight:600}
+.fc-tap{position:absolute;bottom:12px;right:16px;font-size:.75em;color:var(--text2)}
+.fc-q{font-size:1.1em;line-height:1.6;text-align:center}
+.fc-a{margin-top:16px;padding-top:16px;border-top:2px solid var(--border);font-size:1em;line-height:1.5;text-align:center}
+.fc-a .fc-correct{color:var(--ok);font-weight:700;font-size:1.1em;margin-bottom:8px}
+.fc-a .fc-explain{color:var(--text2);font-size:.88em}
+.fc-controls{display:flex;gap:10px;justify-content:center;margin-top:16px}
+.fc-btn{padding:10px 20px;border-radius:8px;border:2px solid;cursor:pointer;font-family:inherit;font-size:.88em;font-weight:600;transition:.2s}
+.fc-knew{border-color:var(--ok);color:var(--ok);background:rgba(52,211,153,.06)}
+.fc-knew:hover{background:rgba(52,211,153,.15)}
+.fc-didnt{border-color:var(--no);color:var(--no);background:rgba(248,113,113,.06)}
+.fc-didnt:hover{background:rgba(248,113,113,.15)}
+.fc-progress{display:flex;gap:16px;justify-content:center;margin:12px 0;font-size:.85em}
+.fc-stat{text-align:center}
+.fc-stat .fc-sv{font-size:1.3em;font-weight:700;font-family:monospace}
+
+/* Topic analysis */
+.topic-section{margin:20px 0}
+.topic-section h3{font-size:.95em;font-weight:700;margin-bottom:12px;color:var(--accent)}
+.topic-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
+.topic-name{flex:1;font-size:.88em;font-weight:600}
+.topic-score{font-family:monospace;font-weight:700;font-size:.9em;min-width:50px;text-align:right}
+.topic-meter{width:100px;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
+.topic-fill{height:100%;border-radius:4px}
+.topic-count{font-size:.75em;color:var(--text2);min-width:40px;text-align:right}
+
+.cat-section{margin-bottom:24px}.cat-section h3{font-size:.85em;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cat-btn{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;text-align:left;transition:.2s;display:flex;align-items:center;gap:10px}
+.cat-btn:hover{border-color:var(--accent);background:var(--card2)}.cat-btn.on{border-color:var(--ok);background:rgba(52,211,153,.06)}
+.cat-btn .cat-icon{font-size:1.4em;flex-shrink:0}.cat-btn .cat-info{flex:1}.cat-btn .cat-name{font-size:.88em;font-weight:600}.cat-btn .cat-count{font-size:.75em;color:var(--text2)}
+.cat-btn .cat-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75em;flex-shrink:0;transition:.2s}
+.cat-btn.on .cat-check{background:var(--ok);border-color:var(--ok);color:#000}
+.cat-actions{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.cat-actions button{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 14px;font-size:.75em;color:var(--text2);cursor:pointer;font-family:inherit}
+.exam-info{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;font-size:.85em;line-height:1.6;color:var(--text2)}
+.exam-info strong{color:var(--text)}
+@media(max-width:600px){.cat-grid{grid-template-columns:1fr}}
+
+/* Light mode */
+body.light{--bg:#f5f6f8;--card:#ffffff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--accent2:#1d4ed8;--ok:#16a34a;--ok-bg:rgba(22,163,74,.06);--no:#dc2626;--no-bg:rgba(220,38,38,.06);--warn:#d97706}
+body.light .op:hover{background:#f0f1f4}
+body.light .gd{background:#f0f1f4}
+
+/* Theme toggle button */
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;transition:.2s;display:flex;align-items:center;gap:4px}
+.theme-toggle:hover{border-color:var(--accent);color:var(--text)}
+
+/* Flag button */
+.flag-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:.85em;transition:.2s;color:var(--text2);font-family:inherit}
+.flag-btn:hover{border-color:var(--warn);color:var(--warn)}
+.flag-btn.flagged{background:rgba(251,191,36,.12);border-color:var(--warn);color:var(--warn)}
+.gd.gf{box-shadow:inset 0 0 0 2px var(--warn)}
+
+/* Sticky mobile nav */
+@media(max-width:600px){
+  .nav{position:sticky;bottom:0;background:var(--bg);padding:10px 8px;border-top:1px solid var(--border);margin:0 -16px -24px;z-index:100}
+  .qc{margin-bottom:70px}
+}
+
+.calc-overlay{position:fixed;top:60px;right:12px;width:280px;background:var(--card);border:2px solid var(--border);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:1001;display:none;overflow:hidden}
+.calc-overlay.open{display:block}
+.calc-overlay.sci{width:340px}
+.calc-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:.85em;font-weight:600;color:var(--text2)}
+.calc-close{background:none;border:none;color:var(--text2);font-size:1.1em;cursor:pointer}
+.calc-mode-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.72em;cursor:pointer;color:var(--text2);font-family:inherit}
+.calc-mode-btn:hover{border-color:var(--accent);color:var(--accent)}
+.calc-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.calc-display{padding:12px 14px;font-family:monospace;font-size:1.4em;text-align:right;color:var(--text);background:var(--bg);border-bottom:1px solid var(--border);min-height:48px;word-break:break-all;overflow:hidden}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:6px}
+.calc-overlay.sci .calc-grid{grid-template-columns:repeat(5,1fr)}
+.calc-btn{padding:14px 4px;border:none;background:var(--card2);color:var(--text);font-size:.95em;font-family:monospace;cursor:pointer;border-radius:6px;transition:.15s}
+.calc-btn:hover{background:var(--border)}
+.calc-btn:active{background:var(--accent);color:#fff}
+.calc-btn.op{color:var(--accent);font-weight:700}
+.calc-btn.eq{background:var(--accent);color:#fff;font-weight:700}
+.calc-btn.eq:hover{background:var(--accent2)}
+.calc-btn.clr{color:var(--no);font-weight:700}
+.calc-btn.sci{font-size:.72em;color:var(--warn);padding:10px 2px}
+.calc-btn.sci:hover{background:rgba(251,191,36,.1)}
+@media(max-width:600px){.calc-overlay{top:auto;bottom:70px;right:4px;left:4px;width:auto}.calc-overlay.sci{width:auto}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app" id="app"></div>
+<script>
+
+// Dark/Light mode
+function getTheme() { try { return localStorage.getItem('hvac_theme') || 'dark'; } catch(e) { return 'dark'; } }
+function setTheme(t) { document.body.className = t === 'light' ? 'light' : ''; try { localStorage.setItem('hvac_theme', t); } catch(e) {} updateThemeBtn(); }
+function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
+function updateThemeBtn() { var btn = document.getElementById('theme-btn'); if (btn) btn.textContent = getTheme() === 'dark' ? 'Light' : 'Dark'; }
+setTheme(getTheme());
+
+// Question flagging
+var flagged = {};
+function toggleFlag(n) { flagged[n] = !flagged[n]; render(); }
+function getFlagHTML(n) {
+  var cls = flagged[n] ? 'flag-btn flagged' : 'flag-btn';
+  var txt = flagged[n] ? 'Flagged' : 'Flag';
+  return '<button class="' + cls + '" onclick="toggleFlag(' + n + ')">' + txt + '</button>';
+}
+const Q=[{n:1,cat:'Core',p:1,t:'mc',q:'Section 608 of the Clean Air Act regulates:',o:['Handling and disposal of refrigerants','Boiler emissions only','Electrical safety','Indoor air quality'],a:0,ex:['CORRECT','Incorrect. Different EPA regulations.','Incorrect. Covered by NEC/OSHA.','Incorrect. Separate regulations.']},
+{n:2,cat:'Core',p:1,t:'mc',q:'Stratospheric ozone depletion is caused primarily by which element in CFC/HCFC refrigerants?',o:['Fluorine','Chlorine','Hydrogen','Carbon'],a:1,ex:['Incorrect. Chlorine is the primary ozone destroyer.','CORRECT - Chlorine atoms catalytically destroy ozone. One chlorine atom can destroy thousands of ozone molecules.','Incorrect.','Incorrect.']},
+{n:3,cat:'Core',p:1,t:'mc',q:'The primary environmental concern with HFC refrigerants is:',o:['Ozone depletion','High Global Warming Potential (GWP)','Toxicity','Radioactivity'],a:1,ex:['Incorrect. HFCs have zero ODP.','CORRECT - HFCs have zero ODP but many have very high GWP, contributing to climate change.','Incorrect. GWP is the primary concern.','Incorrect.']},
+{n:4,cat:'Core',p:1,t:'mc',q:'CFCs were phased out of US production as of:',o:['January 1, 1990','December 31, 1995','November 15, 1993','July 1, 2000'],a:1,ex:['Incorrect.','CORRECT - CFC production banned December 31, 1995 under the Montreal Protocol.','Incorrect. That date is when venting became illegal.','Incorrect.']},
+{n:5,cat:'Core',p:1,t:'mc',q:'Minimum passing score for each EPA 608 section:',o:['60%','70%','80%','90%'],a:1,ex:['Incorrect.','CORRECT - 70% on each section (Core + Type) is required.','Incorrect.','Incorrect.']},
+{n:6,cat:'Core',p:1,t:'mc',q:'It is illegal to intentionally vent which of the following?',o:['Nitrogen','CFC, HCFC, and HFC refrigerants','Water vapor','Carbon dioxide'],a:1,ex:['Incorrect. Nitrogen is commonly vented during testing.','CORRECT - Fines can exceed $44,539 per day per violation.','Incorrect.','Incorrect.']},
+{n:7,cat:'Core',p:1,t:'mc',q:'ODP stands for:',o:['Operational Design Pressure','Ozone Depletion Potential','Oxygen Displacement Percentage','Outdoor Design Parameters'],a:1,ex:['Incorrect.','CORRECT - Measures a substance ability to destroy ozone relative to CFC-11 (ODP=1.0).','Incorrect.','Incorrect.']},
+{n:8,cat:'Core',p:1,t:'mc',q:'R-22 is classified as what type of refrigerant?',o:['CFC','HCFC','HFC','HFO'],a:1,ex:['Incorrect. R-22 contains hydrogen.','CORRECT - R-22 is an HCFC (Hydrochlorofluorocarbon). Lower ODP than CFCs but still depletes ozone.','Incorrect. HFCs have no chlorine.','Incorrect. HFOs are newer low-GWP refrigerants.']},
+{n:9,cat:'Core',p:1,t:'mc',q:'R-410A is classified as:',o:['CFC','HCFC','HFC','HFO'],a:2,ex:['Incorrect.','Incorrect.','CORRECT - R-410A is an HFC blend with zero ODP but high GWP (~2088).','Incorrect.']},
+{n:10,cat:'Core',p:1,t:'mc',q:'Maximum fine per day per violation for knowingly venting refrigerant:',o:['$5,000','$10,000','Up to $44,539','$100'],a:2,ex:['Incorrect.','Incorrect.','CORRECT - Criminal penalties can also include imprisonment.','Incorrect.']},
+{n:11,cat:'Core',p:1,t:'mc',q:'Recovery cylinders should never be filled above what % of capacity by weight?',o:['60%','70%','80%','90%'],a:2,ex:['Incorrect.','Incorrect.','CORRECT - DOT regulation. Overfilling is extremely dangerous due to hydrostatic expansion.','Incorrect.']},
+{n:12,cat:'Core',p:1,t:'mc',q:'Recovery cylinders are typically painted:',o:['Green','Yellow with gray top','Blue','Red'],a:1,ex:['Incorrect.','CORRECT - Yellow body with gray top distinguishes them from virgin refrigerant cylinders.','Incorrect.','Incorrect.']},
+{n:13,cat:'Core',p:1,t:'mc',q:'The three Rs of refrigerant management are:',o:['Reduce, Reuse, Recycle','Recover, Recycle, Reclaim','Repair, Replace, Recharge','Remove, Refill, Return'],a:1,ex:['Incorrect.','CORRECT - Recover (remove from system), Recycle (clean on-site), Reclaim (reprocess to ARI 700 standards).','Incorrect.','Incorrect.']},
+{n:14,cat:'Core',p:1,t:'mc',q:'Reclaimed refrigerant must meet what purity standard?',o:['ARI 500','ARI 700','ARI 900','ASHRAE 15'],a:1,ex:['Incorrect.','CORRECT - ARI 700 = virgin refrigerant quality. Only EPA-certified reclaimers can do this.','Incorrect.','Incorrect. ASHRAE 15 is a safety standard.']},
+{n:15,cat:'Core',p:1,t:'mc',q:'Before opening a system for service, a technician must:',o:['Vent the refrigerant','Recover refrigerant to required levels','Add nitrogen to push refrigerant out','Just open the system'],a:1,ex:['Incorrect. Venting is illegal.','CORRECT - Recover to the required evacuation level for that equipment type.','Incorrect.','Incorrect.']},
+{n:16,cat:'Core',p:1,t:'mc',q:'Refrigerant cylinders should be transported:',o:['On their side','Upright and secured with proper DOT tags','Stacked horizontally','Without labels'],a:1,ex:['Incorrect.','CORRECT - Upright, secured, with DOT tags. Never in enclosed unventilated spaces.','Incorrect.','Incorrect.']},
+{n:17,cat:'Core',p:1,t:'mc',q:'ASHRAE Standard 34 classifies refrigerants by:',o:['Color and odor','Toxicity and flammability','Pressure and temperature','Cost'],a:1,ex:['Incorrect.','CORRECT - Letter (A=lower toxicity, B=higher) + number (1=no flame, 2L=mild, 2=flammable, 3=highly flammable).','Incorrect.','Incorrect.']},
+{n:18,cat:'Core',p:1,t:'mc',q:'A leak detector for HFC systems should be:',o:['A halide torch','An electronic detector rated for HFCs','Soap bubbles only','UV dye only'],a:1,ex:['Incorrect. Halide torches only detect chlorine-containing refrigerants.','CORRECT - HFCs have no chlorine so halide torches will not work. Electronic detectors are required.','Incorrect. Soap bubbles help pinpoint but an approved detector is required.','Incorrect.']},
+{n:19,cat:'Core',p:1,t:'mc',q:'Different refrigerants should never be mixed in a recovery cylinder because:',o:['It saves space','It creates a hazardous, unrecoverable mixture','It improves recovery','Mixing HFCs is allowed'],a:1,ex:['Incorrect.','CORRECT - Mixing contaminates both refrigerants making them unrecoverable. Each type gets its own labeled cylinder.','Incorrect.','Incorrect. Even mixing two HFCs creates contamination.']},
+{n:20,cat:'Core',p:1,t:'mc',q:'CFC and HCFC refrigerants can only be purchased by:',o:['Anyone','EPA 608 certified technicians','Licensed contractors only','Homeowners and techs'],a:1,ex:['Incorrect.','CORRECT - Valid EPA 608 certification is required.','Incorrect. EPA cert specifically required.','Incorrect.']},
+{n:21,cat:'Core',p:1,t:'mc',q:'Recovery cylinder pressure relief devices protect against:',o:['Indicating fullness','Catastrophic failure from overpressure','Faster recovery','Venting non-condensables'],a:1,ex:['Incorrect.','CORRECT - Prevents rupture from overfilling or heat exposure.','Incorrect.','Incorrect.']},
+{n:22,cat:'Core',p:1,t:'mc',q:'High refrigerant concentrations in enclosed spaces can cause:',o:['Better breathing','Oxygen displacement, asphyxiation, and cardiac sensitization','No health effects','Mild skin irritation only'],a:1,ex:['Incorrect.','CORRECT - Displaces oxygen causing asphyxiation. Also causes cardiac sensitization, frostbite from liquid, respiratory damage.','Incorrect.','Incorrect.']},
+{n:23,cat:'Core',p:1,t:'mc',q:'Self-contained (passive) recovery equipment:',o:['Requires external power','Uses system pressure differentials - no external power needed','Only works on small appliances','Is illegal'],a:1,ex:['Incorrect.','CORRECT - Uses pressure differential and gravity. No electricity or external compressor needed.','Incorrect.','Incorrect.']},
+{n:24,cat:'Core',p:1,t:'mc',q:'Recovery equipment must be certified by:',o:['The employer','An EPA-approved testing laboratory','The state board','OSHA'],a:1,ex:['Incorrect.','CORRECT - Must be certified by EPA-approved lab (UL, AHRI) to meet recovery efficiency standards.','Incorrect.','Incorrect.']},
+{n:25,cat:'Core',p:1,t:'mc',q:'If you witness someone intentionally venting refrigerant, you should:',o:['Do nothing','Report the violation to the EPA','Help them','Ask them to stop only'],a:1,ex:['Incorrect.','CORRECT - Report to EPA. A bounty program rewards reporting violations.','Incorrect.','Incorrect.']},
+{n:26,cat:'Type I',p:1,t:'mc',q:'A small appliance is factory-charged with:',o:['Less than 5 lbs','5 lbs or less of refrigerant','Less than 50 lbs','Any amount'],a:1,ex:['Incorrect.','CORRECT - Examples: household refrigerators, window AC, PTACs, vending machines.','Incorrect.','Incorrect.']},
+{n:27,cat:'Type I',p:1,t:'mc',q:'Recovery from a small appliance requires:',o:['80% recovery','90% recovery or 4 inches Hg vacuum','Only easily accessible refrigerant','100% always'],a:1,ex:['Incorrect.','CORRECT - 90% of charge OR achieve 4 inches Hg vacuum with certified equipment.','Incorrect.','Incorrect.']},
+{n:28,cat:'Type I',p:1,t:'mc',q:'System-dependent (passive) recovery requires the vessel to be at:',o:['Higher pressure than the appliance','Lower pressure than the appliance','Same pressure','Any pressure'],a:1,ex:['Incorrect.','CORRECT - Refrigerant flows from high pressure (appliance) to low pressure (vessel).','Incorrect.','Incorrect.']},
+{n:29,cat:'Type I',p:1,t:'mc',q:'Before disposing of a refrigerator, a technician must:',o:['Puncture the compressor','Recover refrigerant using certified equipment','Drain oil only','Nothing if older than 20 years'],a:1,ex:['Incorrect. Venting is illegal.','CORRECT - All refrigerant must be recovered regardless of age or condition.','Incorrect.','Incorrect.']},
+{n:30,cat:'Type I',p:1,t:'mc',q:'Most common compressor in small appliances:',o:['Scroll','Hermetic reciprocating','Centrifugal','Screw'],a:1,ex:['Incorrect.','CORRECT - Small hermetically sealed reciprocating compressors are standard in household refrigerators/freezers.','Incorrect.','Incorrect.']},
+{n:31,cat:'Type I',p:1,t:'mc',q:'With an operating compressor, system-dependent recovery can:',o:['Use the compressor to push refrigerant into the vessel','Never use the compressor','Disconnect the compressor first','Remove the compressor'],a:0,ex:['CORRECT - Running compressor pumps refrigerant into recovery vessel faster and more completely.','Incorrect.','Incorrect.','Incorrect.']},
+{n:32,cat:'Type I',p:1,t:'mc',q:'Small appliance recovery requires what certification?',o:['Type I or Universal','Any EPA cert','No certification needed','State license only'],a:0,ex:['CORRECT - Type I specifically covers small appliances. Universal also covers Type I.','Incorrect.','Incorrect.','Incorrect.']},
+{n:33,cat:'Type I',p:1,t:'mc',q:'Piercing valves after recovery should be:',o:['Left on permanently','Replaced with a service valve or sealed','Reused on other systems','Discarded with appliance'],a:1,ex:['Incorrect. Creates leak point.','CORRECT - Replace with proper service valve or braze/seal the opening.','Incorrect.','Incorrect.']},
+{n:34,cat:'Type I',p:1,t:'mc',q:'If compressor does not run, recovery requires:',o:['System-dependent only','Self-contained (active) recovery equipment','Both methods','No recovery needed'],a:1,ex:['Incorrect. Needs pressure differential the dead compressor cannot provide.','CORRECT - Active equipment with its own compressor must be used.','Incorrect.','Incorrect.']},
+{n:35,cat:'Type I',p:1,t:'mc',q:'R-134a commonly found in which small appliance?',o:['Window ACs','Domestic refrigerators/freezers after 1995','Vending machines only','Automotive AC only'],a:1,ex:['Incorrect.','CORRECT - R-134a replaced R-12 (CFC) in domestic refrigerators after the phaseout.','Incorrect.','Incorrect.']},
+{n:36,cat:'Type I',p:1,t:'mc',q:'Non-condensable gases in a recovery cylinder:',o:['Improve quality','Raise pressure above normal for that temperature','Have no effect','Lower pressure'],a:1,ex:['Incorrect.','CORRECT - Air cannot condense, increasing cylinder pressure above expected levels.','Incorrect.','Incorrect.']},
+{n:37,cat:'Type I',p:1,t:'mc',q:'Oil in older CFC small appliance compressors is typically:',o:['POE','Mineral oil','PAG','Silicone'],a:1,ex:['Incorrect. POE is for HFCs.','CORRECT - CFCs are miscible with mineral oil. Retrofitting to HFC requires changing to POE.','Incorrect. PAG is automotive.','Incorrect.']},
+{n:38,cat:'Type I',p:1,t:'mc',q:'Retrofitting CFC system to HFC requires what oil?',o:['Mineral','POE (polyolester)','PAG','Any automotive oil'],a:1,ex:['Incorrect. Mineral oil not miscible with HFCs.','CORRECT - POE is compatible with HFC refrigerants.','Incorrect.','Incorrect.']},
+{n:39,cat:'Type II',p:1,t:'mc',q:'High-pressure appliances use refrigerants with boiling points:',o:['Above 50F at atmospheric','Between -50C and 10C at atmospheric pressure','Below -100C','At exactly 0C'],a:1,ex:['Incorrect.','CORRECT - Includes R-22, R-410A, R-134a, R-407C systems.','Incorrect.','Incorrect.']},
+{n:40,cat:'Type II',p:1,t:'mc',q:'R-410A is classified as what pressure category?',o:['Low-pressure','Medium-pressure','High-pressure','Very high-pressure'],a:3,ex:['Incorrect.','Incorrect.','Incorrect.','CORRECT - Operating pressures significantly higher than R-22.']},
+{n:41,cat:'Type II',p:1,t:'mc',q:'Comfort cooling with 50+ lbs must be repaired when annual leak rate exceeds:',o:['5%','10%','15%','25%'],a:2,ex:['Incorrect.','Incorrect.','CORRECT - EPA requires repair at 15% for comfort cooling.','Incorrect.']},
+{n:42,cat:'Type II',p:1,t:'mc',q:'Industrial/commercial refrigeration with 50+ lbs: repair when leak rate exceeds:',o:['15%','20%','30%','50%'],a:2,ex:['Incorrect. 15% is for comfort cooling.','Incorrect.','CORRECT - 30% for commercial/industrial process refrigeration.','Incorrect.']},
+{n:43,cat:'Type II',p:1,t:'mc',q:'For dehydration, a system should be evacuated to:',o:['29 inches Hg','500 microns','25,000 microns','0 psig'],a:1,ex:['Incorrect. About 25,000 microns - not deep enough.','CORRECT - 500 microns lowers water boiling point well below room temperature.','Incorrect. Same as 29 inches Hg.','Incorrect. No vacuum at all.']},
+{n:44,cat:'Type II',p:1,t:'mc',q:'What should NEVER be used for leak testing?',o:['Nitrogen','Nitrogen with trace refrigerant','Oxygen or compressed air','Dry nitrogen'],a:2,ex:['Incorrect. Nitrogen is safe.','Incorrect. This is the preferred method.','CORRECT - Oxygen + oil under pressure = explosion risk. NEVER use oxygen or compressed air.','Incorrect. Dry nitrogen is safe.']},
+{n:45,cat:'Type II',p:1,t:'mc',q:'After opening a system for service, evacuation removes:',o:['Refrigerant only','Air and moisture (non-condensables)','Oil only','Nothing if brief'],a:1,ex:['Incorrect.','CORRECT - Air causes high head pressure. Moisture causes acid, copper plating, and ice at metering devices.','Incorrect.','Incorrect. Even brief exposure introduces moisture.']},
+{n:46,cat:'Type II',p:1,t:'mc',q:'A high-pressure cutout switch:',o:['Shuts off compressor when suction drops','Shuts off compressor when discharge rises too high','Controls fan speed','Regulates flow'],a:1,ex:['Incorrect. That is a low-pressure cutout.','CORRECT - Protects against compressor damage from excessive head pressure.','Incorrect.','Incorrect.']},
+{n:47,cat:'Type II',p:1,t:'mc',q:'All HVAC/R systems must be protected by a:',o:['Low-pressure switch','High-pressure switch','Compressor overload','Pressure relief device'],a:3,ex:['Incorrect.','Incorrect.','Incorrect.','CORRECT - Universal code requirement to prevent catastrophic overpressure failure.']},
+{n:48,cat:'Type II',p:1,t:'mc',q:'Moisture in a refrigeration system causes:',o:['Better lubrication','Acid formation, copper plating, and ice at metering device','Improved heat transfer','No problems'],a:1,ex:['Incorrect.','CORRECT - Moisture + refrigerant + oil = acids. Copper plating on bearings/valves. Ice blocks metering devices.','Incorrect.','Incorrect.']},
+{n:49,cat:'Type II',p:1,t:'mc',q:'A standing vacuum test checks for:',o:['Charge level','Leaks after evacuation','Compressor capacity','Oil level'],a:1,ex:['Incorrect.','CORRECT - Isolate pump, monitor micron level. If vacuum holds, system is leak-free and dry.','Incorrect.','Incorrect.']},
+{n:50,cat:'Type II',p:1,t:'mc',q:'Superheat is:',o:['Heat added to liquid above boiling','Vapor temperature above saturation temperature at its pressure','Heat removed during condensation','Total steam heat content'],a:1,ex:['Incorrect. Liquids have subcooling, not superheat.','CORRECT - Indicates all liquid evaporated plus additional sensible heat absorbed.','Incorrect.','Incorrect.']},
+{n:51,cat:'Type II',p:1,t:'mc',q:'Bubbles in the liquid line sight glass typically indicate:',o:['Proper charge','Low charge or restriction','Overcharge','Broken sight glass'],a:1,ex:['Incorrect. Clear sight glass = proper charge.','CORRECT - Flash gas from insufficient subcooled liquid. Usually low charge or upstream restriction.','Incorrect. Overcharge shows clear glass.','Incorrect.']},
+{n:52,cat:'Type II',p:1,t:'mc',q:'An accumulator prevents:',o:['Excess liquid storage','Liquid refrigerant from reaching the compressor','Pressure increase','Oil contamination'],a:1,ex:['Incorrect.','CORRECT - Suction accumulator traps liquid to prevent compressor slugging and mechanical damage.','Incorrect.','Incorrect.']},
+{n:53,cat:'Type II',p:1,t:'mc',q:'As vacuum increases, water boiling point:',o:['Increases','Decreases','Stays at 212F','Water cannot boil in vacuum'],a:1,ex:['Incorrect.','CORRECT - At 29 inches Hg vacuum, water boils at about 76F. This is why deep evacuation removes moisture.','Incorrect.','Incorrect.']},
+{n:54,cat:'Type II',p:1,t:'mc',q:'R-744 (CO2) is classified as:',o:['Low-pressure','High-pressure','Very high-pressure','Ultra-low temperature'],a:2,ex:['Incorrect.','Incorrect.','CORRECT - Critical point at 88F/1,056 psi. Often operates above critical pressure (transcritical).','Incorrect.']},
+{n:55,cat:'Type II',p:1,t:'mc',q:'Before adding refrigerant to a leaking system:',o:['Just add refrigerant','Find and repair the leak first, then evacuate and recharge','Overcharge to compensate','Add leak sealant'],a:1,ex:['Incorrect. Wastes refrigerant and violates regulations.','CORRECT - Repair leak, evacuate to remove air/moisture, then recharge properly.','Incorrect.','Incorrect. Sealants can damage components.']},
+{n:56,cat:'Type III',p:1,t:'mc',q:'Low-pressure appliances use refrigerants with boiling points:',o:['Below -50C','Above 10C (50F) at atmospheric pressure','Between -50C and 10C','At exactly 0C'],a:1,ex:['Incorrect.','CORRECT - R-11 (bp 75F) and R-123 (bp 82F) are examples.','Incorrect. That is high-pressure.','Incorrect.']},
+{n:57,cat:'Type III',p:1,t:'mc',q:'Low-pressure evaporators typically operate:',o:['Above atmospheric pressure','At or below atmospheric (in vacuum)','At exactly 0 psig','Above 100 psig'],a:1,ex:['Incorrect.','CORRECT - Must be below atmospheric to achieve cooling temps since refrigerant boils above 50F at atmospheric.','Incorrect.','Incorrect.']},
+{n:58,cat:'Type III',p:1,t:'mc',q:'A purge unit on a low-pressure chiller removes:',o:['Refrigerant automatically','Air and non-condensables that leak IN','Oil from evaporator','Nothing'],a:1,ex:['Incorrect.','CORRECT - Low-pressure systems operate in vacuum so air leaks IN. Purge unit continuously removes air from condenser.','Incorrect.','Incorrect.']},
+{n:59,cat:'Type III',p:1,t:'mc',q:'Maximum nitrogen test pressure for low-pressure systems:',o:['10 psig','150 psig','System design pressure','500 psig'],a:0,ex:['CORRECT - Low-pressure vessels cannot withstand high pressures. 10 psig maximum.','Incorrect. Would damage low-pressure components.','Incorrect.','Incorrect. Catastrophically dangerous.']},
+{n:60,cat:'Type III',p:1,t:'mc',q:'R-123 is classified as:',o:['CFC','HCFC','HFC','HFO'],a:1,ex:['Incorrect.','CORRECT - HCFC replacement for CFC-11 in low-pressure centrifugal chillers.','Incorrect.','Incorrect.']},
+{n:61,cat:'Type III',p:1,t:'mc',q:'Low-pressure systems must be recovered to:',o:['0 psig','25 inches Hg vacuum','25 mm Hg absolute','Atmospheric'],a:2,ex:['Incorrect.','Incorrect.','CORRECT - 25 mm Hg absolute (approximately 29 inches Hg vacuum).','Incorrect.']},
+{n:62,cat:'Type III',p:1,t:'mc',q:'Air leaks into low-pressure systems where:',o:['At compressor discharge','Anywhere system is below atmospheric pressure','Only at condenser','At liquid line'],a:1,ex:['Incorrect. Discharge is above atmospheric.','CORRECT - Air enters wherever vacuum exists: evaporator, low-side piping, fittings.','Incorrect.','Incorrect.']},
+{n:63,cat:'Type III',p:1,t:'mc',q:'Non-condensable gases in a low-pressure chiller cause:',o:['Better efficiency','Raised condensing pressure and reduced capacity','No effect','Lower evaporator temp'],a:1,ex:['Incorrect.','CORRECT - Air takes space in condenser, raising pressure and reducing cooling capacity.','Incorrect.','Incorrect.']},
+{n:64,cat:'Type III',p:1,t:'mc',q:'If water flow stops but compressor runs, the evaporator can:',o:['Operate normally','Freeze the water in tubes, cracking them','Get warmer','Shut off automatically'],a:1,ex:['Incorrect.','CORRECT - Temperature drops rapidly without water flow, freezing water in tubes. Catastrophic tube damage.','Incorrect.','Incorrect. Not all systems have this protection.']},
+{n:65,cat:'Type III',p:1,t:'mc',q:'Low-pressure chillers typically use what compressor?',o:['Reciprocating','Scroll','Centrifugal','Screw'],a:2,ex:['Incorrect.','Incorrect.','CORRECT - Large volume of low-density vapor requires high-volume centrifugal design.','Incorrect.']},
+{n:66,cat:'Type III',p:1,t:'mc',q:'Charging a low-pressure system: refrigerant added as:',o:['Vapor to high side','Liquid to evaporator charging valve','Vapor to suction only','Either to any point'],a:1,ex:['Incorrect.','CORRECT - Low pressures make vapor charging impractical. Liquid charged directly to evaporator.','Incorrect.','Incorrect.']},
+{n:67,cat:'Type III',p:1,t:'mc',q:'A rupture disc on a low-pressure chiller:',o:['Can be reset','Is one-time-use, bursts at rated pressure, must be replaced','Is same as a relief valve','Is optional'],a:1,ex:['Incorrect. Cannot be reset.','CORRECT - One-time pressure relief. Once burst, must be replaced.','Incorrect. Relief valves reseat; rupture discs are destroyed.','Incorrect. Required for overpressure protection.']}];
+
+const CATS=['Core','Type I','Type II','Type III'];
+const CAT_ICONS={'Core':'\u2699\ufe0f','Type I':'\ud83d\udce6','Type II':'\u2744\ufe0f','Type III':'\ud83c\udf21\ufe0f'};
+const L='ABCDEFGHIJ',TL={mc:'Multiple Choice',tf:'True / False'};
+const TP=Q.reduce((s,q)=>s+q.p,0);
+let S={scr:'start',mode:'practice',i:0,ans:{},txt:{},chk:{},sg:false,graded:false,flt:'all',shuf:null,cats:{Core:true,'Type I':true,'Type II':true,'Type III':true}};
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function filteredQ(){return Q.filter(function(q){return S.cats[q.cat];});}
+function qs(){return S.shuf||S.activeQ||filteredQ();}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function toggleCat(c){S.cats[c]=!S.cats[c];if(!CATS.some(function(k){return S.cats[k];}))S.cats[c]=true;render();}
+function selAll(){CATS.forEach(function(c){S.cats[c]=true;});render();}
+function catGridHTML(){var cc={};CATS.forEach(function(c){cc[c]=Q.filter(function(q){return q.cat===c;}).length;});return CATS.map(function(c){return '<div class="cat-btn '+(S.cats[c]?'on':'')+'" onclick="toggleCat(\''+c+'\')"><span class="cat-icon">'+CAT_ICONS[c]+'</span><div class="cat-info"><div class="cat-name">'+c+'</div><div class="cat-count">'+cc[c]+' questions</div></div><span class="cat-check">'+(S.cats[c]?'\u2713':'')+'</span></div>';}).join('');}
+function catBadge(q){if(!q.cat)return '';return '<span class="qt" style="background:rgba(74,158,255,.1);color:var(--accent)">'+q.cat+'</span>';}
+
+function render(){const el=document.getElementById('app');if(S.scr==='start')return rStart(el);if(S.scr==='quiz')return rQuiz(el);if(S.scr==='results')return rResults(el);}
+
+function rStart(el){
+var fq=filteredQ(),sc=fq.length,sp=fq.reduce(function(s,q){return s+q.p;},0);
+el.innerHTML='<div class="start">'+
+'<h1>\u2699\ufe0f EPA 608 Certification Prep</h1>'+
+'<p class="sub">'+sc+' Questions \u2014 Universal Certification Study Tool</p>'+
+'<div class="exam-info"><strong>About the EPA 608 Exam:</strong> Required for anyone who services, maintains, repairs, or disposes of equipment containing refrigerants. <strong>Core</strong> (25 Qs) is required for all types. Pass 70% on Core + your chosen Type.<br><br>'+
+'<strong>Type I</strong> = Small appliances (5 lbs or less) &bull; <strong>Type II</strong> = High/very high pressure &bull; <strong>Type III</strong> = Low pressure &bull; <strong>Universal</strong> = All three types</div>'+
+'<div class="cat-section"><h3>Choose Sections</h3><div class="cat-grid">'+catGridHTML()+'</div><div class="cat-actions"><button onclick="selAll()">Select All (Universal)</button></div></div>'+
+'<div class="stats"><div class="sb"><div class="v">'+sc+'</div><div class="l">Questions</div></div><div class="sb"><div class="v">70%</div><div class="l">Passing</div></div><div class="sb"><div class="v">4</div><div class="l">Sections</div></div></div>'+
+'<div class="modes">'+
+'<div class="mb '+(S.mode==='practice'?'on':'')+'" onclick="setM(\'practice\')"><h3>\u2705 Practice</h3><p>Check answers as you go with explanations.</p></div>'+
+'<div class="mb '+(S.mode==='exam'?'on':'')+'" onclick="setM(\'exam\')"><h3>\ud83d\udcdd Exam Simulation</h3><p>No feedback until submit. 70% to pass.</p></div>'+
+'<div class="mb '+(S.mode==='shuffle'?'on':'')+'" onclick="setM(\'shuffle\')"><h3>\ud83d\udd00 Shuffle</h3><p>Randomized with instant feedback.</p></div></div>'+
+'<button class="go" onclick="startQ()">Start \u2014 '+sc+' Questions</button>'+
+'<p class="disclaimer">Study aid based on EPA Section 608 regulations. Verify with official EPA materials before testing.</p></div>';}
+
+function rQuiz(el){
+const all=qs(),q=all[S.i],done=S.ans[q.n]!==undefined,checked=S.chk[q.n];
+const prog=Object.keys(S.ans).length;
+let grid='';
+if(S.sg){grid=`<div class="gp"><div class="gr">${all.map((qq,i)=>{
+let c='gd';if(i===S.i)c+=' cur';if(S.ans[qq.n]!==undefined)c+=' ans';
+if(flagged[qq.n])c+=' gf';if(S.chk[qq.n]&&S.ans[qq.n]===qq.a)c+=' gc';if(S.chk[qq.n]&&S.ans[qq.n]!==undefined&&S.ans[qq.n]!==qq.a)c+=' gw';
+return`<div class="${c}" onclick="go(${i})">${qq.n}</div>`;}).join('')}</div></div>`;}
+const opts=`<div class="opts">${q.o.map((o,i)=>{
+let c='op';if(S.ans[q.n]===i)c+=' sel';
+if(checked){c+=' dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a){c='op cor dis';}}
+let exH='';if(checked&&q.ex&&q.ex[i]){const isC=i===q.a;exH=`<div class="ex-box ${isC?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}" onclick="sel(${q.n},${i})"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('')}</div>`;
+const canChk=S.mode!=='exam'&&!checked&&done;
+el.innerHTML=`<div class="hdr"><span class="t">EPA 608 Prep</span><span class="pi">${prog}/${all.length}</span>
+<button class="gt" onclick="tg()">${S.sg?'Hide':'Show'} Map</button></div>
+<div class="pb"><div class="pf" style="width:${(prog/all.length)*100}%"></div></div>${grid}
+<div class="qc"><div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]||q.t}</span>${catBadge(q)}<span class="qp">${q.p} pt</span></div>
+<div class="qq">${esc(q.q)}</div>${opts}</div>
+<div class="nav"><button class="nb" onclick="go(${S.i-1})" ${S.i===0?'disabled':''}>Prev</button>
+<div class="nc">${canChk?`<button class="nb ck" onclick="chk(${q.n})">Check</button>`:''}
+${S.mode==='exam'&&!S.graded?`<button class="nb pr" onclick="submit()" style="background:#f59e0b;border-color:#f59e0b">Submit</button>`:''}</div>
+<button class="nb${S.i===all.length-1?' pr':''}" onclick="${S.i===all.length-1?(S.mode==='exam'?'submit()':'showR()'):`go(${S.i+1})`}">${S.i===all.length-1?(S.mode==='exam'?'Submit':'Results'):'Next'}</button></div>`;}
+
+function rResults(el){
+const all=qs();let cor=0,wrg=0,skip=0;
+all.forEach(q=>{if(S.ans[q.n]===q.a)cor++;else if(S.ans[q.n]!==undefined)wrg++;else skip++;});
+const grd=all.length,pct=grd?Math.round(cor/grd*100):0;
+const passed=pct>=70;
+const cc=passed?'var(--ok)':'var(--no)';
+// Per-section breakdown
+var sections={};
+CATS.forEach(function(c){sections[c]={cor:0,wrg:0,total:0};});
+all.forEach(function(q){if(!sections[q.cat])return;sections[q.cat].total++;if(S.ans[q.n]===q.a)sections[q.cat].cor++;else if(S.ans[q.n]!==undefined)sections[q.cat].wrg++;});
+var secHTML='';
+CATS.forEach(function(c){var s=sections[c];if(!s.total)return;var sp=Math.round(s.cor/s.total*100);var sc2=sp>=70?'var(--ok)':'var(--no)';
+secHTML+='<div class="rs"><div class="rv" style="color:'+sc2+'">'+sp+'%</div><div class="rl">'+c+' ('+s.cor+'/'+s.total+')</div></div>';});
+const rev=all.map(q=>{
+const os=q.o.map((o,i)=>{let c2='op dis';if(i===q.a)c2+=' shw';if(S.ans[q.n]===i&&i!==q.a)c2+=' wrg';if(S.ans[q.n]===i&&i===q.a)c2='op cor dis';
+let exH='';if(q.ex&&q.ex[i]){const ic=i===q.a;exH=`<div class="ex-box ${ic?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c2}"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('');
+return`<div class="qc"><div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]}</span>${catBadge(q)}</div><div class="qq">${esc(q.q)}</div><div class="opts">${os}</div></div>`;}).join('');
+el.innerHTML=`<div class="res"><h2>${passed?'PASSED! \u2705':'NOT YET \u274c'}</h2><p style="color:var(--text2);margin-bottom:16px">70% required to pass each section</p>
+<div class="sc" style="border-color:${cc}"><div class="pct" style="color:${cc}">${pct}%</div><div class="of">${cor}/${grd}</div></div>
+<div class="rg">${secHTML}</div>
+<div class="ra"><button class="nb" onclick="reset()">Start Over</button><button class="nb pr" onclick="retry()">Retry Wrong</button></div></div>
+<div style="padding:0 4px">${rev}</div>`;}
+
+function setM(m){S.mode=m;render();}
+function startQ(){var fq=filteredQ();if(!fq.length){alert('Select at least one section.');return;}S.activeQ=fq;S.scr='quiz';S.i=0;S.ans={};S.txt={};S.chk={};S.graded=false;S.shuf=S.mode==='shuffle'?shuffle(fq):null;render();scrollTo(0,0);}
+function sel(n,i){if(S.chk[n])return;S.ans[n]=i;render();}
+function chk(n){S.chk[n]=true;render();}
+function go(i){const a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
+function tg(){S.sg=!S.sg;render();}
+function submit(){qs().forEach(q=>{S.chk[q.n]=true;});S.graded=true;showR();}
+function showR(){S.scr='results';S.flt='all';render();scrollTo(0,0);}
+function reset(){S.scr='start';S.mode='practice';S.activeQ=null;S.shuf=null;render();scrollTo(0,0);}
+function retry(){const a=qs().filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);if(!a.length){alert('No wrong answers!');return;}S.shuf=a;S.ans={};S.chk={};S.graded=false;S.scr='quiz';S.i=0;S.mode='practice';render();scrollTo(0,0);}
+document.addEventListener('keydown',e=>{if(S.scr!=='quiz')return;if(e.key==='ArrowRight'){e.preventDefault();go(S.i+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(S.i-1);}const a=qs(),q=a[S.i];if(q.o.length>0&&!S.chk[q.n]){const k='ABCDEFGHIJ'.indexOf(e.key.toUpperCase());if(k>=0&&k<q.o.length)sel(q.n,k);}});
+render();
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>

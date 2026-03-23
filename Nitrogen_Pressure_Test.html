@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Nitrogen Pressure Test Calculator</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:800px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.6em;font-weight:800;text-align:center;margin:44px 0 6px}
+.sub{text-align:center;color:var(--text2);margin-bottom:16px}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab{flex:1;padding:12px;border-radius:var(--r);border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;font-family:inherit;font-size:.85em;font-weight:600;transition:.2s}
+.tab:hover{border-color:var(--accent)}.tab.active{border-color:var(--accent);background:rgba(74,158,255,.06);color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:14px}
+.card h2{font-size:1.05em;font-weight:700;color:var(--accent);margin-bottom:4px}
+.desc{font-size:.85em;color:var(--text2);margin-bottom:14px;line-height:1.5}
+.ir{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:12px}
+.ig{flex:1;min-width:140px}
+.ig label{display:block;font-size:.73em;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.ig input,.ig select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:1em;font-family:monospace;outline:none}
+.ig input:focus{border-color:var(--accent)}
+.rb{border:2px solid;border-radius:var(--r);padding:16px;margin-top:14px}
+.rb h3{font-size:.85em;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.ri{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:.9em}
+.ri:last-child{border:none}
+.rl{color:var(--text2)}.rv{font-family:monospace;font-weight:700}
+.verdict{padding:16px;border-radius:var(--r);margin-top:14px;text-align:center;font-weight:700}
+.verdict .vt{font-size:1.15em;margin-bottom:4px}
+.verdict .vd{font-size:.85em;font-weight:400;line-height:1.5}
+.note{background:rgba(251,191,36,.06);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:var(--text2);margin-top:12px;line-height:1.5}
+.note strong{color:var(--warn)}
+.example{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin:12px 0;font-size:.88em;line-height:1.6}
+.example h4{color:var(--accent);font-size:.85em;margin-bottom:6px}
+.formula-box{background:var(--card2);border:2px solid var(--accent);border-radius:var(--r);padding:16px;margin:14px 0;text-align:center}
+.formula-box .formula{font-family:monospace;font-size:1.2em;font-weight:700;color:var(--accent);margin:8px 0}
+.formula-box .fdesc{font-size:.82em;color:var(--text2)}
+table{width:100%;border-collapse:collapse;font-size:.85em;margin-top:8px}
+th{padding:7px 8px;background:var(--card2);color:var(--accent);font-size:.72em;text-transform:uppercase;text-align:center}
+td{padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;font-family:monospace}
+tr:hover td{background:rgba(74,158,255,.04)}
+.chart-row{display:flex;gap:10px;margin:14px 0;flex-wrap:wrap}
+.chart-card{flex:1;min-width:200px;background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center}
+.chart-card .cv{font-size:1.8em;font-weight:800;font-family:monospace}
+.chart-card .cl{font-size:.78em;color:var(--text2);margin-top:4px}
+@media(max-width:600px){.ir{flex-direction:column}.app{padding:8px}h1{font-size:1.3em;margin-top:50px}.chart-row{flex-direction:column}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app">
+<h1>&#x1f9ea; Nitrogen Pressure Test</h1>
+<p class="sub">Temperature compensation calculator — is it a leak or just temp change?</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="sT('predict')">Predict Pressure</button>
+  <button class="tab" onclick="sT('leak')">Leak Check</button>
+  <button class="tab" onclick="sT('table')">Temp/Pressure Table</button>
+  <button class="tab" onclick="sT('ref')">Reference</button>
+</div>
+
+<!-- PREDICT PRESSURE -->
+<div id="tab-predict" class="card">
+  <h2>Predict Pressure at a New Temperature</h2>
+  <div class="desc">You pressurized a system at one temperature. Overnight the temperature changed. This calculates what the pressure SHOULD be if there's no leak.</div>
+  <div class="ir">
+    <div class="ig"><label>Initial Pressure (PSIG)</label><input type="number" id="p-p1" value="150" step="1" oninput="calcPredict()"></div>
+    <div class="ig"><label>Initial Temperature (°F)</label><input type="number" id="p-t1" value="90" step="1" oninput="calcPredict()"></div>
+    <div class="ig"><label>New Temperature (°F)</label><input type="number" id="p-t2" value="55" step="1" oninput="calcPredict()"></div>
+  </div>
+  <div id="p-result"></div>
+</div>
+
+<!-- LEAK CHECK -->
+<div id="tab-leak" class="card" style="display:none">
+  <h2>Is It a Leak or Temperature Change?</h2>
+  <div class="desc">You left a system pressurized overnight. The pressure dropped. Enter your readings — this will tell you if the drop is from temperature change alone or if you have a real leak.</div>
+  <div class="ir">
+    <div class="ig"><label>Initial Pressure (PSIG)</label><input type="number" id="l-p1" value="150" step="1" oninput="calcLeak()"></div>
+    <div class="ig"><label>Initial Temperature (°F)</label><input type="number" id="l-t1" value="90" step="1" oninput="calcLeak()"></div>
+  </div>
+  <div class="ir">
+    <div class="ig"><label>Current Pressure (PSIG)</label><input type="number" id="l-p2" value="140" step="1" oninput="calcLeak()"></div>
+    <div class="ig"><label>Current Temperature (°F)</label><input type="number" id="l-t2" value="55" step="1" oninput="calcLeak()"></div>
+  </div>
+  <div id="l-result"></div>
+</div>
+
+<!-- TEMP TABLE -->
+<div id="tab-table" class="card" style="display:none">
+  <h2>Expected Pressure at Various Temperatures</h2>
+  <div class="desc">Enter your starting conditions. See what the gauge should read at every temperature from 20°F to 120°F.</div>
+  <div class="ir">
+    <div class="ig"><label>Starting Pressure (PSIG)</label><input type="number" id="tb-p1" value="150" step="1" oninput="calcTable()"></div>
+    <div class="ig"><label>Starting Temperature (°F)</label><input type="number" id="tb-t1" value="75" step="1" oninput="calcTable()"></div>
+  </div>
+  <div id="tb-result"></div>
+</div>
+
+<!-- REFERENCE -->
+<div id="tab-ref" class="card" style="display:none">
+  <h2>Reference — Gay-Lussac's Law &amp; Pressure Testing</h2>
+  
+  <div class="formula-box">
+    <div style="font-size:.8em;color:var(--text2)">Gay-Lussac's Law (constant volume)</div>
+    <div class="formula">P1 / T1 = P2 / T2</div>
+    <div class="fdesc">Pressure and temperature are directly proportional at constant volume.<br>MUST use absolute pressure (PSIA) and absolute temperature (Rankine).</div>
+  </div>
+  
+  <div class="formula-box">
+    <div style="font-size:.8em;color:var(--text2)">Conversions</div>
+    <div class="formula">PSIA = PSIG + 14.7</div>
+    <div class="formula">°R = °F + 459.67</div>
+    <div class="fdesc">Rankine is the absolute temperature scale for Fahrenheit.<br>0°R = absolute zero = −459.67°F</div>
+  </div>
+
+  <div class="formula-box">
+    <div style="font-size:.8em;color:var(--text2)">Solving for P2</div>
+    <div class="formula">P2 = P1 × (T2 / T1)</div>
+    <div class="fdesc">All values must be absolute (PSIA and °R).<br>Convert back: PSIG = PSIA − 14.7</div>
+  </div>
+  
+  <div class="example">
+    <h4>Worked Example</h4>
+    <p>You pressurize to <strong>150 PSIG</strong> at <strong>90°F</strong>. Overnight the temperature drops to <strong>55°F</strong>. What should the gauge read?</p>
+    <p style="margin-top:8px">
+      <strong>Step 1:</strong> Convert to absolute<br>
+      P1 = 150 + 14.7 = <strong>164.7 PSIA</strong><br>
+      T1 = 90 + 459.67 = <strong>549.67°R</strong><br>
+      T2 = 55 + 459.67 = <strong>514.67°R</strong>
+    </p>
+    <p style="margin-top:8px">
+      <strong>Step 2:</strong> Apply Gay-Lussac's Law<br>
+      P2 = 164.7 × (514.67 / 549.67) = 164.7 × 0.9363 = <strong>154.2 PSIA</strong>
+    </p>
+    <p style="margin-top:8px">
+      <strong>Step 3:</strong> Convert back to gauge<br>
+      P2 = 154.2 − 14.7 = <strong>139.5 PSIG</strong>
+    </p>
+    <p style="margin-top:8px;color:var(--ok)">
+      <strong>Result:</strong> A 35°F temperature drop causes the gauge to read about <strong>10.5 PSI lower</strong>. This is NOT a leak — it's physics!
+    </p>
+  </div>
+
+  <div class="card" style="border-color:var(--accent);margin-top:16px">
+    <h2>Pressure Test Procedures</h2>
+    <div class="ri"><span class="rl">Typical N2 test pressure (ACR copper)</span><span class="rv" style="color:var(--ok)">150-300 PSIG</span></div>
+    <div class="ri"><span class="rl">Typical N2 test pressure (refrigeration)</span><span class="rv" style="color:var(--ok)">150-500 PSIG</span></div>
+    <div class="ri"><span class="rl">Standing test duration</span><span class="rv" style="color:var(--ok)">24 hours minimum</span></div>
+    <div class="ri"><span class="rl">Acceptable pressure loss</span><span class="rv" style="color:var(--ok)">0 PSIG (after temp compensation)</span></div>
+    <div class="ri"><span class="rl">Always use a regulator</span><span class="rv" style="color:var(--warn)">N2 tanks are 2,000+ PSI!</span></div>
+    <div class="ri"><span class="rl">Never use oxygen</span><span class="rv" style="color:var(--no)">Explosion risk with oil!</span></div>
+    <div class="note"><strong>Procedure:</strong> 1) Pressurize with dry nitrogen through a regulator. 2) Record pressure and ambient temperature. 3) Wait 24 hours. 4) Record final pressure and temperature. 5) Calculate expected pressure using Gay-Lussac's Law. 6) Compare — any difference beyond temp compensation = leak. 7) If leak found, use soap bubbles or electronic detector to locate.</div>
+  </div>
+
+  <div class="card" style="border-color:var(--warn);margin-top:12px">
+    <h2>Rule of Thumb</h2>
+    <div class="desc" style="margin:0">At 150 PSIG and typical ambient temperatures, every <strong>1°F change</strong> causes roughly <strong>0.3 PSIG change</strong> in the same direction. This is approximate — use the calculator for precision. At higher test pressures, the change per degree is larger.</div>
+    <div class="chart-row">
+      <div class="chart-card"><div class="cv" style="color:var(--accent)">~0.3</div><div class="cl">PSI per °F at 150 PSIG</div></div>
+      <div class="chart-card"><div class="cv" style="color:var(--accent)">~0.6</div><div class="cl">PSI per °F at 300 PSIG</div></div>
+      <div class="chart-card"><div class="cv" style="color:var(--accent)">~1.0</div><div class="cl">PSI per °F at 500 PSIG</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+function toR(f){return f+459.67;}
+function toPSIA(g){return g+14.7;}
+function toPSIG(a){return a-14.7;}
+
+// Gay-Lussac: P1/T1 = P2/T2 → P2 = P1 * T2/T1 (all absolute)
+function predictP(p1psig, t1f, t2f){
+  var P1=toPSIA(p1psig), T1=toR(t1f), T2=toR(t2f);
+  var P2=P1*(T2/T1);
+  return toPSIG(P2);
+}
+
+function sT(id){['predict','leak','table','ref'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===id?'':'none';});document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',['predict','leak','table','ref'][i]===id);});}
+
+function calcPredict(){
+  var p1=parseFloat(document.getElementById('p-p1').value)||0;
+  var t1=parseFloat(document.getElementById('p-t1').value)||0;
+  var t2=parseFloat(document.getElementById('p-t2').value)||0;
+  var p2=predictP(p1,t1,t2);
+  var diff=p2-p1;
+  var diffColor=diff>=0?'var(--ok)':'var(--warn)';
+  var psiPerDeg=Math.abs(t2-t1)>0?Math.abs(diff/(t2-t1)):0;
+  
+  document.getElementById('p-result').innerHTML=
+    '<div class="rb" style="border-color:var(--accent)"><h3 style="color:var(--accent)">Predicted Pressure</h3>'+
+    '<div class="ri"><span class="rl">Initial: '+p1+' PSIG at '+t1+'°F</span><span class="rv">'+toPSIA(p1).toFixed(1)+' PSIA / '+toR(t1).toFixed(1)+'°R</span></div>'+
+    '<div class="ri"><span class="rl">New temperature</span><span class="rv">'+t2+'°F ('+toR(t2).toFixed(1)+'°R)</span></div>'+
+    '<div class="ri" style="border-top:2px solid var(--accent);padding-top:10px"><span class="rl" style="font-weight:700;font-size:1.05em">Expected Gauge Reading</span><span class="rv" style="font-size:1.3em;color:var(--ok)">'+p2.toFixed(1)+' PSIG</span></div>'+
+    '<div class="ri"><span class="rl">Pressure change from temp alone</span><span class="rv" style="color:'+diffColor+'">'+(diff>=0?'+':'')+diff.toFixed(1)+' PSI</span></div>'+
+    '<div class="ri"><span class="rl">Rate of change</span><span class="rv">~'+psiPerDeg.toFixed(2)+' PSI per °F</span></div>'+
+    '</div>'+
+    '<div class="verdict" style="background:rgba(74,158,255,.06);color:var(--accent)"><div class="vt">'+(diff<0?'Gauge will read LOWER by '+Math.abs(diff).toFixed(1)+' PSI':'Gauge will read HIGHER by '+diff.toFixed(1)+' PSI')+'</div><div class="vd">A '+(Math.abs(t2-t1)).toFixed(0)+'°F temperature '+(t2<t1?'drop':'rise')+' causes a '+Math.abs(diff).toFixed(1)+' PSI '+(diff<0?'decrease':'increase')+'. This is normal physics — not a leak.</div></div>';
+}
+
+function calcLeak(){
+  var p1=parseFloat(document.getElementById('l-p1').value)||0;
+  var t1=parseFloat(document.getElementById('l-t1').value)||0;
+  var p2=parseFloat(document.getElementById('l-p2').value)||0;
+  var t2=parseFloat(document.getElementById('l-t2').value)||0;
+  
+  var expected=predictP(p1,t1,t2);
+  var diff=p2-expected; // positive = higher than expected, negative = lower than expected (leak)
+  var absDiff=Math.abs(diff);
+  
+  var isLeak=diff<-0.5; // more than 0.5 PSI below expected = possible leak
+  var isSus=diff<-0.2&&diff>=-0.5;
+  
+  var verdictHTML='';
+  if(isLeak){
+    verdictHTML='<div class="verdict" style="background:rgba(248,113,113,.08);color:var(--no)"><div class="vt">&#x26a0; POSSIBLE LEAK DETECTED</div><div class="vd">Your actual pressure is '+absDiff.toFixed(1)+' PSI BELOW what temperature change alone would explain. The expected reading was '+expected.toFixed(1)+' PSIG but you read '+p2+' PSIG. Use soap bubbles or an electronic detector to locate the leak.</div></div>';
+  } else if(isSus){
+    verdictHTML='<div class="verdict" style="background:rgba(251,191,36,.08);color:var(--warn)"><div class="vt">&#x26a0; BORDERLINE — Monitor Longer</div><div class="vd">Pressure is '+absDiff.toFixed(1)+' PSI below expected. This is within the margin of gauge accuracy. Continue monitoring for another 12-24 hours to confirm.</div></div>';
+  } else {
+    verdictHTML='<div class="verdict" style="background:rgba(52,211,153,.08);color:var(--ok)"><div class="vt">&#x2705; NO LEAK — Pressure Change from Temperature</div><div class="vd">Your reading of '+p2+' PSIG matches the expected '+expected.toFixed(1)+' PSIG (within '+absDiff.toFixed(1)+' PSI). The '+(p1-p2>0?'drop':'rise')+' is fully explained by the '+(Math.abs(t2-t1)).toFixed(0)+'°F temperature change.</div></div>';
+  }
+  
+  document.getElementById('l-result').innerHTML=
+    '<div class="rb" style="border-color:'+(isLeak?'var(--no)':isSus?'var(--warn)':'var(--ok)')+'"><h3 style="color:'+(isLeak?'var(--no)':isSus?'var(--warn)':'var(--ok)')+'">Leak Analysis</h3>'+
+    '<div class="ri"><span class="rl">Initial conditions</span><span class="rv">'+p1+' PSIG at '+t1+'°F</span></div>'+
+    '<div class="ri"><span class="rl">Current reading</span><span class="rv">'+p2+' PSIG at '+t2+'°F</span></div>'+
+    '<div class="ri"><span class="rl">Total pressure change</span><span class="rv">'+(p2-p1>=0?'+':'')+(p2-p1).toFixed(1)+' PSI</span></div>'+
+    '<div class="ri"><span class="rl">Expected from temp change alone</span><span class="rv" style="color:var(--accent)">'+expected.toFixed(1)+' PSIG</span></div>'+
+    '<div class="ri"><span class="rl">Unexplained difference</span><span class="rv" style="color:'+(isLeak?'var(--no)':'var(--ok)')+'">'+diff.toFixed(1)+' PSI</span></div>'+
+    '</div>'+verdictHTML;
+}
+
+function calcTable(){
+  var p1=parseFloat(document.getElementById('tb-p1').value)||0;
+  var t1=parseFloat(document.getElementById('tb-t1').value)||0;
+  
+  var html='<div style="overflow-x:auto"><table><tr><th>Temp (°F)</th><th>Expected PSIG</th><th>Change from '+p1+' PSIG</th><th>PSI/°F</th></tr>';
+  for(var t=0;t<=130;t+=5){
+    var p=predictP(p1,t1,t);
+    var diff=p-p1;
+    var perDeg=Math.abs(t-t1)>0?Math.abs(diff/(t-t1)):0;
+    var highlight=Math.abs(t-t1)<3;
+    html+='<tr'+(highlight?' style="background:rgba(74,158,255,.08)"':'')+'><td'+(highlight?' style="font-weight:700;color:var(--accent)"':'')+'>'+t+'°F'+(highlight?' ← start':'')+'</td><td style="color:var(--ok)">'+p.toFixed(1)+'</td><td style="color:'+(diff>=0?'var(--ok)':'var(--warn)')+'">'+(diff>=0?'+':'')+diff.toFixed(1)+'</td><td>'+perDeg.toFixed(3)+'</td></tr>';
+  }
+  html+='</table></div>';
+  html+='<div class="note"><strong>How to read:</strong> Find the temperature row. The "Expected PSIG" is what your gauge should show at that temperature if there are no leaks. Any reading lower than that column indicates a potential leak.</div>';
+  document.getElementById('tb-result').innerHTML=html;
+}
+
+calcPredict();calcLeak();calcTable();
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>

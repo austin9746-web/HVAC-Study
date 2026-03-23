@@ -122,9 +122,83 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .print-btn:hover{border-color:var(--accent);background:var(--card2)}
 @media print{.back-btn,.fab-container,.calc-overlay,.ref-overlay,.nav,.hdr,.go,.modes,.timer-toggle,.stats-history,.print-btn,.nb{display:none!important}.app{padding:0}.qc{break-inside:avoid;border:1px solid #ccc;margin:8px 0}.start{display:none}.res,.opts,.qc{display:block!important}body{background:#fff;color:#000}.score-bar,.pb{display:none}:root{--card:#fff;--card2:#f5f5f5;--border:#ddd;--text:#000;--text2:#666;--ok:#22c55e;--no:#dc2626;--accent:#2563eb}}
 .save-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 16px;color:var(--text2);font-family:inherit;font-size:.82em;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px}.save-btn:hover{border-color:var(--ok);color:var(--ok)}.save-btn.saved{border-color:var(--ok);color:var(--ok);background:rgba(52,211,153,.08)}
+
+/* Flashcard mode */
+.fc-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:32px 28px;margin:16px 0;min-height:250px;cursor:pointer;transition:.3s;position:relative;display:flex;flex-direction:column;justify-content:center}
+.fc-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.fc-card.flipped{border-color:var(--ok);background:rgba(52,211,153,.03)}
+.fc-label{position:absolute;top:12px;left:16px;font-size:.7em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);font-weight:600}
+.fc-tap{position:absolute;bottom:12px;right:16px;font-size:.75em;color:var(--text2)}
+.fc-q{font-size:1.1em;line-height:1.6;text-align:center}
+.fc-a{margin-top:16px;padding-top:16px;border-top:2px solid var(--border);font-size:1em;line-height:1.5;text-align:center}
+.fc-a .fc-correct{color:var(--ok);font-weight:700;font-size:1.1em;margin-bottom:8px}
+.fc-a .fc-explain{color:var(--text2);font-size:.88em}
+.fc-controls{display:flex;gap:10px;justify-content:center;margin-top:16px}
+.fc-btn{padding:10px 20px;border-radius:8px;border:2px solid;cursor:pointer;font-family:inherit;font-size:.88em;font-weight:600;transition:.2s}
+.fc-knew{border-color:var(--ok);color:var(--ok);background:rgba(52,211,153,.06)}
+.fc-knew:hover{background:rgba(52,211,153,.15)}
+.fc-didnt{border-color:var(--no);color:var(--no);background:rgba(248,113,113,.06)}
+.fc-didnt:hover{background:rgba(248,113,113,.15)}
+.fc-progress{display:flex;gap:16px;justify-content:center;margin:12px 0;font-size:.85em}
+.fc-stat{text-align:center}
+.fc-stat .fc-sv{font-size:1.3em;font-weight:700;font-family:monospace}
+
+/* Topic analysis */
+.topic-section{margin:20px 0}
+.topic-section h3{font-size:.95em;font-weight:700;margin-bottom:12px;color:var(--accent)}
+.topic-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
+.topic-name{flex:1;font-size:.88em;font-weight:600}
+.topic-score{font-family:monospace;font-weight:700;font-size:.9em;min-width:50px;text-align:right}
+.topic-meter{width:100px;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
+.topic-fill{height:100%;border-radius:4px}
+.topic-count{font-size:.75em;color:var(--text2);min-width:40px;text-align:right}
+
+/* Light mode */
+body.light{--bg:#f5f6f8;--card:#ffffff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--accent2:#1d4ed8;--ok:#16a34a;--ok-bg:rgba(22,163,74,.06);--no:#dc2626;--no-bg:rgba(220,38,38,.06);--warn:#d97706}
+body.light .op:hover{background:#f0f1f4}
+body.light .gd{background:#f0f1f4}
+
+/* Theme toggle button */
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;transition:.2s;display:flex;align-items:center;gap:4px}
+.theme-toggle:hover{border-color:var(--accent);color:var(--text)}
+
+/* Flag button */
+.flag-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:.85em;transition:.2s;color:var(--text2);font-family:inherit}
+.flag-btn:hover{border-color:var(--warn);color:var(--warn)}
+.flag-btn.flagged{background:rgba(251,191,36,.12);border-color:var(--warn);color:var(--warn)}
+.gd.gf{box-shadow:inset 0 0 0 2px var(--warn)}
+
+/* Sticky mobile nav */
+@media(max-width:600px){
+  .nav{position:sticky;bottom:0;background:var(--bg);padding:10px 8px;border-top:1px solid var(--border);margin:0 -16px -24px;z-index:100}
+  .qc{margin-bottom:70px}
+}
+
+.calc-overlay{position:fixed;top:60px;right:12px;width:280px;background:var(--card);border:2px solid var(--border);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:1001;display:none;overflow:hidden}
+.calc-overlay.open{display:block}
+.calc-overlay.sci{width:340px}
+.calc-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:.85em;font-weight:600;color:var(--text2)}
+.calc-close{background:none;border:none;color:var(--text2);font-size:1.1em;cursor:pointer}
+.calc-mode-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.72em;cursor:pointer;color:var(--text2);font-family:inherit}
+.calc-mode-btn:hover{border-color:var(--accent);color:var(--accent)}
+.calc-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.calc-display{padding:12px 14px;font-family:monospace;font-size:1.4em;text-align:right;color:var(--text);background:var(--bg);border-bottom:1px solid var(--border);min-height:48px;word-break:break-all;overflow:hidden}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:6px}
+.calc-overlay.sci .calc-grid{grid-template-columns:repeat(5,1fr)}
+.calc-btn{padding:14px 4px;border:none;background:var(--card2);color:var(--text);font-size:.95em;font-family:monospace;cursor:pointer;border-radius:6px;transition:.15s}
+.calc-btn:hover{background:var(--border)}
+.calc-btn:active{background:var(--accent);color:#fff}
+.calc-btn.op{color:var(--accent);font-weight:700}
+.calc-btn.eq{background:var(--accent);color:#fff;font-weight:700}
+.calc-btn.eq:hover{background:var(--accent2)}
+.calc-btn.clr{color:var(--no);font-weight:700}
+.calc-btn.sci{font-size:.72em;color:var(--warn);padding:10px 2px}
+.calc-btn.sci:hover{background:rgba(251,191,36,.1)}
+@media(max-width:600px){.calc-overlay{top:auto;bottom:70px;right:4px;left:4px;width:auto}.calc-overlay.sci{width:auto}}
 </style>
 </head>
 <body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
 <a href="index.html" class="back-btn">← Study Hub</a>
 <div class="app" id="app"></div>
 <script>
@@ -146,6 +220,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     window._hvacDisplayName = 'Guest';
   }
 })();
+
+// Dark/Light mode
+function getTheme() { try { return localStorage.getItem('hvac_theme') || 'dark'; } catch(e) { return 'dark'; } }
+function setTheme(t) { document.body.className = t === 'light' ? 'light' : ''; try { localStorage.setItem('hvac_theme', t); } catch(e) {} updateThemeBtn(); }
+function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
+function updateThemeBtn() { var btn = document.getElementById('theme-btn'); if (btn) btn.textContent = getTheme() === 'dark' ? 'Light' : 'Dark'; }
+setTheme(getTheme());
+
+// Question flagging
+var flagged = {};
+function toggleFlag(n) { flagged[n] = !flagged[n]; render(); }
+function getFlagHTML(n) {
+  var cls = flagged[n] ? 'flag-btn flagged' : 'flag-btn';
+  var txt = flagged[n] ? 'Flagged' : 'Flag';
+  return '<button class="' + cls + '" onclick="toggleFlag(' + n + ')">' + txt + '</button>';
+}
 const Q=[{n:1,p:2,t:'mc',q:'A down-fed system is __________.',o:['When the boiler is at the lowest level of the building','When the terminal unit is located above the steam main','When the terminal unit is located below the steam main','When the boiler is at the highest level of the building'],a:2,ex:['Describes an up-fed system where steam rises from the boiler in the basement.','Describes a standard up-fed branch connection, not the overall system type.','CORRECT — In a down-fed system, the steam main runs at a high elevation and feeds down to terminal units below it. Gravity assists condensate drainage.','The defining characteristic is the relationship between the steam main and terminal units, not the boiler\'s position.']},
 {n:2,p:2,t:'mc',q:'A drip is a __________.',o:['Vertical piece of pipe off the bottom of a steam pipe or terminal unit','Horizontal connection from a terminal unit to a riser','Vertical connection to a radiator valve or trap from the steam or condensate return','Vertical pipe below the trap or valve connection','Horizontal pipe connection from a main to a riser or terminal unit'],a:0,ex:['CORRECT — A drip (drip leg/drip pocket) extends downward from the bottom of a steam main to collect condensate for removal by a steam trap, preventing water hammer.','This describes a runout or branch line.','This describes a riser or drop connection, not a drip.','The drip is the pocket that collects condensate before the trap, not pipe after it.','This describes a branch takeoff.']},
 {n:3,p:2,t:'mc',q:'A vacuum can raise water or hold water to an elevation of ___________.',o:['1 foot per 1"Hg','2.31 feet per 1"Hg','.433 feet per 1"Hg','None of the above are correct'],a:0,ex:['CORRECT — 1"Hg of vacuum supports approximately 1.13 feet of water. In practice, this is rounded to ~1 foot per 1"Hg. Key value for vacuum return systems.','2.31 feet per 1 PSI is the conversion for pressure to water column height. This confuses psi with inches of mercury.','0.433 psi per foot of water is the inverse conversion — pressure created by a 1-foot water column. Related but different.','Answer A is correct.']},
@@ -344,7 +434,7 @@ return `<div class="score-bar${isExam?' exam-mode':''}${noData?' no-data':''}">
 
 function render(){
 const el=document.getElementById('app');
-if(S.scr==='start')return rStart(el);
+if(S.scr==='flashcards')return rFlashcards(el);if(S.scr==='fc-results')return rFcResults(el);if(S.scr==='start')return rStart(el);
 if(S.scr==='quiz')return rQuiz(el);
 if(S.scr==='results')return rResults(el);
 }
@@ -361,6 +451,7 @@ el.innerHTML=`<div class="start">
 <div class="modes">
 <div class="mb ${S.mode==='practice'?'on':''}" onclick="setM('practice')"><h3>✅ Practice</h3><p>Check answers as you go with full explanations for every choice.</p></div>
 <div class="mb ${S.mode==='exam'?'on':''}" onclick="setM('exam')"><h3>📝 Exam</h3><p>No feedback until submit. Simulates real test conditions.</p></div>
+<div class="mb" onclick="startFlashcards()" style="border-color:var(--warn)"><h3 style="color:var(--warn)">&#x1f4a1; Flashcards</h3><p>No multiple choice — test pure recall. Flip to reveal answers.</p></div>
 <div class="mb ${S.mode==='shuffle'?'on':''}" onclick="setM('shuffle')"><h3>🔀 Shuffle</h3><p>Randomized order with instant explanations. Great for review.</p></div>
 </div>
 <button class="go" onclick="startQ()">Start Exam</button>
@@ -374,7 +465,7 @@ let grid='';
 if(S.sg){grid=`<div class="gp"><div class="gr">${all.map((qq,i)=>{
 let c='gd';if(i===S.i)c+=' cur';
 if(S.ans[qq.n]!==undefined||S.txt[qq.n])c+=' ans';
-if(S.chk[qq.n]&&S.ans[qq.n]===qq.a)c+=' gc';
+if(flagged[qq.n])c+=' gf';if(S.chk[qq.n]&&S.ans[qq.n]===qq.a)c+=' gc';
 if(S.chk[qq.n]&&S.ans[qq.n]!==undefined&&S.ans[qq.n]!==qq.a)c+=' gw';
 return`<div class="${c}" onclick="go(${i})">${qq.n}</div>`;}).join('')}</div></div>`;}
 
@@ -431,6 +522,7 @@ let filt=all;
 if(S.flt==='wrong')filt=all.filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);
 if(S.flt==='correct')filt=all.filter(q=>S.ans[q.n]===q.a);
 if(S.flt==='skipped')filt=all.filter(q=>S.ans[q.n]===undefined&&q.a!==-1);
+if(S.flt==='flagged')filt=all.filter(q=>flagged[q.n]);
 if(S.flt==='text')filt=all.filter(q=>q.a===-1);
 
 const rev=filt.map(q=>{
@@ -466,7 +558,7 @@ el.innerHTML=`<div class="res">
 <button class="fb ${S.flt==='wrong'?'on':''}" onclick="setF('wrong')">Wrong (${wrg})</button>
 <button class="fb ${S.flt==='correct'?'on':''}" onclick="setF('correct')">Correct (${cor})</button>
 <button class="fb ${S.flt==='skipped'?'on':''}" onclick="setF('skipped')">Skipped (${skip})</button>
-<button class="fb ${S.flt==='text'?'on':''}" onclick="setF('text')">Written (${all.filter(q=>q.a===-1).length})</button>
+<button class="fb ${S.flt==='flagged'?'on':''}" onclick="setF('flagged')">Flagged (${all.filter(q=>flagged[q.n]).length})</button><button class="fb ${S.flt==='text'?'on':''}" onclick="setF('text')">Written (${all.filter(q=>q.a===-1).length})</button>
 </div>
 ${rev}
 </div>`;}
@@ -481,13 +573,152 @@ function go(i){const a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0
 function tg(){S.sg=!S.sg;render();}
 function submit(){qs().forEach(q=>{S.chk[q.n]=true;});S.graded=true;showR();}
 function showR(){S.scr='results';S.flt='all';render();scrollTo(0,0);}
-function reset(){S.scr='start';S.mode='practice';render();scrollTo(0,0);}
+function reset(){S.scr='start';S.mode='practice';fcState={cards:[],i:0,flipped:false,knew:0,didnt:0};render();scrollTo(0,0);}
 function setF(f){S.flt=f;render();}
 function retry(){const a=qs().filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);if(!a.length){alert('No wrong answers to retry!');return;}S.shuf=a;S.ans={};S.chk={};S.txt={};S.graded=false;S.scr='quiz';S.i=0;S.mode='practice';render();scrollTo(0,0);}
 document.addEventListener('keydown',e=>{if(S.scr!=='quiz')return;if(e.key==='ArrowRight'){e.preventDefault();go(S.i+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(S.i-1);}const a=qs(),q=a[S.i];if(q.o.length>0&&!S.chk[q.n]){const k='ABCDEFGHIJ'.indexOf(e.key.toUpperCase());if(k>=0&&k<q.o.length)sel(q.n,k);}});
 render();
 
 /* === ENHANCEMENTS === */
+
+// === FLASHCARD MODE ===
+var fcState = {cards:[], i:0, flipped:false, knew:0, didnt:0};
+
+window.startFlashcards = function() {
+  var pool = typeof filteredQ === 'function' ? filteredQ() : Q;
+  if (!pool.length) { alert('No questions selected.'); return; }
+  // Only MC/TF with answers
+  fcState.cards = shuffle(pool.filter(function(q){ return q.a !== -1 && q.o.length > 0; }));
+  if (!fcState.cards.length) { alert('No flashcard-eligible questions.'); return; }
+  fcState.i = 0; fcState.flipped = false; fcState.knew = 0; fcState.didnt = 0;
+  S.scr = 'flashcards';
+  render(); scrollTo(0,0);
+}
+
+window.fcFlip = function() { fcState.flipped = true; render(); }
+window.fcKnew = function() { fcState.knew++; fcNext(); }
+window.fcDidnt = function() { fcState.didnt++; fcNext(); }
+window.fcNext = function() {
+  fcState.i++;
+  fcState.flipped = false;
+  if (fcState.i >= fcState.cards.length) { S.scr = 'fc-results'; }
+  render(); scrollTo(0,0);
+}
+
+function rFlashcards(el) {
+  var q = fcState.cards[fcState.i];
+  var total = fcState.cards.length;
+  var pct = Math.round(((fcState.i) / total) * 100);
+  
+  var ansHTML = '';
+  if (fcState.flipped) {
+    var correct = q.o[q.a];
+    var explanation = (q.ex && q.ex[q.a]) ? q.ex[q.a] : '';
+    ansHTML = '<div class="fc-a"><div class="fc-correct">' + esc(correct) + '</div>' +
+      (explanation ? '<div class="fc-explain">' + esc(explanation) + '</div>' : '') + '</div>';
+  }
+
+  var diagImg = '';
+  if (q.d && typeof DIAGRAMS !== 'undefined' && DIAGRAMS[q.d]) {
+    diagImg = '<img src="' + DIAGRAMS[q.d] + '" style="width:100%;margin:12px 0;border-radius:8px">';
+  }
+  
+  el.innerHTML = '<div class="hdr"><span class="t">Flashcards</span><span class="pi">' + (fcState.i+1) + '/' + total + '</span>' +
+    '<button class="gt" onclick="reset()">Exit</button></div>' +
+    '<div class="pb"><div class="pf" style="width:' + pct + '%"></div></div>' +
+    '<div class="fc-progress">' +
+    '<div class="fc-stat"><div class="fc-sv" style="color:var(--ok)">' + fcState.knew + '</div><div style="font-size:.7em;color:var(--text2)">Knew</div></div>' +
+    '<div class="fc-stat"><div class="fc-sv" style="color:var(--no)">' + fcState.didnt + '</div><div style="font-size:.7em;color:var(--text2)">Missed</div></div>' +
+    '</div>' +
+    '<div class="fc-card' + (fcState.flipped ? ' flipped' : '') + '" onclick="' + (fcState.flipped ? '' : 'fcFlip()') + '">' +
+    '<span class="fc-label">Q' + q.n + ' &bull; ' + (TL[q.t]||q.t) + '</span>' +
+    '<div class="fc-q">' + esc(q.q) + diagImg + '</div>' +
+    ansHTML +
+    (fcState.flipped ? '' : '<span class="fc-tap">Tap to reveal answer</span>') +
+    '</div>' +
+    (fcState.flipped ? '<div class="fc-controls"><button class="fc-btn fc-knew" onclick="fcKnew()">I Knew It</button><button class="fc-btn fc-didnt" onclick="fcDidnt()">Didn\'t Know</button></div>' : '') +
+    '<div class="nav" style="margin-top:12px"><button class="nb" onclick="reset()">Exit</button><div></div>' +
+    '<button class="nb" onclick="fcState.flipped=false;fcState.i++;if(fcState.i>=fcState.cards.length){S.scr=\'fc-results\';}render();scrollTo(0,0);">Skip</button></div>';
+}
+
+function rFcResults(el) {
+  var total = fcState.cards.length;
+  var pct = total > 0 ? Math.round((fcState.knew / total) * 100) : 0;
+  var cc = pct >= 70 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : 'var(--no)';
+  el.innerHTML = '<div class="res"><h2>Flashcard Results</h2>' +
+    '<div class="sc" style="border-color:' + cc + '"><div class="pct" style="color:' + cc + '">' + pct + '%</div><div class="of">Recall Rate</div></div>' +
+    '<div class="rg"><div class="rs"><div class="rv" style="color:var(--ok)">' + fcState.knew + '</div><div class="rl">Knew It</div></div>' +
+    '<div class="rs"><div class="rv" style="color:var(--no)">' + fcState.didnt + '</div><div class="rl">Missed</div></div>' +
+    '<div class="rs"><div class="rv" style="color:var(--text2)">' + (total - fcState.knew - fcState.didnt) + '</div><div class="rl">Skipped</div></div>' +
+    '<div class="rs"><div class="rv" style="color:var(--accent)">' + total + '</div><div class="rl">Total</div></div></div>' +
+    '<div class="ra"><button class="nb" onclick="reset()">Back to Start</button><button class="nb pr" onclick="startFlashcards()">Again</button></div></div>';
+}
+
+
+// === WRONG ANSWER ANALYSIS ===
+function categorizeQuestion(q) {
+  var text = (q.q || '').toLowerCase();
+  // Keyword-based topic detection
+  if (/compress|suction|discharge|piston|scroll|reciprocat/.test(text)) return 'Compressors';
+  if (/condens|head pressure|reject|subcool/.test(text)) return 'Condensers';
+  if (/evaporat|superheat|starv|flood|low side/.test(text)) return 'Evaporators';
+  if (/txv|expansion|metering|orifice/.test(text)) return 'Metering Devices';
+  if (/refrigerant|r-22|r-410|r-134|charge|recover/.test(text)) return 'Refrigerants';
+  if (/btu|heat|sensible|latent|temperature|thermal/.test(text)) return 'Heat & BTU Calcs';
+  if (/pressure|psi|psig|psia|vacuum|gauge|absolute|manometer/.test(text)) return 'Pressure & Gauges';
+  if (/boiler|steam|condensate|trap|low.water/.test(text)) return 'Steam & Boilers';
+  if (/pump|circulator|flow|pipe|piping|valve|fitting/.test(text)) return 'Piping & Valves';
+  if (/hydronic|radiant|baseboard|radiator|zone/.test(text)) return 'Hydronic Systems';
+  if (/oil|lubric|compressor oil/.test(text)) return 'Oil & Lubrication';
+  if (/safety|relief|code|asme|nec/.test(text)) return 'Safety & Codes';
+  if (/electric|motor|amp|volt|watt|relay|contactor/.test(text)) return 'Electrical';
+  if (/air|filter|duct|fan|cfm|airflow/.test(text)) return 'Airflow & Filtration';
+  if (/troubleshoot|diagnos|symptom|cause|problem/.test(text)) return 'Troubleshooting';
+  if (/tower|cool.*tower|wet.bulb/.test(text)) return 'Cooling Towers';
+  if (/density|volume|area|gallon|cylinder|weight/.test(text)) return 'Volume & Density';
+  if (/convert|celsius|fahrenheit|formula/.test(text)) return 'Unit Conversions';
+  return 'General';
+}
+
+function getTopicAnalysis() {
+  var all = typeof qs === 'function' ? qs() : Q;
+  var topics = {};
+  all.forEach(function(q) {
+    if (q.a === -1) return;
+    var topic = categorizeQuestion(q);
+    if (!topics[topic]) topics[topic] = {right:0, wrong:0, total:0};
+    topics[topic].total++;
+    if (S.ans[q.n] === q.a) topics[topic].right++;
+    else if (S.ans[q.n] !== undefined) topics[topic].wrong++;
+  });
+  return topics;
+}
+
+function topicAnalysisHTML() {
+  var topics = getTopicAnalysis();
+  var sorted = Object.keys(topics).sort(function(a,b) {
+    var pa = topics[a].total > 0 ? topics[a].wrong / topics[a].total : 0;
+    var pb = topics[b].total > 0 ? topics[b].wrong / topics[b].total : 0;
+    return pb - pa;
+  });
+  
+  if (!sorted.length) return '';
+  
+  var html = '<div class="topic-section"><h3>Topic Breakdown — Weakest First</h3>';
+  sorted.forEach(function(topic) {
+    var t = topics[topic];
+    if (t.right + t.wrong === 0) return;
+    var pct = Math.round(t.right / (t.right + t.wrong) * 100);
+    var color = pct >= 70 ? 'var(--ok)' : pct >= 50 ? 'var(--warn)' : 'var(--no)';
+    html += '<div class="topic-bar"><span class="topic-name">' + topic + '</span>' +
+      '<div class="topic-meter"><div class="topic-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+      '<span class="topic-score" style="color:' + color + '">' + pct + '%</span>' +
+      '<span class="topic-count">' + t.right + '/' + (t.right + t.wrong) + '</span></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
 /* ENHANCEMENTS */
 /* === HVAC STUDY TOOL ENHANCEMENTS === */
 
@@ -521,16 +752,16 @@ const ENHANCE_CSS = `
 /* Calculator */
 .calc-overlay{position:fixed;top:120px;right:12px;width:260px;background:var(--card);border:2px solid var(--border);border-radius:var(--r);z-index:999;box-shadow:0 8px 32px rgba(0,0,0,.4);display:none}
 .calc-overlay.open{display:block}
-.calc-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)}
+
 .calc-header span{font-size:.85em;font-weight:600;color:var(--text2)}
-.calc-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.2em}
-.calc-display{background:var(--bg);margin:8px;border-radius:6px;padding:12px;font-family:monospace;font-size:1.3em;text-align:right;color:var(--text);min-height:44px;word-break:break-all}
-.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 8px 8px}
-.calc-btn{padding:12px;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:monospace;font-size:1em;cursor:pointer;text-align:center}
-.calc-btn:hover{background:var(--border)}
-.calc-btn.op{color:var(--accent);font-weight:700}
-.calc-btn.eq{background:var(--accent);color:#fff;border-color:var(--accent)}
-.calc-btn.clr{color:var(--no)}
+
+
+
+
+
+
+
+
 
 /* FAB buttons */
 .fab-container{position:fixed;top:60px;right:12px;display:flex;flex-direction:column;gap:8px;z-index:998}
@@ -597,6 +828,7 @@ function initEnhancements(toolId) {
   
   window.saveAndConfirm = function() {
     saveSession();
+    cloudSave();
     var btn = document.getElementById('save-progress-btn');
     if (btn) {
       btn.textContent = 'Saved!';
@@ -651,6 +883,11 @@ function initEnhancements(toolId) {
 
   
   // === CLOUD SYNC ===
+  var _cloudTimer = null;
+  function cloudSaveDebounced() {
+    if (_cloudTimer) clearTimeout(_cloudTimer);
+    _cloudTimer = setTimeout(function() { cloudSave(); }, 3000);
+  }
   function getScriptUrl() {
     try { return localStorage.getItem('hvac_script_url') || ''; } catch(e) { return ''; }
   }
@@ -896,57 +1133,125 @@ function initEnhancements(toolId) {
 
 
   // === CALCULATOR ===
+  
   let calcDisplay = '0';
-  let calcPrev = null;
-  let calcOp = null;
   let calcNew = true;
+  let calcSci = false;
   
   function createCalc() {
     if (document.getElementById('calc-panel')) return;
     const div = document.createElement('div');
     div.id = 'calc-panel';
     div.className = 'calc-overlay';
-    const btns = ['C','(',')','/','7','8','9','*','4','5','6','-','1','2','3','+','0','.','±','='];
-    div.innerHTML = '<div class="calc-header"><span>Calculator</span><button class="calc-close" onclick="toggleCalc()">\u2715</button></div>' +
-      '<div class="calc-display" id="calc-disp">0</div>' +
-      '<div class="calc-grid">' + btns.map(b => {
-        let cls = 'calc-btn';
-        if ('/*-+'.includes(b)) cls += ' op';
-        if (b === '=') cls += ' eq';
-        if (b === 'C') cls += ' clr';
-        return '<button class="' + cls + '" onclick="calcPress(\'' + b.replace("'","\\'") + '\')">' + b + '</button>';
-      }).join('') + '</div>';
+    renderCalcUI(div);
     document.body.appendChild(div);
   }
   
+  function renderCalcUI(div) {
+    if (!div) div = document.getElementById('calc-panel');
+    if (!div) return;
+    div.className = 'calc-overlay' + (calcSci ? ' sci' : '') + (div.classList.contains('open') ? ' open' : '');
+    
+    var header = '<div class="calc-header"><span>Calculator</span><div><button class="calc-mode-btn' + (!calcSci ? ' active' : '') + '" onclick="setCalcMode(false)">Basic</button> <button class="calc-mode-btn' + (calcSci ? ' active' : '') + '" onclick="setCalcMode(true)">Scientific</button></div><button class="calc-close" onclick="toggleCalc()">\u2715</button></div>';
+    var display = '<div class="calc-display" id="calc-disp">' + calcDisplay + '</div>';
+    
+    var btns;
+    if (calcSci) {
+      btns = [
+        ['sin','cos','tan','(','C'],
+        ['asin','acos','atan',')','\u232b'],
+        ['ln','log','\u221a','x\u00b2','/'],
+        ['\u03c0','e','x^y','%','*'],
+        ['7','8','9','EE','-'],
+        ['4','5','6','1/x','+'],
+        ['1','2','3','\u00b1','='],
+        ['0','.',null,null,null]
+      ];
+    } else {
+      btns = [
+        ['C','(',')','/'],
+        ['7','8','9','*'],
+        ['4','5','6','-'],
+        ['1','2','3','+'],
+        ['0','.','\u00b1','=']
+      ];
+    }
+    
+    var grid = '<div class="calc-grid">';
+    btns.forEach(function(row) {
+      row.forEach(function(b) {
+        if (b === null) return;
+        var cls = 'calc-btn';
+        if ('/*-+'.indexOf(b) >= 0) cls += ' op';
+        if (b === '=') cls += ' eq';
+        if (b === 'C' || b === '\u232b') cls += ' clr';
+        if (['sin','cos','tan','asin','acos','atan','ln','log','\u221a','x\u00b2','x^y','\u03c0','e','EE','1/x','%'].indexOf(b) >= 0) cls += ' sci';
+        var span = '';
+        if (b === '0' && !calcSci) span = ' style="grid-column:span 1"';
+        grid += '<button class="' + cls + '"' + span + ' onclick="calcPress(\'' + b.replace(/'/g,"\\'") + '\')">' + b + '</button>';
+      });
+    });
+    grid += '</div>';
+    
+    div.innerHTML = header + display + grid;
+  }
+  
+  window.setCalcMode = function(sci) {
+    calcSci = sci;
+    renderCalcUI();
+  };
+
   window.toggleCalc = function() {
     createCalc();
-    document.getElementById('calc-panel').classList.toggle('open');
+    var panel = document.getElementById('calc-panel');
+    panel.classList.toggle('open');
   };
-  
+
   window.calcPress = function(key) {
-    const disp = document.getElementById('calc-disp');
-    if (key === 'C') { calcDisplay = '0'; calcPrev = null; calcOp = null; calcNew = true; }
-    else if (key === '±') { 
-      if (calcDisplay !== '0') calcDisplay = calcDisplay.startsWith('-') ? calcDisplay.slice(1) : '-' + calcDisplay;
-    }
+    var d = calcDisplay;
+    
+    if (key === 'C') { calcDisplay = '0'; calcNew = true; }
+    else if (key === '\u232b') { calcDisplay = d.length > 1 ? d.slice(0, -1) : '0'; }
+    else if (key === '\u00b1') { if (d !== '0') calcDisplay = d.startsWith('-') ? d.slice(1) : '-' + d; }
     else if (key === '=') {
-      try { calcDisplay = String(eval(calcDisplay.replace(/×/g,'*').replace(/÷/g,'/'))); } 
-      catch(e) { calcDisplay = 'Error'; }
+      try {
+        var expr = d.replace(/\u00d7/g, '*').replace(/\u00f7/g, '/');
+        // Sanitize: only allow digits, operators, parens, decimal, minus, e, **, Math functions
+        if (/^[\d+\-*/().eE ]+$/.test(expr.replace(/Math\.[a-z]+/g,''))) {
+          calcDisplay = String(+parseFloat(Function('"use strict";return (' + expr + ')')()).toPrecision(12));
+        } else { calcDisplay = 'Error'; }
+      } catch(e) { calcDisplay = 'Error'; }
       calcNew = true;
     }
-    else if ('+-*/'.includes(key)) { calcDisplay += key; calcNew = false; }
-    else if (key === '(' || key === ')') { calcDisplay = (calcNew && calcDisplay === '0' ? '' : calcDisplay) + key; calcNew = false; }
+    else if (key === 'sin') { try { calcDisplay = String(Math.sin(parseFloat(d) * Math.PI / 180)); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === 'cos') { try { calcDisplay = String(Math.cos(parseFloat(d) * Math.PI / 180)); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === 'tan') { try { calcDisplay = String(Math.tan(parseFloat(d) * Math.PI / 180)); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === 'asin') { try { calcDisplay = String(Math.asin(parseFloat(d)) * 180 / Math.PI); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === 'acos') { try { calcDisplay = String(Math.acos(parseFloat(d)) * 180 / Math.PI); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === 'atan') { try { calcDisplay = String(Math.atan(parseFloat(d)) * 180 / Math.PI); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === 'ln') { try { calcDisplay = String(Math.log(parseFloat(d))); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === 'log') { try { calcDisplay = String(Math.log10(parseFloat(d))); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === '\u221a') { try { calcDisplay = String(Math.sqrt(parseFloat(d))); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === 'x\u00b2') { try { calcDisplay = String(Math.pow(parseFloat(d), 2)); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === 'x^y') { calcDisplay = d + '**'; calcNew = false; }
+    else if (key === '\u03c0') { calcDisplay = calcNew ? String(Math.PI) : d + String(Math.PI); calcNew = false; }
+    else if (key === 'e') { calcDisplay = calcNew ? String(Math.E) : d + String(Math.E); calcNew = false; }
+    else if (key === 'EE') { calcDisplay = d + 'e'; calcNew = false; }
+    else if (key === '1/x') { try { calcDisplay = String(1 / parseFloat(d)); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if (key === '%') { try { calcDisplay = String(parseFloat(d) / 100); } catch(e) { calcDisplay = 'Error'; } calcNew = true; }
+    else if ('+-*/'.indexOf(key) >= 0) { calcDisplay += key; calcNew = false; }
+    else if (key === '(' || key === ')') { calcDisplay = (calcNew && d === '0' ? '' : d) + key; calcNew = false; }
     else {
-      if (calcNew && calcDisplay === '0') calcDisplay = key;
+      if (calcNew && d === '0') calcDisplay = key;
       else if (calcNew) { calcDisplay = key; calcNew = false; }
       else calcDisplay += key;
       calcNew = false;
     }
-    disp.textContent = calcDisplay;
+    
+    var disp = document.getElementById('calc-disp');
+    if (disp) disp.textContent = calcDisplay;
   };
 
-  // === FAB BUTTONS ===
   function createFABs() {
     if (document.getElementById('fab-btns')) return;
     const div = document.createElement('div');
@@ -959,9 +1264,18 @@ function initEnhancements(toolId) {
   // === HOOK INTO EXISTING FUNCTIONS ===
   
   // Override the check function to record stats
+  const origSel = window.sel;
+  if (origSel) {
+    window.sel = function(n, i) {
+      origSel(n, i);
+      cloudSaveDebounced();
+    };
+  }
+
   const origChk = window.chk;
   window.chk = function(n) {
     origChk(n);
+    cloudSaveDebounced();
     // Find the question and record result
     const allQ = typeof qs === 'function' ? qs() : Q;
     const q = allQ.find(qq => qq.n === n);
@@ -1043,6 +1357,7 @@ function initEnhancements(toolId) {
   const origRender = window.render;
   window.render = function() {
     origRender();
+    if (S.scr === 'quiz') saveSession();
     
     // Add FABs if in quiz mode
     if (S.scr === 'quiz') {
@@ -1147,5 +1462,6 @@ cloudLoad(function(){ render(); });
 
 initEnhancements("steam");
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
 </body>
 </html>

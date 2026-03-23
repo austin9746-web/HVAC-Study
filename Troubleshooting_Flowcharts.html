@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>HVAC Troubleshooting Flowcharts</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:700px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.6em;font-weight:800;text-align:center;margin:44px 0 6px}
+.sub{text-align:center;color:var(--text2);margin-bottom:20px}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.scenario-btn{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:18px 16px;cursor:pointer;transition:.2s;text-align:left}
+.scenario-btn:hover{border-color:var(--accent);transform:translateY(-2px)}
+.scenario-btn .si{font-size:1.3em;margin-bottom:4px}
+.scenario-btn .sn{font-size:.88em;font-weight:700}
+.scenario-btn .sd{font-size:.75em;color:var(--text2);margin-top:2px}
+.node{background:var(--card);border:2px solid var(--accent);border-radius:var(--r);padding:20px;margin:14px 0;position:relative}
+.node-q{font-size:1em;font-weight:700;margin-bottom:4px}
+.node-info{font-size:.85em;color:var(--text2);margin-bottom:14px;line-height:1.5}
+.node-choices{display:flex;flex-direction:column;gap:8px}
+.choice-btn{background:var(--card2);border:2px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;font-family:inherit;font-size:.9em;font-weight:600;color:var(--text);text-align:left;transition:.2s}
+.choice-btn:hover{border-color:var(--accent);background:rgba(74,158,255,.06)}
+.fix-node{background:rgba(52,211,153,.06);border:2px solid var(--ok);border-radius:var(--r);padding:20px;margin:14px 0}
+.fix-node h3{color:var(--ok);font-size:.9em;margin-bottom:8px}
+.fix-node p{font-size:.88em;line-height:1.6;color:var(--text)}
+.history{margin:14px 0}
+.hist-item{background:var(--card2);border-left:3px solid var(--accent);padding:8px 12px;margin-bottom:4px;border-radius:0 8px 8px 0;font-size:.82em}
+.hist-q{color:var(--text2)}.hist-a{color:var(--accent);font-weight:600}
+.nb{padding:10px 20px;border:2px solid var(--border);background:var(--card);color:var(--text);border-radius:8px;cursor:pointer;font-family:inherit;font-size:.88em;font-weight:600;transition:.2s;margin-right:8px}.nb:hover{border-color:var(--accent)}
+.breadcrumb{font-size:.78em;color:var(--text2);margin-bottom:8px}
+@media(max-width:600px){.scenario-grid{grid-template-columns:1fr}.app{padding:8px}h1{font-size:1.3em;margin-top:50px}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app" id="app"></div>
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+var SCENARIOS = {
+  nostart:{name:"Compressor Won't Start",icon:"🔌",desc:"No hum, no run, nothing happens",
+    tree:{q:"Is there 24V at the thermostat R terminal?",info:"Check with multimeter between R and C at the thermostat subbase. This confirms transformer output.",
+      yes:{q:"Does the thermostat call for cooling? (24V at Y terminal)",info:"Set thermostat to cool, below room temp. Check for 24V between Y and C.",
+        yes:{q:"Is there 24V at the contactor coil?",info:"Check voltage across the contactor coil terminals outside. If 24V is present, the signal made it from thermostat to unit.",
+          yes:{q:"Does the contactor pull in (contacts close)?",info:"Listen for a click. Check if the contacts close with a screwdriver handle tap or by measuring voltage across the load side.",
+            yes:{q:"Is there line voltage (240V) at the compressor common terminal?",info:"Check L1 to neutral and L2 to neutral at the compressor terminals. Both should show ~120V.",
+              yes:{fix:"Compressor motor failure",detail:"Line voltage is reaching the compressor but it won't start. Possible causes: open internal overload (wait 2 hours and retry), open start or run winding (check with ohmmeter C-S, C-R, S-R), seized compressor (check LRA on startup), or bad run capacitor (check MFD with meter)."},
+              no:{fix:"Wiring issue between contactor and compressor",detail:"Contactor is pulling in but voltage isn't reaching the compressor. Check for: burned contactor contacts (pitted/melted), loose wiring, open overload, blown fuse in disconnect, or tripped breaker."}
+            },
+            no:{fix:"Bad contactor coil or mechanical failure",detail:"24V is reaching the coil but contacts won't close. The coil may be open (check ohms — should read 10-40Ω) or the contactor is mechanically stuck. Inspect for pitted/welded contacts, debris, or broken spring. Replace contactor."}
+          },
+          no:{q:"Are all safety switches closed? (HPS, LPS, flow switch)",info:"Check continuity through each safety in the 24V circuit. A tripped safety breaks the circuit before the contactor.",
+            yes:{fix:"Broken wire or bad connection in control circuit",detail:"24V leaves the thermostat but doesn't reach the contactor. Trace the wire run — look for damaged thermostat cable, corroded connections, or a miswired splice. Check all wire nuts and terminal connections."},
+            no:{fix:"Safety switch has tripped",detail:"A safety device has opened the control circuit. Determine WHICH safety: High Pressure Switch (check for dirty condenser, failed fan, overcharge), Low Pressure Switch (check for low charge, restricted filter drier, iced coil), or Flow Switch (check water/air flow). Fix the ROOT CAUSE before resetting!"}
+          }
+        },
+        no:{fix:"Thermostat not calling for cooling",detail:"24V is present at R but not switching to Y. Check: thermostat mode (set to COOL, not OFF or HEAT), setpoint below room temp, thermostat anticipator/deadband, corroded thermostat contacts, or replace thermostat. Also check for a float switch (condensate) wired in series with Y."}
+      },
+      no:{fix:"No 24V power — transformer or upstream issue",detail:"No 24V at thermostat means the transformer isn't producing power. Check: 240V at transformer primary (is there power to the unit?), transformer secondary output (should be 24-28VAC), blown low-voltage fuse (3A or 5A on the board), tripped breaker, or blown control fuse. Also check for a shorted thermostat wire dragging down the transformer."}
+    }
+  },
+  highhead:{name:"High Head Pressure",icon:"🔴",desc:"Discharge pressure above normal",
+    tree:{q:"Is the condenser coil clean?",info:"Inspect the outdoor coil. Dirt, grass, cottonwood, pet hair, and debris block airflow and prevent heat rejection.",
+      no:{fix:"Dirty condenser coil",detail:"Clean the condenser coil with a coil cleaner and garden hose (spray from inside out). This is the #1 cause of high head pressure. Maintenance: clean annually."},
+      yes:{q:"Is the condenser fan running at full speed?",info:"Check that the fan motor is spinning freely at correct RPM. A slow fan reduces airflow across the coil.",
+        no:{fix:"Condenser fan motor issue",detail:"Fan not running or running slow. Check: bad capacitor (test MFD), burned motor winding (check ohms), bad fan relay, loose/broken blade, seized bearings, or wrong rotation. Replace motor or capacitor as needed."},
+        yes:{q:"Is the system overcharged?",info:"Check subcooling. If subcooling is well above normal (>20°F), the system likely has too much refrigerant, pushing head pressure up.",
+          yes:{fix:"System overcharged",detail:"Excess refrigerant fills the condenser with liquid, reducing the area available for desuperheating and condensing. This raises head pressure. Recover refrigerant until subcooling reaches manufacturer target (typically 10-15°F). Weigh the charge if possible."},
+          no:{q:"Is there a non-condensable (air) in the system?",info:"Air in the system acts like extra gas that can't condense — it just takes up space and raises pressure. Head pressure will be higher than the PT chart predicts for the outdoor ambient.",
+            yes:{fix:"Non-condensables (air) in system",detail:"Air entered during service or through a leak. Must recover entire charge, evacuate to 500 microns, pass standing vacuum test, then recharge by weight. Do NOT simply add refrigerant — the air must be removed."},
+            no:{fix:"Restriction in system or recirculated air",detail:"Check for: refrigerant restriction in liquid line (filter drier, kinked line), condenser location causing recirculated hot air (too close to wall, in direct sun on all sides), or nearby heat sources. Also verify the outdoor ambient — head pressure should correlate with PT chart + 20-30°F condenser split."}
+          }
+        }
+      }
+    }
+  },
+  lowsuction:{name:"Low Suction Pressure",icon:"🔵",desc:"Suction pressure below normal",
+    tree:{q:"Is there adequate airflow across the evaporator?",info:"Check the supply/return vents and feel for airflow. Restricted airflow is the most common cause of low suction pressure.",
+      no:{q:"Is the air filter clean?",info:"A dirty filter restricts airflow dramatically. This is always the first thing to check.",
+        no:{fix:"Dirty air filter",detail:"Replace or clean the air filter. A clogged filter restricts airflow across the evaporator, causing the coil to get too cold and suction pressure to drop. Can eventually freeze the coil. Check monthly!"},
+        yes:{fix:"Blower issue or duct problem",detail:"Filter is clean but airflow is still low. Check: blower motor running? Correct speed tap? Belt broken (on belt-drive)? Collapsed duct? Closed dampers? Dirty evaporator coil (clean with foaming coil cleaner)? Too many closed registers?"}
+      },
+      yes:{q:"Is the evaporator coil iced/frosted?",info:"Look at the coil. If it's covered in frost or ice, something is causing the coil temperature to drop below freezing.",
+        yes:{fix:"Frozen evaporator coil",detail:"Turn system to FAN ONLY to defrost (usually 30-60 min). Then find the root cause: low refrigerant charge (check superheat), restricted metering device, low airflow, running system below 65°F outdoor temp without a low-ambient kit, or defective defrost timer (heat pump)."},
+        no:{q:"Is the refrigerant charge low? (High superheat?)",info:"Check superheat. If superheat is high (>15°F) with low suction pressure, the system is likely low on charge.",
+          yes:{fix:"Low refrigerant charge (leak)",detail:"System is undercharged — refrigerant has leaked out. Find and repair the leak FIRST (use electronic detector, soap bubbles, or UV dye). Then evacuate and recharge to manufacturer specs by weight. Common leak points: service valves, flare connections, coil joints, Schrader cores."},
+          no:{fix:"Metering device restriction",detail:"Suction is low but superheat is also low or fluctuating. This indicates the TXV/piston is restricting flow. Check: TXV sensing bulb position and contact, restricted filter drier (frost/temp drop across it), restricted TXV screen, or failed TXV. Replace filter drier first — it's the cheapest fix."}
+        }
+      }
+    }
+  },
+  noheat:{name:"No Heat (Furnace)",icon:"🔥",desc:"Furnace won't ignite or produce heat",
+    tree:{q:"Is the thermostat calling for heat? (24V at W terminal)",info:"Set thermostat to HEAT, above room temp. Check for 24V between W and C at the furnace control board.",
+      no:{fix:"No call for heat",detail:"Same as cooling diagnosis — check thermostat mode, setpoint, transformer, fuse. On the furnace board, check for a blown 3A/5A fuse. Also check: is the furnace door switch closed? Many furnaces have a safety switch that kills power when the blower door is removed."},
+      yes:{q:"Is the inducer/draft motor running?",info:"On a call for heat, the inducer motor should start first (proves combustion airflow). Listen for it.",
+        no:{fix:"Inducer motor failure or board issue",detail:"Board should energize the inducer on a W call. Check: inducer motor (spin freely? Getting voltage?), control board relay, blown board fuse, or pressure switch stuck open (board won't start inducer if it reads an error). Check LED error codes on the board."},
+        yes:{q:"Is the pressure switch closing?",info:"After the inducer starts, the pressure switch must close to prove draft. It's a diaphragm switch connected to the inducer housing by a small rubber hose.",
+          no:{fix:"Pressure switch not closing",detail:"The pressure switch proves combustion draft. If it won't close: check the hose for cracks/kinks/water, check the drain trap (blocked = no draft), check inducer speed (weak motor = insufficient draft), check flue/vent for blockage (bird nest, ice), or the pressure switch itself is faulty (test with manometer)."},
+          yes:{q:"Is the igniter glowing (HSI) or sparking?",info:"The hot surface igniter should glow bright orange. If it's a spark ignition system, you should hear/see a spark at the burner.",
+            no:{fix:"Bad igniter",detail:"HSI igniter is not glowing. Check: voltage to igniter (should be 80-120VAC), cracked/broken igniter element (white ceramic — very fragile, don't touch with bare hands), or igniter resistance too high (check ohms — should be 40-200Ω depending on type). Replace igniter."},
+            yes:{q:"Is the gas valve opening? (Can you hear/smell gas?)",info:"After igniter proves, the board should open the gas valve. Listen for a click and slight gas smell at the burner area.",
+              no:{fix:"Gas valve not opening",detail:"Igniter glows but no gas. Check: 24V at gas valve (board should send it), gas supply on (manual valve, meter), gas pressure at manifold (use manometer), or faulty gas valve. Also check: is the flame sensor circuit complete? Some boards won't open the gas valve if the flame sensor circuit is open."},
+              yes:{fix:"Flame sensor issue or other",detail:"Gas is flowing and igniting, but furnace shuts off quickly (within 3-10 seconds). This is almost always a dirty flame sensor — remove it and clean with fine steel wool or emery cloth until shiny. The flame sensor proves flame presence to the board. If it can't sense flame, the board shuts off gas as a safety. If cleaning doesn't work, replace the sensor."}
+            }
+          }
+        }
+      }
+    }
+  },
+  shortcycle:{name:"Short Cycling",icon:"⚡",desc:"System turns on and off rapidly",
+    tree:{q:"Is the system running for less than 5 minutes before shutting off?",info:"Normal run cycles are 10-20 minutes. Short cycling (under 5 min) wastes energy and damages compressors.",
+      yes:{q:"Does the compressor shut off on the overload?",info:"Put an amp clamp on the common wire. If amps spike and the compressor shuts off, the internal overload is tripping.",
+        yes:{fix:"Compressor overload tripping",detail:"Compressor is overheating or drawing excessive amps. Causes: low refrigerant (compressor runs hot without suction gas cooling), dirty condenser (high head = high amps), bad run capacitor (motor struggles), restricted airflow, or compressor mechanical failure. Check amps vs nameplate RLA."},
+        no:{q:"Is a safety switch tripping? (Check for LED error codes)",info:"Most modern systems have diagnostic LEDs on the control board. Count the flashes — the code will tell you exactly which safety tripped.",
+          yes:{fix:"Safety device cycling the system",detail:"Read the error code and address: HPS tripping = high head pressure (clean condenser, check fan, check charge). LPS tripping = low charge or restriction. Freeze stat = frozen coil (check airflow). Float switch = condensate backup. Fix the root cause — do NOT jumper out safeties!"},
+          no:{fix:"Thermostat or wiring issue",detail:"If no safety is tripping, the thermostat may be causing short cycles. Check: thermostat location (in direct sunlight? Near a vent? On an exterior wall?), anticipator setting, dead battery in digital stat, loose wiring causing intermittent contact, or thermostat is oversized for the space (reaches setpoint too quickly)."}
+        }
+      },
+      no:{fix:"System may be cycling normally",detail:"If cycles are 8-15 minutes and the space is reaching temperature, this may be normal operation. Check: is the system oversized for the space? Oversized equipment reaches setpoint quickly and short-cycles. A Manual J load calculation can verify proper sizing. Also check for adequate return air."}
+    }
+  }
+};
+
+var state={scr:'menu',scenario:null,path:[],history:[]};
+
+function render(){
+  var el=document.getElementById('app');
+  if(state.scr==='menu')rMenu(el);
+  else if(state.scr==='flow')rFlow(el);
+}
+
+function rMenu(el){
+  var html='<h1>&#x1f527; Troubleshooting Flowcharts</h1><p class="sub">Interactive diagnostic decision trees — think like a tech</p><div class="scenario-grid">';
+  for(var k in SCENARIOS){
+    var s=SCENARIOS[k];
+    html+='<div class="scenario-btn" onclick="startScenario(\''+k+'\')"><div class="si">'+s.icon+'</div><div class="sn">'+s.name+'</div><div class="sd">'+s.desc+'</div></div>';
+  }
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+function startScenario(key){
+  state.scenario=key;state.path=[];state.history=[];state.scr='flow';render();scrollTo(0,0);
+}
+
+function getNode(){
+  var node=SCENARIOS[state.scenario].tree;
+  for(var i=0;i<state.path.length;i++){
+    node=node[state.path[i]];
+  }
+  return node;
+}
+
+function choose(choice){
+  state.path.push(choice);
+  var node=getNode();
+  // Save history
+  var parent=SCENARIOS[state.scenario].tree;
+  for(var i=0;i<state.path.length-1;i++)parent=parent[state.path[i]];
+  state.history.push({q:parent.q,a:choice==='yes'?'Yes':'No'});
+  render();scrollTo(0,0);
+}
+
+function goBack(){
+  if(state.path.length>0){state.path.pop();state.history.pop();}
+  else{state.scr='menu';}
+  render();scrollTo(0,0);
+}
+
+function rFlow(el){
+  var s=SCENARIOS[state.scenario];
+  var node=getNode();
+  
+  // History breadcrumb
+  var histHTML='';
+  if(state.history.length>0){
+    histHTML='<div class="history">';
+    state.history.forEach(function(h){
+      histHTML+='<div class="hist-item"><span class="hist-q">'+h.q+'</span> &rarr; <span class="hist-a">'+h.a+'</span></div>';
+    });
+    histHTML+='</div>';
+  }
+  
+  var html='<div class="breadcrumb">'+s.icon+' '+s.name+' &bull; Step '+(state.path.length+1)+'</div>';
+  html+='<button class="nb" onclick="goBack()">&larr; Back</button>';
+  html+='<button class="nb" onclick="state.scr=\'menu\';render()">All Scenarios</button>';
+  html+=histHTML;
+  
+  if(node.fix){
+    // Terminal node — diagnosis found
+    html+='<div class="fix-node"><h3>&#x2705; Diagnosis: '+node.fix+'</h3><p>'+node.detail+'</p></div>';
+    html+='<div style="margin-top:16px;text-align:center"><button class="nb" onclick="startScenario(\''+state.scenario+'\')">Restart This Scenario</button><button class="nb" onclick="state.scr=\'menu\';render()">All Scenarios</button></div>';
+  } else {
+    // Question node
+    html+='<div class="node"><div class="node-q">'+node.q+'</div>';
+    if(node.info)html+='<div class="node-info">'+node.info+'</div>';
+    html+='<div class="node-choices">';
+    if(node.yes)html+='<button class="choice-btn" onclick="choose(\'yes\')">&#x2705; Yes</button>';
+    if(node.no)html+='<button class="choice-btn" onclick="choose(\'no\')">&#x274c; No</button>';
+    html+='</div></div>';
+  }
+  
+  el.innerHTML=html;
+}
+
+render();
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>

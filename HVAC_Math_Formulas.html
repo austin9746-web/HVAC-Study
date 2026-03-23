@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>HVAC Math &amp; Formulas</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--accent2:#2d7dd2;--ok:#34d399;--ok-bg:rgba(52,211,153,.08);--no:#f87171;--no-bg:rgba(248,113,113,.08);--warn:#fbbf24;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:880px;margin:0 auto;padding:16px}
+.start{text-align:center;padding:48px 16px}
+.start h1{font-size:2.2em;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.start .sub{color:var(--text2);margin-bottom:32px}
+.stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.sb{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 22px;min-width:110px}
+.sb .v{font-size:1.7em;font-weight:700;color:var(--accent)}
+.sb .l{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.modes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.mb{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px 20px;cursor:pointer;text-align:left;min-width:220px;transition:.2s}
+.mb:hover{border-color:var(--accent);background:var(--card2)}
+.mb.on{border-color:var(--accent);background:rgba(74,158,255,.06)}
+.mb h3{font-size:.95em;margin-bottom:2px}
+.mb p{font-size:.78em;color:var(--text2)}
+.go{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:12px 44px;font-size:1.05em;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;margin-top:8px}
+.go:hover{background:var(--accent2);transform:translateY(-1px)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;margin-bottom:0;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
+.hdr .t{font-size:.85em;font-weight:600;color:var(--text2)}
+.hdr .pi{font-size:.82em;color:var(--text2);font-family:monospace}
+
+/* === SCORE BAR === */
+.score-bar{display:flex;align-items:center;gap:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin:10px 0;overflow:hidden;min-height:48px}
+.score-bar .sc-section{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 16px;min-width:70px;border-right:1px solid var(--border)}
+.score-bar .sc-section:last-child{border-right:none}
+.score-bar .sc-val{font-size:1.2em;font-weight:700;font-family:monospace;line-height:1.2}
+.score-bar .sc-lbl{font-size:.62em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);line-height:1.2}
+.sc-pct-wrap{flex:1;padding:8px 16px;display:flex;align-items:center;gap:12px;min-width:120px}
+.sc-pct-bar{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;position:relative}
+.sc-pct-fill{height:100%;border-radius:4px;transition:width .4s,background .3s}
+.sc-pct-num{font-size:1.3em;font-weight:700;font-family:monospace;min-width:52px;text-align:right}
+.score-bar.exam-mode{opacity:.5;filter:blur(3px);pointer-events:none;user-select:none}
+.score-bar.no-data .sc-val{color:var(--text2)}
+@media(max-width:500px){.score-bar .sc-section{padding:6px 10px;min-width:54px}.score-bar .sc-val{font-size:1em}.sc-pct-wrap{padding:6px 10px}.sc-pct-num{font-size:1.1em;min-width:44px}}
+
+.pb{height:4px;background:var(--card2);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));border-radius:2px;transition:width .4s}
+.qc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:14px}
+.qm{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.qn{font-family:monospace;font-size:.8em;font-weight:600;color:var(--accent);background:rgba(74,158,255,.1);padding:3px 9px;border-radius:6px}
+.qt{font-size:.75em;color:var(--text2);background:var(--card2);padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+.qp{font-size:.75em;color:var(--warn);margin-left:auto;font-weight:600}
+.qq{font-size:1.05em;line-height:1.6;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.op{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--card2);border:2px solid transparent;border-radius:8px;cursor:pointer;transition:.15s;font-size:.92em;line-height:1.5}
+.op:hover{border-color:var(--border);background:#252a35}
+.op.sel{border-color:var(--accent);background:rgba(74,158,255,.05)}
+.op.cor{border-color:var(--ok);background:var(--ok-bg)}
+.op.wrg{border-color:var(--no);background:var(--no-bg)}
+.op.shw{border-color:var(--ok);background:var(--ok-bg)}
+.op.dis{cursor:default}
+.ol{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.75em;font-weight:600;color:var(--text2);transition:.15s}
+.op.sel .ol{background:var(--accent);color:#fff}
+.op.cor .ol{background:var(--ok);color:#000}
+.op.wrg .ol{background:var(--no);color:#fff}
+.op.shw .ol{background:var(--ok);color:#000}
+.ot{padding-top:2px;flex:1}
+.ex-box{margin-top:8px;padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5;color:var(--text)}
+.ex-box.ex-ok{border-left-color:var(--ok);background:var(--ok-bg)}
+.ex-box.ex-no{border-left-color:var(--no);background:var(--no-bg)}
+.ti{width:100%;background:var(--card2);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:.92em;resize:vertical;min-height:44px}
+.ti:focus{outline:none;border-color:var(--accent)}
+.hint{background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.2);border-radius:8px;padding:12px 14px;margin-top:10px}
+.hint .hl{font-size:.75em;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.hint .ht{font-size:.88em;line-height:1.5}
+.fill-exps{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fill-exp{padding:10px 12px;background:rgba(74,158,255,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.84em;line-height:1.5}
+.nav{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.nb{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 18px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;font-weight:500}
+.nb:hover{background:var(--card2);border-color:var(--text2)}
+.nb.pr{background:var(--accent);border-color:var(--accent);color:#fff}
+.nb.pr:hover{background:var(--accent2)}
+.nb:disabled{opacity:.3;cursor:not-allowed}
+.nc{display:flex;gap:6px;align-items:center}
+.ck{background:var(--warn);border:none;color:#000;font-weight:600}
+.ck:hover{background:#e5a900}
+.gt{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);cursor:pointer;font-size:.8em;font-family:inherit;transition:.15s}
+.gt:hover{border-color:var(--text2);color:var(--text)}
+.gp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:3px}
+.gd{width:100%;aspect-ratio:1;border-radius:5px;border:1px solid var(--border);background:var(--card2);cursor:pointer;font-size:.7em;font-weight:600;display:flex;align-items:center;justify-content:center;transition:.15s;color:var(--text2)}
+.gd:hover{border-color:var(--text2)}
+.gd.cur{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 2px rgba(74,158,255,.15)}
+.gd.ans{background:rgba(74,158,255,.12);border-color:var(--accent);color:var(--accent)}
+.gd.gc{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.gd.gw{background:var(--no-bg);border-color:var(--no);color:var(--no)}
+.res{text-align:center;padding:32px 16px}
+.res h2{font-size:1.8em;margin-bottom:6px}
+.sc{width:160px;height:160px;border-radius:50%;border:5px solid var(--ok);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px auto}
+.sc .pct{font-size:2.8em;font-weight:700}
+.sc .of{font-size:.82em;color:var(--text2)}
+.rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:20px 0}
+.rs{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.rs .rv{font-size:1.4em;font-weight:700}
+.rs .rl{font-size:.75em;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.ra{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.ft{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.fb{padding:5px 12px;border-radius:18px;border:1px solid var(--border);background:none;color:var(--text2);font-size:.8em;cursor:pointer;font-family:inherit;transition:.15s}
+.fb.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fb:hover{border-color:var(--text2)}
+.disclaimer{margin-top:12px;font-size:.75em;color:var(--text2);opacity:.7}
+@media(max-width:600px){.app{padding:8px}.qc{padding:16px}.start h1{font-size:1.5em}.mb{min-width:100%}.gr{grid-template-columns:repeat(auto-fill,minmax(30px,1fr))}}
+
+/* Back to hub button */
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;text-decoration:none;display:flex;align-items:center;gap:5px;transition:.2s}
+.back-btn:hover{border-color:var(--accent);color:var(--text);background:var(--card2)}
+/* Print results button */
+.print-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 22px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.print-btn:hover{border-color:var(--accent);background:var(--card2)}
+@media print{.back-btn,.fab-container,.calc-overlay,.ref-overlay,.nav,.hdr,.go,.modes,.timer-toggle,.stats-history,.print-btn,.nb{display:none!important}.app{padding:0}.qc{break-inside:avoid;border:1px solid #ccc;margin:8px 0}.start{display:none}.res,.opts,.qc{display:block!important}body{background:#fff;color:#000}.score-bar,.pb{display:none}:root{--card:#fff;--card2:#f5f5f5;--border:#ddd;--text:#000;--text2:#666;--ok:#22c55e;--no:#dc2626;--accent:#2563eb}}
+.save-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 16px;color:var(--text2);font-family:inherit;font-size:.82em;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px}.save-btn:hover{border-color:var(--ok);color:var(--ok)}.save-btn.saved{border-color:var(--ok);color:var(--ok);background:rgba(52,211,153,.08)}
+
+/* Flashcard mode */
+.fc-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:32px 28px;margin:16px 0;min-height:250px;cursor:pointer;transition:.3s;position:relative;display:flex;flex-direction:column;justify-content:center}
+.fc-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.fc-card.flipped{border-color:var(--ok);background:rgba(52,211,153,.03)}
+.fc-label{position:absolute;top:12px;left:16px;font-size:.7em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);font-weight:600}
+.fc-tap{position:absolute;bottom:12px;right:16px;font-size:.75em;color:var(--text2)}
+.fc-q{font-size:1.1em;line-height:1.6;text-align:center}
+.fc-a{margin-top:16px;padding-top:16px;border-top:2px solid var(--border);font-size:1em;line-height:1.5;text-align:center}
+.fc-a .fc-correct{color:var(--ok);font-weight:700;font-size:1.1em;margin-bottom:8px}
+.fc-a .fc-explain{color:var(--text2);font-size:.88em}
+.fc-controls{display:flex;gap:10px;justify-content:center;margin-top:16px}
+.fc-btn{padding:10px 20px;border-radius:8px;border:2px solid;cursor:pointer;font-family:inherit;font-size:.88em;font-weight:600;transition:.2s}
+.fc-knew{border-color:var(--ok);color:var(--ok);background:rgba(52,211,153,.06)}
+.fc-knew:hover{background:rgba(52,211,153,.15)}
+.fc-didnt{border-color:var(--no);color:var(--no);background:rgba(248,113,113,.06)}
+.fc-didnt:hover{background:rgba(248,113,113,.15)}
+.fc-progress{display:flex;gap:16px;justify-content:center;margin:12px 0;font-size:.85em}
+.fc-stat{text-align:center}
+.fc-stat .fc-sv{font-size:1.3em;font-weight:700;font-family:monospace}
+
+/* Topic analysis */
+.topic-section{margin:20px 0}
+.topic-section h3{font-size:.95em;font-weight:700;margin-bottom:12px;color:var(--accent)}
+.topic-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
+.topic-name{flex:1;font-size:.88em;font-weight:600}
+.topic-score{font-family:monospace;font-weight:700;font-size:.9em;min-width:50px;text-align:right}
+.topic-meter{width:100px;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
+.topic-fill{height:100%;border-radius:4px}
+.topic-count{font-size:.75em;color:var(--text2);min-width:40px;text-align:right}
+
+/* Light mode */
+body.light{--bg:#f5f6f8;--card:#ffffff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--accent2:#1d4ed8;--ok:#16a34a;--ok-bg:rgba(22,163,74,.06);--no:#dc2626;--no-bg:rgba(220,38,38,.06);--warn:#d97706}
+body.light .op:hover{background:#f0f1f4}
+body.light .gd{background:#f0f1f4}
+
+/* Theme toggle button */
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;transition:.2s;display:flex;align-items:center;gap:4px}
+.theme-toggle:hover{border-color:var(--accent);color:var(--text)}
+
+/* Flag button */
+.flag-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:.85em;transition:.2s;color:var(--text2);font-family:inherit}
+.flag-btn:hover{border-color:var(--warn);color:var(--warn)}
+.flag-btn.flagged{background:rgba(251,191,36,.12);border-color:var(--warn);color:var(--warn)}
+.gd.gf{box-shadow:inset 0 0 0 2px var(--warn)}
+
+/* Sticky mobile nav */
+@media(max-width:600px){
+  .nav{position:sticky;bottom:0;background:var(--bg);padding:10px 8px;border-top:1px solid var(--border);margin:0 -16px -24px;z-index:100}
+  .qc{margin-bottom:70px}
+}
+
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.theme-toggle:hover{border-color:var(--accent);color:var(--text)}
+.work-box{background:var(--card2);border:2px solid var(--accent);border-radius:var(--r);padding:16px;margin-top:12px;font-family:monospace;white-space:pre-wrap;font-size:.85em;line-height:1.7;color:var(--text)}
+.work-box .wl{color:var(--accent);font-weight:700}
+.work-box .wv{color:var(--ok);font-weight:700}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab{flex:1;padding:12px;border-radius:var(--r);border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;font-family:inherit;font-size:.85em;font-weight:600;transition:.2s}
+.tab:hover{border-color:var(--accent)}.tab.active{border-color:var(--accent);background:rgba(74,158,255,.06);color:var(--accent)}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.fc h3{font-size:.95em;font-weight:700;color:var(--accent);margin-bottom:10px;border-bottom:2px solid var(--border);padding-bottom:6px}
+.fm{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88em;flex-wrap:wrap;gap:4px}
+.fm:last-child{border:none}
+.fn{font-weight:700}.ff{font-family:monospace;color:var(--warn);font-weight:600}
+.fd{color:var(--text2);font-size:.82em;margin-top:2px;width:100%}
+@media(max-width:600px){.nav{position:sticky;bottom:0;background:var(--bg);padding:10px 8px;border-top:1px solid var(--border);margin:0 -16px -24px;z-index:100}.qc{margin-bottom:70px}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app" id="app"></div>
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+const Q=[{n:1,cat:'BTU & Heat',p:2,t:'mc',q:'A technician measures airflow at 1,200 CFM through a cooling coil. The return air is 80°F and the supply air is 58°F. What is the sensible cooling capacity in BTU/hr?',o:['28,512 BTU/hr','25,920 BTU/hr','14,256 BTU/hr','31,680 BTU/hr'],a:0,ex:['CORRECT — Q = 1.08 × CFM × ΔT = 1.08 × 1,200 × (80-58) = 1.08 × 1,200 × 22 = 28,512 BTU/hr. The constant 1.08 accounts for air density and specific heat at standard conditions.','Incorrect. You may have used 1.0 instead of 1.08 as the constant.','Incorrect. You may have divided by 2 somewhere.','Incorrect. Check your temperature difference.'],work:'Formula: Q = 1.08 × CFM × ΔT\nGiven: CFM = 1,200 | Return = 80°F | Supply = 58°F\nStep 1: ΔT = 80 - 58 = 22°F\nStep 2: Q = 1.08 × 1,200 × 22\nStep 3: Q = 1.08 × 26,400 = 28,512 BTU/hr'},{n:2,cat:'BTU & Heat',p:2,t:'mc',q:'A hydronic system circulates 8 GPM of water. The supply temperature is 180°F and the return is 160°F. What is the heat output in BTU/hr?',o:['96,000 BTU/hr','80,000 BTU/hr','72,000 BTU/hr','160,000 BTU/hr'],a:1,ex:['Incorrect. Check the constant used.','CORRECT — Q = 500 × GPM × ΔT = 500 × 8 × (180-160) = 500 × 8 × 20 = 80,000 BTU/hr. The constant 500 accounts for water weight (8.33 lb/gal) × specific heat (1.0) × 60 min/hr.','Incorrect.','Incorrect. You may have used 1,000 instead of 500.'],work:'Formula: Q = 500 × GPM × ΔT\nGiven: GPM = 8 | Supply = 180°F | Return = 160°F\nStep 1: ΔT = 180 - 160 = 20°F\nStep 2: Q = 500 × 8 × 20 = 80,000 BTU/hr\nNote: 500 comes from 8.33 lb/gal × 1.0 Btu/lb·°F × 60 min/hr ≈ 500'},{n:3,cat:'BTU & Heat',p:2,t:'mc',q:'How many BTUs are required to raise 40 gallons of water from 50°F to 140°F?',o:['29,988 BTU','36,000 BTU','33,320 BTU','30,000 BTU'],a:0,ex:['CORRECT — Q = Weight × ΔT × Specific Heat. Weight = 40 gal × 8.33 lb/gal = 333.2 lbs. Q = 333.2 × (140-50) × 1.0 = 333.2 × 90 = 29,988 BTU.','Incorrect. You may have used 8.0 lb/gal instead of 8.33.','Incorrect.','Incorrect. Close but not accounting for actual water weight.'],work:'Formula: Q = m × c × ΔT\nGiven: Volume = 40 gal | Start = 50°F | End = 140°F\nStep 1: Mass = 40 gal × 8.33 lb/gal = 333.2 lbs\nStep 2: ΔT = 140 - 50 = 90°F\nStep 3: Q = 333.2 × 1.0 × 90 = 29,988 BTU'},{n:4,cat:'BTU & Heat',p:2,t:'mc',q:'A building has a heat loss of 120,000 BTU/hr. How many square feet of steam radiation (EDR) are needed?',o:['500 sq ft EDR','800 sq ft EDR','720 sq ft EDR','480 sq ft EDR'],a:0,ex:['CORRECT — Each square foot of steam EDR delivers 240 BTU/hr. EDR = 120,000 ÷ 240 = 500 sq ft.','Incorrect. You may have used 150 BTU/hr (that\'s for hot water EDR, not steam).','Incorrect.','Incorrect.'],work:'Formula: EDR = Total BTU/hr ÷ BTU per sq ft\nGiven: Heat loss = 120,000 BTU/hr | Steam EDR = 240 BTU/hr per sq ft\nStep 1: EDR = 120,000 ÷ 240 = 500 sq ft\nNote: Steam EDR = 240 BTU/hr per sq ft | Hot Water EDR = 150 BTU/hr per sq ft'},{n:5,cat:'BTU & Heat',p:2,t:'mc',q:'A boiler is rated at 4 BHP (Boiler Horsepower). What is its output in BTU/hr?',o:['100,000 BTU/hr','133,900 BTU/hr','167,375 BTU/hr','200,000 BTU/hr'],a:1,ex:['Incorrect.','CORRECT — 1 BHP = 33,475 BTU/hr. So 4 × 33,475 = 133,900 BTU/hr.','Incorrect. You may have multiplied by 5 instead of 4.','Incorrect.'],work:'Formula: Output = BHP × 33,475\nGiven: BHP = 4\nStep 1: Output = 4 × 33,475 = 133,900 BTU/hr\nNote: 1 BHP = 33,475 BTU/hr = evaporating 34.5 lbs of water per hour at 212°F'},{n:6,cat:'Refrigeration',p:2,t:'mc',q:'An R-410A system has a suction pressure of 118 psig. The suction line temperature is 52°F. The saturated suction temperature at 118 psig is 40°F. What is the superheat?',o:['92°F','78°F','12°F','52°F'],a:2,ex:['Incorrect. You added instead of subtracting.','Incorrect.','CORRECT — Superheat = Actual temp − Saturation temp = 52°F − 40°F = 12°F. This tells you the refrigerant is fully vaporized plus 12° of additional sensible heat.','Incorrect. 52°F is the actual line temperature, not the superheat.'],work:'Formula: Superheat = Actual Suction Line Temp − Saturated Suction Temp\nGiven: Suction pressure = 118 psig → Sat temp = 40°F | Line temp = 52°F\nStep 1: SH = 52 - 40 = 12°F\nNormal range: 8-12°F superheat for most TXV systems'},{n:7,cat:'Refrigeration',p:2,t:'mc',q:'An R-410A system has a liquid line pressure of 418 psig (saturation temp = 110°F). The liquid line temperature reads 98°F. What is the subcooling?',o:['98°F','12°F','110°F','318°F'],a:1,ex:['Incorrect.','CORRECT — Subcooling = Saturation temp − Actual liquid temp = 110°F − 98°F = 12°F. This means the liquid is 12° below its boiling point, ensuring solid liquid reaches the metering device.','Incorrect. 110°F is the saturation temperature.','Incorrect.'],work:'Formula: Subcooling = Saturated Liquid Temp − Actual Liquid Line Temp\nGiven: Liquid pressure = 418 psig → Sat temp = 110°F | Line temp = 98°F\nStep 1: SC = 110 - 98 = 12°F\nNormal range: 10-15°F subcooling for most systems'},{n:8,cat:'Refrigeration',p:2,t:'mc',q:'A compressor has a suction pressure of 70 psig and a discharge pressure of 325 psig. What is the compression ratio? (Atmospheric pressure = 14.7 psia)',o:['4.64:1','4.01:1','3.91:1','5.12:1'],a:1,ex:['Incorrect. You may not have converted to absolute pressure correctly.','CORRECT — Must convert to PSIA first. Suction = 70 + 14.7 = 84.7 psia. Discharge = 325 + 14.7 = 339.7 psia. CR = 339.7 ÷ 84.7 = 4.01:1','Incorrect.','Incorrect.'],work:'Formula: CR = Discharge PSIA ÷ Suction PSIA\nGiven: Suction = 70 psig | Discharge = 325 psig\nStep 1: Convert to PSIA → Suction = 70 + 14.7 = 84.7 psia\nStep 2: Discharge = 325 + 14.7 = 339.7 psia\nStep 3: CR = 339.7 ÷ 84.7 = 4.01:1\nIMPORTANT: Always use absolute pressure (PSIA), not gauge (PSIG)'},{n:9,cat:'Refrigeration',p:2,t:'mc',q:'A refrigeration system removes 60,000 BTU/hr from a walk-in cooler. How many tons of refrigeration is this?',o:['3 tons','4 tons','5 tons','6 tons'],a:2,ex:['Incorrect.','Incorrect.','CORRECT — 1 ton = 12,000 BTU/hr. Tons = 60,000 ÷ 12,000 = 5 tons.','Incorrect.'],work:'Formula: Tons = BTU/hr ÷ 12,000\nGiven: Capacity = 60,000 BTU/hr\nStep 1: Tons = 60,000 ÷ 12,000 = 5 tons\nNote: 1 ton = 12,000 BTU/hr = the cooling effect of melting 1 ton (2000 lbs) of ice in 24 hours'},{n:10,cat:'Electrical',p:2,t:'mc',q:'A 240V single-phase compressor draws 18 amps during operation. What is the power consumption in watts?',o:['4,320 watts','2,160 watts','3,600 watts','6,480 watts'],a:0,ex:['CORRECT — P = V × I = 240 × 18 = 4,320 watts. For single phase, it\'s simply voltage times current.','Incorrect. You may have divided by 2.','Incorrect.','Incorrect.'],work:'Formula: P = V × I (single phase)\nGiven: V = 240V | I = 18A\nStep 1: P = 240 × 18 = 4,320 watts\nNote: For 3-phase → P = V × I × 1.732 (√3)'},{n:11,cat:'Electrical',p:2,t:'mc',q:'A 24V control circuit has a relay coil rated at 40 ohms. How much current does it draw?',o:['0.6 amps','960 amps','1.67 amps','16 amps'],a:0,ex:['CORRECT — Ohm\'s Law: I = V ÷ R = 24 ÷ 40 = 0.6 amps (600 milliamps).','Incorrect. V × R is not the correct formula.','Incorrect.','Incorrect.'],work:'Formula: I = V ÷ R (Ohm\'s Law)\nGiven: V = 24V | R = 40Ω\nStep 1: I = 24 ÷ 40 = 0.6 amps\nOhm\'s Law triangle: V = I × R | I = V ÷ R | R = V ÷ I'},{n:12,cat:'Electrical',p:2,t:'mc',q:'A 5 kW electric heat strip operates on 240V single phase. What is the amperage draw?',o:['20.83 amps','48 amps','10.42 amps','1,200 amps'],a:0,ex:['CORRECT — I = P ÷ V = 5,000W ÷ 240V = 20.83 amps. Remember to convert kW to watts first (5 kW = 5,000W).','Incorrect.','Incorrect. You may have divided by 480 instead of 240.','Incorrect.'],work:'Formula: I = P ÷ V\nGiven: P = 5 kW = 5,000W | V = 240V\nStep 1: I = 5,000 ÷ 240 = 20.83 amps\nAlso: 1 kW = 3,412 BTU/hr, so 5 kW = 17,060 BTU/hr'},{n:13,cat:'Electrical',p:2,t:'mc',q:'What is the resistance of a run capacitor circuit that has 370V across it and draws 2.5 amps?',o:['925 ohms','148 ohms','0.00676 ohms','74 ohms'],a:1,ex:['Incorrect. You multiplied V × I.','CORRECT — R = V ÷ I = 370 ÷ 2.5 = 148 ohms.','Incorrect.','Incorrect.'],work:'Formula: R = V ÷ I\nGiven: V = 370V | I = 2.5A\nStep 1: R = 370 ÷ 2.5 = 148 ohms'},{n:14,cat:'Conversions',p:2,t:'mc',q:'Convert 68°F to Celsius.',o:['20°C','36°C','154°C','35.5°C'],a:0,ex:['CORRECT — °C = (°F − 32) × 5/9 = (68 − 32) × 5/9 = 36 × 0.5556 = 20°C.','Incorrect. You may have multiplied by 9/5 instead of 5/9.','Incorrect. You may have added 32 instead of subtracting.','Incorrect.'],work:'Formula: °C = (°F − 32) × 5/9\nGiven: °F = 68\nStep 1: 68 - 32 = 36\nStep 2: 36 × 5/9 = 36 × 0.5556 = 20°C\nReverse: °F = (°C × 9/5) + 32'},{n:15,cat:'Conversions',p:2,t:'mc',q:'A gauge reads 28 inches of mercury vacuum. Convert this to PSIA. (1 atm = 29.92 in. Hg = 14.696 psia)',o:['0.94 psia','13.76 psia','14.7 psia','28 psia'],a:0,ex:['CORRECT — First find how much vacuum: 28 in.Hg out of 29.92. PSIA = (29.92 − 28) ÷ 29.92 × 14.696 = 1.92 ÷ 29.92 × 14.696 = 0.0642 × 14.696 = 0.94 psia. Very close to a perfect vacuum!','Incorrect.','Incorrect. 14.7 is atmospheric — no vacuum at all.','Incorrect.'],work:'Formula: PSIA = ((29.92 − in.Hg vacuum) ÷ 29.92) × 14.696\nGiven: Vacuum = 28 in.Hg\nStep 1: Remaining pressure = 29.92 - 28 = 1.92 in.Hg\nStep 2: PSIA = (1.92 ÷ 29.92) × 14.696 = 0.0642 × 14.696 = 0.94 psia'},{n:16,cat:'Conversions',p:2,t:'mc',q:'Convert 150 psig to psia.',o:['135.3 psia','164.7 psia','150 psia','14.7 psia'],a:1,ex:['Incorrect. You subtracted instead of adding.','CORRECT — PSIA = PSIG + 14.7 = 150 + 14.7 = 164.7 psia. Absolute pressure = gauge pressure + atmospheric pressure.','Incorrect. PSIG and PSIA are not the same.','Incorrect. 14.7 is atmospheric pressure only.'],work:'Formula: PSIA = PSIG + 14.7\nGiven: PSIG = 150\nStep 1: PSIA = 150 + 14.7 = 164.7 psia\nReverse: PSIG = PSIA − 14.7'},{n:17,cat:'Airflow',p:2,t:'mc',q:'A round duct is 12 inches in diameter. What is the cross-sectional area in square feet?',o:['0.785 sq ft','1.0 sq ft','3.14 sq ft','113 sq ft'],a:0,ex:['CORRECT — Area = π × r² = π × (6/12)² = 3.14159 × 0.25 = 0.785 sq ft. Convert radius to feet: 6 inches = 0.5 ft.','Incorrect.','Incorrect. You calculated in square inches and forgot to convert.','Incorrect. 113 is the area in square inches, not square feet.'],work:'Formula: A = π × r² (convert to feet first)\nGiven: Diameter = 12" → Radius = 6" = 0.5 ft\nStep 1: A = π × (0.5)² = 3.14159 × 0.25 = 0.785 sq ft\nOr in sq inches: π × 6² = 113.1 sq in ÷ 144 = 0.785 sq ft'},{n:18,cat:'Airflow',p:2,t:'mc',q:'Air flows through a 12" round duct at 800 FPM (feet per minute). What is the CFM?',o:['628 CFM','800 CFM','9,600 CFM','401 CFM'],a:0,ex:['CORRECT — CFM = Area × Velocity. Area = 0.785 sq ft (from π × 0.5²). CFM = 0.785 × 800 = 628 CFM.','Incorrect. 800 is the velocity, not the volume.','Incorrect.','Incorrect.'],work:'Formula: CFM = Area (sq ft) × Velocity (FPM)\nGiven: 12" duct → Area = 0.785 sq ft | Velocity = 800 FPM\nStep 1: CFM = 0.785 × 800 = 628 CFM\nNote: Also CFM = Velocity × (D/2)² × π ÷ 144 if working in inches'},{n:19,cat:'BTU & Heat',p:2,t:'mc',q:'A gas furnace has an input rating of 100,000 BTU/hr and an AFUE of 92%. What is the output?',o:['100,000 BTU/hr','92,000 BTU/hr','108,696 BTU/hr','80,000 BTU/hr'],a:1,ex:['Incorrect. That\'s the input, not accounting for efficiency.','CORRECT — Output = Input × Efficiency = 100,000 × 0.92 = 92,000 BTU/hr. The remaining 8% (8,000 BTU/hr) is lost up the flue.','Incorrect. You divided instead of multiplying.','Incorrect. That would be 80% efficiency.'],work:'Formula: Output = Input × AFUE (as decimal)\nGiven: Input = 100,000 BTU/hr | AFUE = 92% = 0.92\nStep 1: Output = 100,000 × 0.92 = 92,000 BTU/hr\nNote: AFUE = Annual Fuel Utilization Efficiency'},{n:20,cat:'Electrical',p:2,t:'mc',q:'How many BTU/hr does a 10 kW electric heater produce?',o:['29,300 BTU/hr','34,120 BTU/hr','10,000 BTU/hr','3,412 BTU/hr'],a:1,ex:['Incorrect.','CORRECT — 1 kW = 3,412 BTU/hr. So 10 × 3,412 = 34,120 BTU/hr.','Incorrect. 10,000 is watts, not BTU.','Incorrect. 3,412 is for 1 kW, not 10.'],work:'Formula: BTU/hr = kW × 3,412\nGiven: kW = 10\nStep 1: BTU/hr = 10 × 3,412 = 34,120 BTU/hr\nNote: 1 watt = 3.412 BTU/hr | 1 kW = 3,412 BTU/hr'},{n:21,cat:'Refrigeration',p:2,t:'mc',q:'A system has a cooling capacity of 36,000 BTU/hr and a power input of 3,000 watts. What is the EER?',o:['12.0','10.8','108','0.083'],a:0,ex:['CORRECT — EER = BTU/hr ÷ Watts = 36,000 ÷ 3,000 = 12.0. Higher EER = more efficient.','Incorrect.','Incorrect. You may have multiplied.','Incorrect. That\'s watts ÷ BTU.'],work:'Formula: EER = BTU/hr ÷ Watts\nGiven: Capacity = 36,000 BTU/hr | Power = 3,000W\nStep 1: EER = 36,000 ÷ 3,000 = 12.0\nNote: SEER is seasonal average. EER is at a single condition (95°F outdoor).'},{n:22,cat:'BTU & Heat',p:2,t:'mc',q:'Steam at 0 psig contains 970.4 BTU/lb of latent heat. How much heat is released when 200 lbs of steam condenses?',o:['194,080 BTU','97,040 BTU','388,160 BTU','4,852 BTU'],a:0,ex:['CORRECT — Q = mass × latent heat = 200 × 970.4 = 194,080 BTU. This is the heat released during condensation (phase change only, no temperature change).','Incorrect. You may have used 100 lbs.','Incorrect.','Incorrect.'],work:'Formula: Q = m × hfg\nGiven: m = 200 lbs | hfg = 970.4 BTU/lb (at 0 psig)\nStep 1: Q = 200 × 970.4 = 194,080 BTU\nNote: hfg = latent heat of vaporization. At 0 psig, steam condenses at 212°F.'},{n:23,cat:'Airflow',p:2,t:'mc',q:'A building requires 400 CFM per ton of cooling. If the AC system is 3.5 tons, what total CFM is needed?',o:['1,400 CFM','1,200 CFM','114 CFM','4,200 CFM'],a:0,ex:['CORRECT — CFM = 400 × tons = 400 × 3.5 = 1,400 CFM. The 400 CFM/ton rule of thumb ensures proper dehumidification and comfort.','Incorrect.','Incorrect. You divided instead of multiplying.','Incorrect.'],work:'Formula: Total CFM = CFM per ton × Tons\nGiven: 400 CFM/ton | 3.5 tons\nStep 1: CFM = 400 × 3.5 = 1,400 CFM\nNote: 350-400 CFM/ton is standard. Lower CFM = better dehumidification but risk of coil icing.'},{n:24,cat:'Conversions',p:2,t:'mc',q:'How many gallons of water are in a system that contains 1,200 lbs of water?',o:['144 gallons','10,000 gallons','100 gallons','9,996 gallons'],a:0,ex:['CORRECT — Gallons = Weight ÷ 8.33 = 1,200 ÷ 8.33 = 144 gallons. Water weighs 8.33 lbs per gallon.','Incorrect.','Incorrect.','Incorrect. You may have multiplied instead of dividing.'],work:'Formula: Gallons = Weight (lbs) ÷ 8.33\nGiven: Weight = 1,200 lbs\nStep 1: Gallons = 1,200 ÷ 8.33 = 144 gallons\nNote: 1 gallon of water = 8.33 lbs | 1 cubic foot = 7.48 gallons = 62.4 lbs'},{n:25,cat:'BTU & Heat',p:2,t:'mc',q:'How many BTU are needed to convert 10 lbs of 212°F water into 212°F steam?',o:['2,120 BTU','1,800 BTU','9,704 BTU','970 BTU'],a:2,ex:['Incorrect.','Incorrect. 180 BTU/lb is sensible heat to raise water from 32°F to 212°F.','CORRECT — Latent heat of vaporization = 970.4 BTU/lb. Q = 10 × 970.4 = 9,704 BTU. No temperature change occurs — all energy goes into changing phase from liquid to gas.','Incorrect. That\'s for 1 lb, not 10.'],work:'Formula: Q = m × hfg\nGiven: m = 10 lbs | hfg = 970.4 BTU/lb\nStep 1: Q = 10 × 970.4 = 9,704 BTU\nKey: Sensible heat changes temperature. Latent heat changes state (phase). At 212°F/0 psig, water absorbs 970.4 BTU/lb to become steam with NO temperature change.'}];
+const L='ABCDEFGHIJ',TL={mc:'Multiple Choice'};
+let S={scr:'start',mode:'practice',i:0,ans:{},txt:{},chk:{},sg:false,graded:false,flt:'all',shuf:null,view:'quiz'};
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function qs(){return S.shuf||Q;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function render(){var el=document.getElementById('app');
+if(S.view==='formulas')return rFormulas(el);
+if(S.scr==='start')return rStart(el);
+if(S.scr==='quiz')return rQuiz(el);
+if(S.scr==='results')return rResults(el);
+}
+
+function rFormulas(el){
+el.innerHTML='<div class="start"><h1>\ud83d\udcca HVAC Formula Cheat Sheet</h1><p class="sub">Every formula you need, organized by category</p>'+
+'<div class="tabs"><button class="tab active" onclick="S.view=\'formulas\';render()">Formulas</button><button class="tab" onclick="S.view=\'quiz\';S.scr=\'start\';render()">Practice Questions</button></div>'+
+
+'<div class="fc"><h3>\ud83d\udd25 BTU &amp; Heat Transfer</h3>'+
+'<div class="fm"><span class="fn">Sensible Heat (Air)</span><span class="ff">Q = 1.08 \u00d7 CFM \u00d7 \u0394T</span></div><div class="fd">For air through a coil or duct. 1.08 = air density \u00d7 specific heat \u00d7 60 min/hr</div>'+
+'<div class="fm"><span class="fn">Sensible Heat (Water)</span><span class="ff">Q = 500 \u00d7 GPM \u00d7 \u0394T</span></div><div class="fd">For water through a heat exchanger. 500 = 8.33 lb/gal \u00d7 1.0 sp.ht. \u00d7 60 min/hr</div>'+
+'<div class="fm"><span class="fn">Heat (General)</span><span class="ff">Q = m \u00d7 c \u00d7 \u0394T</span></div><div class="fd">mass (lbs) \u00d7 specific heat \u00d7 temperature change. Water c = 1.0 BTU/lb\u00b0F</div>'+
+'<div class="fm"><span class="fn">Latent Heat</span><span class="ff">Q = m \u00d7 hfg</span></div><div class="fd">mass \u00d7 latent heat of vaporization. No temp change \u2014 phase change only</div>'+
+'<div class="fm"><span class="fn">Boiler HP</span><span class="ff">1 BHP = 33,475 BTU/hr</span></div>'+
+'<div class="fm"><span class="fn">Steam EDR</span><span class="ff">1 sq ft EDR = 240 BTU/hr</span></div>'+
+'<div class="fm"><span class="fn">Hot Water EDR</span><span class="ff">1 sq ft EDR = 150 BTU/hr</span></div>'+
+'<div class="fm"><span class="fn">Furnace Output</span><span class="ff">Output = Input \u00d7 AFUE</span></div>'+
+'</div>'+
+
+'<div class="fc"><h3>\u2744\ufe0f Refrigeration</h3>'+
+'<div class="fm"><span class="fn">Superheat</span><span class="ff">SH = Actual Suction Temp \u2212 Sat. Suction Temp</span></div><div class="fd">Normal TXV: 8\u201312\u00b0F. Read sat temp from PT chart at suction pressure.</div>'+
+'<div class="fm"><span class="fn">Subcooling</span><span class="ff">SC = Sat. Liquid Temp \u2212 Actual Liquid Temp</span></div><div class="fd">Normal: 10\u201315\u00b0F. Read sat temp from PT chart at liquid/head pressure.</div>'+
+'<div class="fm"><span class="fn">Compression Ratio</span><span class="ff">CR = Discharge PSIA \u00f7 Suction PSIA</span></div><div class="fd">MUST convert to absolute (PSIA = PSIG + 14.7). Normal CR: 3:1 to 4:1</div>'+
+'<div class="fm"><span class="fn">Tons of Refrigeration</span><span class="ff">Tons = BTU/hr \u00f7 12,000</span></div><div class="fd">1 ton = 12,000 BTU/hr = melting 2,000 lbs ice in 24 hrs</div>'+
+'<div class="fm"><span class="fn">EER</span><span class="ff">EER = BTU/hr \u00f7 Watts</span></div>'+
+'<div class="fm"><span class="fn">COP</span><span class="ff">COP = BTU output \u00f7 BTU input</span></div><div class="fd">COP = EER \u00f7 3.412</div>'+
+'</div>'+
+
+'<div class="fc"><h3>\u26a1 Electrical</h3>'+
+'<div class="fm"><span class="fn">Ohm\u2019s Law: Voltage</span><span class="ff">V = I \u00d7 R</span></div>'+
+'<div class="fm"><span class="fn">Ohm\u2019s Law: Current</span><span class="ff">I = V \u00f7 R</span></div>'+
+'<div class="fm"><span class="fn">Ohm\u2019s Law: Resistance</span><span class="ff">R = V \u00f7 I</span></div>'+
+'<div class="fm"><span class="fn">Power (Single Phase)</span><span class="ff">P = V \u00d7 I</span></div>'+
+'<div class="fm"><span class="fn">Power (Three Phase)</span><span class="ff">P = V \u00d7 I \u00d7 1.732</span></div>'+
+'<div class="fm"><span class="fn">kW to BTU/hr</span><span class="ff">1 kW = 3,412 BTU/hr</span></div>'+
+'<div class="fm"><span class="fn">HP to Watts</span><span class="ff">1 HP = 746 Watts</span></div>'+
+'</div>'+
+
+'<div class="fc"><h3>\ud83c\udf2c\ufe0f Airflow</h3>'+
+'<div class="fm"><span class="fn">CFM</span><span class="ff">CFM = Area (sq ft) \u00d7 Velocity (FPM)</span></div>'+
+'<div class="fm"><span class="fn">Duct Area (round)</span><span class="ff">A = \u03c0 \u00d7 r\u00b2 (in sq ft)</span></div><div class="fd">Convert radius to feet first. 12\u201d duct: r = 0.5 ft \u2192 A = 0.785 sq ft</div>'+
+'<div class="fm"><span class="fn">CFM per Ton</span><span class="ff">400 CFM per ton (rule of thumb)</span></div>'+
+'<div class="fm"><span class="fn">Sensible Heat Ratio</span><span class="ff">SHR = Sensible BTU \u00f7 Total BTU</span></div>'+
+'</div>'+
+
+'<div class="fc"><h3>\ud83d\udd04 Conversions</h3>'+
+'<div class="fm"><span class="fn">\u00b0F to \u00b0C</span><span class="ff">\u00b0C = (\u00b0F \u2212 32) \u00d7 5/9</span></div>'+
+'<div class="fm"><span class="fn">\u00b0C to \u00b0F</span><span class="ff">\u00b0F = (\u00b0C \u00d7 9/5) + 32</span></div>'+
+'<div class="fm"><span class="fn">PSIG to PSIA</span><span class="ff">PSIA = PSIG + 14.7</span></div>'+
+'<div class="fm"><span class="fn">PSIA to PSIG</span><span class="ff">PSIG = PSIA \u2212 14.7</span></div>'+
+'<div class="fm"><span class="fn">Water Weight</span><span class="ff">1 gallon = 8.33 lbs</span></div>'+
+'<div class="fm"><span class="fn">Water Volume</span><span class="ff">1 cu ft = 7.48 gallons = 62.4 lbs</span></div>'+
+'<div class="fm"><span class="fn">Perfect Vacuum</span><span class="ff">29.92 in.Hg = 0 psia</span></div>'+
+'</div>'+
+
+'<div class="fc"><h3>\ud83d\udca7 Steam Quick Values (at 0 PSIG)</h3>'+
+'<div class="fm"><span class="fn">Boiling Point</span><span class="ff">212\u00b0F</span></div>'+
+'<div class="fm"><span class="fn">Sensible Heat (hf)</span><span class="ff">180 BTU/lb</span></div>'+
+'<div class="fm"><span class="fn">Latent Heat (hfg)</span><span class="ff">970.4 BTU/lb</span></div>'+
+'<div class="fm"><span class="fn">Total Heat (hg)</span><span class="ff">1,150.4 BTU/lb</span></div>'+
+'</div>'+
+
+'</div>';
+}
+
+function rStart(el){
+el.innerHTML='<div class="start"><h1>\ud83d\udcca HVAC Math &amp; Formulas</h1><p class="sub">25 Scenario Questions with Step-by-Step Solutions</p>'+
+'<div class="tabs"><button class="tab" onclick="S.view=\'formulas\';render()">Formula Cheat Sheet</button><button class="tab active" onclick="S.view=\'quiz\';S.scr=\'start\';render()">Practice Questions</button></div>'+
+'<div class="stats"><div class="sb"><div class="v">25</div><div class="l">Problems</div></div><div class="sb"><div class="v">5</div><div class="l">Categories</div></div><div class="sb"><div class="v">\ud83d\udcdd</div><div class="l">Worked Solutions</div></div></div>'+
+'<div class="modes">'+
+'<div class="mb '+(S.mode==='practice'?'on':'')+'" onclick="setM(\'practice\')"><h3>\u2705 Practice</h3><p>Check each answer and see the full worked solution step-by-step.</p></div>'+
+'<div class="mb '+(S.mode==='exam'?'on':'')+'" onclick="setM(\'exam\')"><h3>\ud83d\udcdd Exam</h3><p>No feedback until submit.</p></div>'+
+'<div class="mb '+(S.mode==='shuffle'?'on':'')+'" onclick="setM(\'shuffle\')"><h3>\ud83d\udd00 Shuffle</h3><p>Random order with instant feedback.</p></div></div>'+
+'<button class="go" onclick="startQ()">Start \u2014 25 Problems</button></div>';
+}
+
+function rQuiz(el){
+var all=qs(),q=all[S.i],done=S.ans[q.n]!==undefined,checked=S.chk[q.n];
+var prog=Object.keys(S.ans).length;
+var grid='';if(S.sg){grid='<div class="gp"><div class="gr">'+all.map(function(qq,i){var c='gd';if(i===S.i)c+=' cur';if(S.ans[qq.n]!==undefined)c+=' ans';if(S.chk[qq.n]&&S.ans[qq.n]===qq.a)c+=' gc';if(S.chk[qq.n]&&S.ans[qq.n]!==undefined&&S.ans[qq.n]!==qq.a)c+=' gw';return'<div class="'+c+'" onclick="go('+i+')">'+qq.n+'</div>';}).join('')+'</div></div>';}
+var opts='<div class="opts">'+q.o.map(function(o,i){var c='op';if(S.ans[q.n]===i)c+=' sel';if(checked){c+=' dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a)c='op cor dis';}var exH='';if(checked&&q.ex&&q.ex[i]){var isC=i===q.a;exH='<div class="ex-box '+(isC?'ex-ok':'ex-no')+'">'+esc(q.ex[i])+'</div>';}return'<div class="'+c+'" onclick="sel('+q.n+','+i+')"><span class="ol">'+L[i]+'</span><div class="ot">'+esc(o)+exH+'</div></div>';}).join('')+'</div>';
+var workHTML='';if(checked&&q.work){workHTML='<div class="work-box">'+esc(q.work).replace(/\n/g,'<br>').replace(/(Formula|Given|Step \d+|Note|IMPORTANT|Key|Reverse|Also|Normal range|Remember):/g,'<span class="wl">$1:</span>').replace(/(= [\d,.]+[^<]*)/g,'<span class="wv">$1</span>')+'</div>';}
+var canChk=S.mode!=='exam'&&!checked&&done;
+var catBadge=q.cat?'<span class="qt" style="background:rgba(74,158,255,.1);color:var(--accent)">'+q.cat+'</span>':'';
+el.innerHTML='<div class="hdr"><span class="t">HVAC Math</span><span class="pi">'+prog+'/'+all.length+'</span><button class="gt" onclick="tg()">'+(S.sg?'Hide':'Show')+' Map</button></div><div class="pb"><div class="pf" style="width:'+(prog/all.length*100)+'%"></div></div>'+grid+'<div class="qc"><div class="qm"><span class="qn">Q'+q.n+'</span>'+catBadge+'<span class="qp">'+q.p+' pts</span></div><div class="qq">'+esc(q.q)+'</div>'+opts+workHTML+'</div><div class="nav"><button class="nb" onclick="go('+(S.i-1)+')"'+(S.i===0?' disabled':'')+'>Prev</button><div class="nc">'+(canChk?'<button class="nb ck" onclick="chk('+q.n+')">Check</button>':'')+(S.mode==='exam'&&!S.graded?'<button class="nb pr" onclick="submit()" style="background:#f59e0b;border-color:#f59e0b">Submit</button>':'')+'</div><button class="nb'+(S.i===all.length-1?' pr':'')+'" onclick="'+(S.i===all.length-1?(S.mode==='exam'?'submit()':'showR()'):'go('+(S.i+1)+')')+'">'+(S.i===all.length-1?(S.mode==='exam'?'Submit':'Results'):'Next')+'</button></div>';
+}
+
+function rResults(el){var all=qs(),cor=0,wrg=0;all.forEach(function(q){if(S.ans[q.n]===q.a)cor++;else if(S.ans[q.n]!==undefined)wrg++;});var skip=all.length-cor-wrg;var pct=all.length?Math.round(cor/all.length*100):0;var cc=pct>=70?'var(--ok)':pct>=50?'var(--warn)':'var(--no)';
+var rev=all.map(function(q){var os=q.o.map(function(o,i){var c2='op dis';if(i===q.a)c2+=' shw';if(S.ans[q.n]===i&&i!==q.a)c2+=' wrg';if(S.ans[q.n]===i&&i===q.a)c2='op cor dis';var exH='';if(q.ex&&q.ex[i]){var ic=i===q.a;exH='<div class="ex-box '+(ic?'ex-ok':'ex-no')+'">'+esc(q.ex[i])+'</div>';}return'<div class="'+c2+'"><span class="ol">'+L[i]+'</span><div class="ot">'+esc(o)+exH+'</div></div>';}).join('');var workH=q.work?'<div class="work-box">'+esc(q.work).replace(/\n/g,'<br>').replace(/(Formula|Given|Step \d+|Note|IMPORTANT|Key|Reverse|Also|Normal range|Remember):/g,'<span class="wl">$1:</span>').replace(/(= [\d,.]+[^<]*)/g,'<span class="wv">$1</span>')+'</div>':'';var catB=q.cat?'<span class="qt" style="background:rgba(74,158,255,.1);color:var(--accent)">'+q.cat+'</span>':'';return'<div class="qc"><div class="qm"><span class="qn">Q'+q.n+'</span>'+catB+'</div><div class="qq">'+esc(q.q)+'</div><div class="opts">'+os+'</div>'+workH+'</div>';}).join('');
+el.innerHTML='<div class="res"><h2>Results</h2><div class="sc" style="border-color:'+cc+'"><div class="pct" style="color:'+cc+'">'+pct+'%</div><div class="of">'+cor+'/'+all.length+'</div></div><div class="rg"><div class="rs"><div class="rv" style="color:var(--ok)">'+cor+'</div><div class="rl">Correct</div></div><div class="rs"><div class="rv" style="color:var(--no)">'+wrg+'</div><div class="rl">Wrong</div></div><div class="rs"><div class="rv" style="color:var(--text2)">'+skip+'</div><div class="rl">Skipped</div></div></div><div class="ra"><button class="nb" onclick="reset()">Start Over</button><button class="nb pr" onclick="retry()">Retry Wrong</button></div></div><div style="padding:0 4px">'+rev+'</div>';}
+
+function setM(m){S.mode=m;render();}
+function startQ(){S.view='quiz';S.scr='quiz';S.i=0;S.ans={};S.chk={};S.graded=false;S.shuf=S.mode==='shuffle'?shuffle(Q):null;render();scrollTo(0,0);}
+function sel(n,i){if(S.chk[n])return;S.ans[n]=i;render();}
+function chk(n){S.chk[n]=true;render();}
+function go(i){var a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
+function tg(){S.sg=!S.sg;render();}
+function submit(){qs().forEach(function(q){S.chk[q.n]=true;});S.graded=true;showR();}
+function showR(){S.scr='results';render();scrollTo(0,0);}
+function reset(){S.scr='start';S.mode='practice';S.shuf=null;render();scrollTo(0,0);}
+function retry(){var a=qs().filter(function(q){return S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a;});if(!a.length){alert('No wrong answers!');return;}S.shuf=a;S.ans={};S.chk={};S.scr='quiz';S.i=0;S.mode='practice';render();scrollTo(0,0);}
+document.addEventListener('keydown',function(e){if(S.scr!=='quiz')return;if(e.key==='ArrowRight'){e.preventDefault();go(S.i+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(S.i-1);}var a=qs(),q=a[S.i];if(q.o.length>0&&!S.chk[q.n]){var k='ABCDEFGHIJ'.indexOf(e.key.toUpperCase());if(k>=0&&k<q.o.length)sel(q.n,k);}});
+render();
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Tube Bending Layout Calculator</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--accent2:#2d7dd2;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:900px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.8em;font-weight:800;text-align:center;margin:40px 0 8px}
+.sub{text-align:center;color:var(--text2);margin-bottom:20px}
+.tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.tab{flex:1;min-width:100px;padding:10px;border-radius:var(--r);border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;font-family:inherit;font-size:.82em;font-weight:600;transition:.2s}
+.tab:hover{border-color:var(--accent)}.tab.active{border-color:var(--accent);background:rgba(74,158,255,.06);color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px}
+.card h2{font-size:1.1em;font-weight:700;color:var(--accent);margin-bottom:4px}
+.card .desc{font-size:.85em;color:var(--text2);margin-bottom:16px;line-height:1.5}
+.input-row{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:16px}
+.ig{flex:1;min-width:130px}
+.ig label{display:block;font-size:.75em;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.ig input,.ig select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:1em;font-family:monospace;outline:none}
+.ig input:focus,.ig select:focus{border-color:var(--accent)}
+.rb{background:rgba(74,158,255,.06);border:2px solid var(--accent);border-radius:var(--r);padding:16px;margin-top:16px}
+.rb h3{font-size:.82em;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.ri{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.9em}
+.ri:last-child{border:none}
+.rl{color:var(--text2)}.rv{font-family:monospace;font-weight:700;color:var(--ok)}
+.steps-box{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:16px}
+.step{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.9em}
+.step:last-child{border:none}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700;flex-shrink:0}
+.step-val{margin-left:auto;font-family:monospace;font-weight:700;color:var(--warn);min-width:70px;text-align:right}
+.formula-card{background:var(--card);border:2px solid var(--accent);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.formula-card h3{font-size:.9em;font-weight:700;color:var(--accent);margin-bottom:10px}
+.formula{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88em;flex-wrap:wrap;gap:4px}
+.formula:last-child{border:none}
+.fn{font-weight:700;color:var(--text)}.ff{font-family:monospace;color:var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:.88em;margin-top:8px}
+th{text-align:left;padding:8px 10px;background:var(--card2);color:var(--accent);font-size:.75em;text-transform:uppercase}
+td{padding:8px 10px;border-bottom:1px solid var(--border);font-family:monospace}
+.note{background:rgba(251,191,36,.06);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:var(--text2);margin-top:12px;line-height:1.5}
+.note strong{color:var(--warn)}
+.bender-vals{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.bv{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center}
+.bv h4{font-size:.85em;color:var(--accent);margin-bottom:8px}
+.bv .bvr{display:flex;justify-content:space-between;font-size:.85em;padding:3px 0}
+.bv .bvl{color:var(--text2)}.bv .bvv{font-family:monospace;font-weight:700;color:var(--ok)}
+.diagram-box{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-top:16px;text-align:center}
+@media(max-width:600px){.input-row{flex-direction:column}.app{padding:8px}h1{font-size:1.4em;margin-top:50px}.bender-vals{grid-template-columns:1fr}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app">
+<h1>&#x1f527; Tube Bending Layout</h1>
+<p class="sub">Calculator &amp; Reference — From Your Notebook to the Job</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('calc')">Calculator</button>
+  <button class="tab" onclick="showTab('procedure')">5-Step Procedure</button>
+  <button class="tab" onclick="showTab('offsets')">Offsets</button>
+  <button class="tab" onclick="showTab('benders')">Bender Charts</button>
+  <button class="tab" onclick="showTab('ref')">Reference</button>
+</div>
+
+<!-- ===== CALCULATOR TAB ===== -->
+<div id="tab-calc" class="card">
+  <h2>Bend Layout Calculator</h2>
+  <div class="desc">Enter your bender radius, desired bend angle, and measurement to end of pipe. Calculates Setback, Advance, Holdback, and Gain — then walks you through the 5-step mark sequence.</div>
+  
+  <div class="input-row">
+    <div class="ig"><label>Bender Radius (inches)</label>
+      <select id="c-radius" onchange="calcBend()">
+        <option value="0.625">5/8"</option>
+        <option value="0.75">3/4"</option>
+        <option value="0.9375" selected>15/16"</option>
+        <option value="1.0">1"</option>
+        <option value="1.125">1-1/8"</option>
+        <option value="1.5">1-1/2"</option>
+        <option value="2.0">2"</option>
+        <option value="0">Custom...</option>
+      </select>
+    </div>
+    <div class="ig" id="custom-r" style="display:none"><label>Custom Radius</label><input type="number" id="c-radius-custom" value="1" step="0.0625" oninput="calcBend()"></div>
+    <div class="ig"><label>Bend Angle (degrees)</label>
+      <select id="c-angle" onchange="calcBend()">
+        <option value="90" selected>90&deg;</option>
+        <option value="45">45&deg;</option>
+        <option value="60">60&deg;</option>
+        <option value="30">30&deg;</option>
+        <option value="0">Custom...</option>
+      </select>
+    </div>
+    <div class="ig" id="custom-a" style="display:none"><label>Custom Angle</label><input type="number" id="c-angle-custom" value="90" step="1" oninput="calcBend()"></div>
+  </div>
+  <div class="input-row">
+    <div class="ig"><label>EOP to Centerline &#8452; (inches)</label><input type="number" id="c-eop" value="12" step="0.0625" oninput="calcBend()"></div>
+  </div>
+  <div id="calc-result"></div>
+  <div id="calc-steps"></div>
+</div>
+
+<!-- ===== 5-STEP PROCEDURE TAB ===== -->
+<div id="tab-procedure" class="card" style="display:none">
+  <h2>5-Step Layout Procedure</h2>
+  <div class="desc">This is the sequence you follow when marking tube for a bend. Each step builds on the previous mark.</div>
+  
+  <div class="formula-card">
+    <h3>The Formulas</h3>
+    <div class="formula"><span class="fn">Setback (SB)</span><span class="ff">TAN(&frac12; bend angle) &times; Radius of Bender</span></div>
+    <div class="formula"><span class="fn">Advance (ADV)</span><span class="ff">Radius of Bender &times; 0.01745 &times; Bend Angle</span></div>
+    <div class="formula"><span class="fn">Holdback (HB)</span><span class="ff">2 &times; Setback</span></div>
+    <div class="formula"><span class="fn">Gain</span><span class="ff">2 &times; (Setback &minus; Advance)</span></div>
+    <div class="formula"><span class="fn">Gain (alternate)</span><span class="ff">(2 &times; Setback) &minus; ADV</span></div>
+  </div>
+
+  <div class="steps-box">
+    <div class="step"><span class="step-num">1</span><span>EOP &rarr; &#8452;<br><small style="color:var(--text2)">Measure from End Of Pipe to the Centerline mark. This is your first measurement from the print.</small></span></div>
+    <div class="step"><span class="step-num">2</span><span>&#8452; &rarr; SB<br><small style="color:var(--text2)">From the centerline mark, measure the Setback distance and make a mark. This is where the bend begins.</small></span></div>
+    <div class="step"><span class="step-num">3</span><span>SB &rarr; ADV<br><small style="color:var(--text2)">From the setback mark, measure the Advance distance. This is the arc length of the bend.</small></span></div>
+    <div class="step"><span class="step-num">4</span><span>ADV &rarr; HB<br><small style="color:var(--text2)">From the advance mark, measure the Holdback distance. This positions the bender correctly.</small></span></div>
+    <div class="step"><span class="step-num">5</span><span>HB &rarr; New &#8452; or EOP<br><small style="color:var(--text2)">From the holdback mark, measure to the next centerline or end of pipe for the next bend or cut.</small></span></div>
+  </div>
+
+  <div class="note"><strong>Remember:</strong> Holdback = 2 &times; Setback. For a 15/16" bender doing a 90&deg; bend, HB = SB + 9/16". For a 45&deg; bend, HB = SB + 3/16".</div>
+</div>
+
+<!-- ===== OFFSETS TAB ===== -->
+<div id="tab-offsets" class="card" style="display:none">
+  <h2>Offset Bends</h2>
+  <div class="desc">Two equal-angle bends to move the tube around an obstacle. Enter the offset depth and bend angle to calculate travel between marks.</div>
+  <div class="input-row">
+    <div class="ig"><label>Offset Depth (inches)</label><input type="number" id="off-depth" value="6" step="0.125" oninput="calcOffset()"></div>
+    <div class="ig"><label>Bend Angle</label><select id="off-angle" onchange="calcOffset()"><option value="30">30&deg;</option><option value="45" selected>45&deg;</option><option value="60">60&deg;</option></select></div>
+  </div>
+  <div id="off-result"></div>
+  
+  <div class="formula-card" style="margin-top:16px">
+    <h3>Offset Multipliers</h3>
+    <table><tr><th>Angle</th><th>Multiplier</th><th>Shrink/inch</th></tr>
+    <tr><td>30&deg;</td><td>2.000</td><td>1/4"</td></tr>
+    <tr><td>45&deg;</td><td>1.414</td><td>3/8"</td></tr>
+    <tr><td>60&deg;</td><td>1.155</td><td>1/2"</td></tr></table>
+  </div>
+  <div class="note"><strong>Formula:</strong> Travel = Offset Depth &times; Multiplier. Shrink = Depth &times; Shrink Constant (add to total tube length).</div>
+</div>
+
+<!-- ===== BENDER CHARTS TAB ===== -->
+<div id="tab-benders" class="card" style="display:none">
+  <h2>Bender Quick-Reference Charts</h2>
+  <div class="desc">Pre-calculated values for common bender sizes. These are the numbers you keep in your notebook.</div>
+  <div id="bender-charts"></div>
+</div>
+
+<!-- ===== REFERENCE TAB ===== -->
+<div id="tab-ref" class="card" style="display:none">
+  <h2>Reference Tables</h2>
+  
+  <div class="formula-card">
+    <h3>Fraction to Decimal</h3>
+    <table><tr><th>Fraction</th><th>Decimal</th><th>Fraction</th><th>Decimal</th></tr>
+    <tr><td>1/16"</td><td>0.0625</td><td>9/16"</td><td>0.5625</td></tr>
+    <tr><td>1/8"</td><td>0.125</td><td>5/8"</td><td>0.625</td></tr>
+    <tr><td>3/16"</td><td>0.1875</td><td>11/16"</td><td>0.6875</td></tr>
+    <tr><td>1/4"</td><td>0.25</td><td>3/4"</td><td>0.75</td></tr>
+    <tr><td>5/16"</td><td>0.3125</td><td>13/16"</td><td>0.8125</td></tr>
+    <tr><td>3/8"</td><td>0.375</td><td>7/8"</td><td>0.875</td></tr>
+    <tr><td>7/16"</td><td>0.4375</td><td>15/16"</td><td>0.9375</td></tr>
+    <tr><td>1/2"</td><td>0.5</td><td>1"</td><td>1.0</td></tr></table>
+  </div>
+
+  <div class="formula-card">
+    <h3>Trig Quick Reference</h3>
+    <table><tr><th>Angle</th><th>TAN(½ angle)</th><th>&times; 0.01745</th></tr>
+    <tr><td>30&deg;</td><td>0.2679</td><td>0.5236</td></tr>
+    <tr><td>45&deg;</td><td>0.4142</td><td>0.7854</td></tr>
+    <tr><td>60&deg;</td><td>0.5774</td><td>1.0472</td></tr>
+    <tr><td>90&deg;</td><td>1.0000</td><td>1.5708</td></tr></table>
+  </div>
+
+  <div class="formula-card">
+    <h3>Saddle Bends (3-Bend)</h3>
+    <table><tr><th>Center</th><th>Outers</th><th>Shrink/inch</th></tr>
+    <tr><td>45&deg;</td><td>22.5&deg; each</td><td>3/16" per inch depth</td></tr>
+    <tr><td>60&deg;</td><td>30&deg; each</td><td>1/4" per inch depth</td></tr></table>
+    <div class="note" style="margin-top:8px"><strong>Spread:</strong> Mark center of saddle. Distance from center to each outer mark = (Travel / 2) + (Obstruction width / 2).</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Rolling Offset</h3>
+    <div class="formula"><span class="fn">True Offset</span><span class="ff">&radic;(rise&sup2; + run&sup2;)</span></div>
+    <div class="formula"><span class="fn">Travel</span><span class="ff">True Offset &times; Multiplier</span></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return 'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+function toFrac(d) {
+  if (d===0) return '0"';
+  var neg = d < 0; if (neg) d = -d;
+  var whole = Math.floor(d); var frac = d - whole;
+  var best = ''; var bestDiff = 1;
+  var denoms = [1,2,4,8,16];
+  for (var i=0;i<denoms.length;i++) {
+    var num = Math.round(frac*denoms[i]);
+    if (num === denoms[i]) { whole++; best=''; break; }
+    var diff = Math.abs(frac - num/denoms[i]);
+    if (diff < bestDiff) { bestDiff=diff; best = num>0 ? num+'/'+denoms[i] : ''; }
+  }
+  var result = '';
+  if (whole>0 && best) result = whole+' '+best+'"';
+  else if (whole>0) result = whole+'"';
+  else if (best) result = best+'"';
+  else result = d.toFixed(3)+'"';
+  return neg ? '-'+result : result;
+}
+
+function showTab(id) {
+  ['calc','procedure','offsets','benders','ref'].forEach(function(t){
+    document.getElementById('tab-'+t).style.display = t===id ? '' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach(function(t,i){
+    t.classList.toggle('active', ['calc','procedure','offsets','benders','ref'][i]===id);
+  });
+}
+
+function getRadius() {
+  var sel = document.getElementById('c-radius');
+  if (sel.value === '0') {
+    document.getElementById('custom-r').style.display = '';
+    return parseFloat(document.getElementById('c-radius-custom').value) || 1;
+  }
+  document.getElementById('custom-r').style.display = 'none';
+  return parseFloat(sel.value);
+}
+
+function getAngle() {
+  var sel = document.getElementById('c-angle');
+  if (sel.value === '0') {
+    document.getElementById('custom-a').style.display = '';
+    return parseFloat(document.getElementById('c-angle-custom').value) || 90;
+  }
+  document.getElementById('custom-a').style.display = 'none';
+  return parseFloat(sel.value);
+}
+
+function bendCalcs(radius, angleDeg) {
+  var halfRad = (angleDeg / 2) * Math.PI / 180;
+  var sb = Math.tan(halfRad) * radius;
+  var adv = radius * 0.01745 * angleDeg;
+  var hb = 2 * sb;
+  var gain = (2 * sb) - adv;
+  return { sb: sb, adv: adv, hb: hb, gain: gain };
+}
+
+function calcBend() {
+  var radius = getRadius();
+  var angle = getAngle();
+  var eop = parseFloat(document.getElementById('c-eop').value) || 0;
+  var b = bendCalcs(radius, angle);
+
+  // Result box
+  document.getElementById('calc-result').innerHTML =
+    '<div class="rb"><h3>Calculated Values ('+angle+'&deg; bend, '+toFrac(radius)+' radius)</h3>' +
+    '<div class="ri"><span class="rl">Setback (SB)</span><span class="rv">' + b.sb.toFixed(4) + '" &asymp; ' + toFrac(b.sb) + '</span></div>' +
+    '<div class="ri"><span class="rl">Advance (ADV)</span><span class="rv">' + b.adv.toFixed(4) + '" &asymp; ' + toFrac(b.adv) + '</span></div>' +
+    '<div class="ri"><span class="rl">Holdback (HB = 2&times;SB)</span><span class="rv">' + b.hb.toFixed(4) + '" &asymp; ' + toFrac(b.hb) + '</span></div>' +
+    '<div class="ri"><span class="rl">Gain (2&times;SB &minus; ADV)</span><span class="rv">' + b.gain.toFixed(4) + '" &asymp; ' + toFrac(b.gain) + '</span></div>' +
+    '</div>';
+
+  // 5-step walkthrough with actual values
+  var cl = eop; // centerline position
+  var sbMark = cl + b.sb; // setback from EOP
+  var advMark = sbMark + b.adv;
+  var hbMark = advMark + b.hb;
+  
+  document.getElementById('calc-steps').innerHTML =
+    '<div class="steps-box" style="margin-top:16px"><h3 style="font-size:.85em;color:var(--accent);margin-bottom:12px">YOUR LAYOUT MARKS (from EOP)</h3>' +
+    '<div class="step"><span class="step-num">1</span><span>EOP &rarr; &#8452; (Centerline)</span><span class="step-val">' + toFrac(eop) + '</span></div>' +
+    '<div class="step"><span class="step-num">2</span><span>&#8452; &rarr; SB (subtract SB from &#8452;)</span><span class="step-val">' + toFrac(eop - b.sb) + ' from EOP</span></div>' +
+    '<div class="step"><span class="step-num">3</span><span>SB mark + ADV</span><span class="step-val">+' + toFrac(b.adv) + '</span></div>' +
+    '<div class="step"><span class="step-num">4</span><span>ADV mark + HB</span><span class="step-val">+' + toFrac(b.hb) + '</span></div>' +
+    '<div class="step"><span class="step-num">5</span><span>HB &rarr; New &#8452; or cut</span><span class="step-val">Measure next</span></div>' +
+    '</div>';
+}
+
+function calcOffset() {
+  var depth = parseFloat(document.getElementById('off-depth').value) || 0;
+  var angle = document.getElementById('off-angle').value;
+  var mult = {'30':2.0,'45':1.414,'60':1.155}[angle] || 1.414;
+  var shrinkPerInch = {'30':0.25,'45':0.375,'60':0.5}[angle] || 0.375;
+  var travel = depth * mult;
+  var shrink = depth * shrinkPerInch;
+  
+  document.getElementById('off-result').innerHTML =
+    '<div class="rb"><h3>Offset Results</h3>' +
+    '<div class="ri"><span class="rl">Travel (mark to mark)</span><span class="rv">' + travel.toFixed(3) + '" &asymp; ' + toFrac(travel) + '</span></div>' +
+    '<div class="ri"><span class="rl">Multiplier (' + angle + '&deg;)</span><span class="rv">' + mult + '</span></div>' +
+    '<div class="ri"><span class="rl">Shrink (add to total length)</span><span class="rv">' + shrink.toFixed(3) + '" &asymp; ' + toFrac(shrink) + '</span></div>' +
+    '</div>';
+}
+
+function buildBenderCharts() {
+  var benders = [
+    {name:'5/8" Bender', r:0.625},
+    {name:'3/4" Bender', r:0.75},
+    {name:'15/16" Bender', r:0.9375},
+    {name:'1-1/8" Bender', r:1.125},
+    {name:'1-1/2" Bender', r:1.5}
+  ];
+  var angles = [90, 45, 60, 30];
+  
+  var html = '';
+  benders.forEach(function(bdr) {
+    html += '<div class="formula-card" style="margin-bottom:16px"><h3>' + bdr.name + ' (R = ' + bdr.r + '")</h3>';
+    html += '<div class="bender-vals">';
+    angles.forEach(function(a) {
+      var b = bendCalcs(bdr.r, a);
+      html += '<div class="bv"><h4>' + a + '&deg; Bend</h4>' +
+        '<div class="bvr"><span class="bvl">SB:</span><span class="bvv">' + toFrac(b.sb) + '</span></div>' +
+        '<div class="bvr"><span class="bvl">ADV:</span><span class="bvv">' + toFrac(b.adv) + '</span></div>' +
+        '<div class="bvr"><span class="bvl">HB:</span><span class="bvv">' + toFrac(b.hb) + '</span></div>' +
+        '<div class="bvr"><span class="bvl">Gain:</span><span class="bvv">' + toFrac(b.gain) + '</span></div></div>';
+    });
+    html += '</div></div>';
+  });
+  document.getElementById('bender-charts').innerHTML = html;
+}
+
+// Initialize
+calcBend();
+calcOffset();
+buildBenderCharts();
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>
