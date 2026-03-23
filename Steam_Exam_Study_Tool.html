@@ -649,6 +649,80 @@ function initEnhancements(toolId) {
     try { localStorage.removeItem(SESSION_KEY); } catch(e) {}
   }
 
+  
+  // === CLOUD SYNC ===
+  function getScriptUrl() {
+    try { return localStorage.getItem('hvac_script_url') || ''; } catch(e) { return ''; }
+  }
+  
+  function getDisplayName() {
+    try {
+      var users = JSON.parse(localStorage.getItem('hvac_users') || '{}');
+      var user = window._hvacUser || 'guest';
+      return users[user] ? users[user].display : user;
+    } catch(e) { return window._hvacUser || 'guest'; }
+  }
+  
+  function cloudSave() {
+    var url = getScriptUrl();
+    var user = getDisplayName();
+    if (!url || user === 'guest' || user === 'Guest') return;
+    
+    var stats = loadStats();
+    var sessionData = null;
+    try {
+      var raw = localStorage.getItem(SESSION_KEY);
+      if (raw) sessionData = JSON.parse(raw);
+    } catch(e) {}
+    
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'sync_save',
+        username: user,
+        tool: toolId,
+        stats: stats,
+        session: sessionData
+      })
+    }).catch(function(){});
+  }
+  
+  function cloudLoad(callback) {
+    var url = getScriptUrl();
+    var user = getDisplayName();
+    if (!url || user === 'guest' || user === 'Guest') { if (callback) callback(); return; }
+    
+    fetch(url + '?action=sync_load&username=' + encodeURIComponent(user))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.progress && data.progress[toolId]) {
+          var cloud = data.progress[toolId];
+          
+          // Merge cloud stats with local (keep highest counts)
+          if (cloud.stats) {
+            var local = loadStats();
+            for (var qn in cloud.stats) {
+              if (!local[qn]) {
+                local[qn] = cloud.stats[qn];
+              } else {
+                local[qn].right = Math.max(local[qn].right || 0, cloud.stats[qn].right || 0);
+                local[qn].wrong = Math.max(local[qn].wrong || 0, cloud.stats[qn].wrong || 0);
+                local[qn].last = Math.max(local[qn].last || 0, cloud.stats[qn].last || 0);
+              }
+            }
+            saveStats(local);
+          }
+          
+          // Load cloud session if no local session exists
+          if (cloud.session && !localStorage.getItem(SESSION_KEY)) {
+            localStorage.setItem(SESSION_KEY, JSON.stringify(cloud.session));
+          }
+        }
+        if (callback) callback();
+      })
+      .catch(function() { if (callback) callback(); });
+  }
+
   function getWeakQuestions() {
     const stats = loadStats();
     return Q.filter(q => {
@@ -915,6 +989,7 @@ function initEnhancements(toolId) {
     if (typeof showR === 'function') showR();
     stopTimer();
     clearSavedSession();
+    cloudSave();
     // Post score to cloud leaderboard
     try {
       var scriptUrl = localStorage.getItem('hvac_script_url');
@@ -1064,6 +1139,8 @@ function initEnhancements(toolId) {
     if (confirm('Clear all study history for this tool?')) {
       localStorage.removeItem(STORE_KEY);
       render();
+cloudLoad(function(){ render(); });
+
     }
   };
 }
