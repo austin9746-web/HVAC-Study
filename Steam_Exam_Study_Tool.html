@@ -680,10 +680,18 @@ function initEnhancements(toolId) {
     const div = document.createElement('div');
     div.id = 'ref-panel';
     div.className = 'ref-overlay';
-    div.innerHTML = '<button class="fab" onclick="toggleCalc()" title="Calculator">CALC</button><button class="fab" onclick="toggleRef()" title="Reference">REF</button>';
+    div.innerHTML = '<button class="ref-close" onclick="toggleRef()">X</button>' +
+      '<div class="ref-tabs">' +
+      '<button class="ref-tab active" onclick="showRefTab(\'pt\',this)">PT Charts</button>' +
+      '<button class="ref-tab" onclick="showRefTab(\'steam\',this)">Steam Tables</button>' +
+      '<button class="ref-tab" onclick="showRefTab(\'formulas\',this)">Formulas</button>' +
+      '</div>' +
+      '<div id="ref-pt" class="ref-content">' + getPTContent() + '</div>' +
+      '<div id="ref-steam" class="ref-content" style="display:none">' + getSteamContent() + '</div>' +
+      '<div id="ref-formulas" class="ref-content" style="display:none">' + getFormulaContent() + '</div>';
     document.body.appendChild(div);
   }
-  
+
   window.toggleRef = function() {
     createRefPanel();
     document.getElementById('ref-panel').classList.toggle('open');
@@ -694,6 +702,7 @@ function initEnhancements(toolId) {
   
   window.showRefTab = function(tab, btn) {
     document.getElementById('ref-pt').style.display = tab === 'pt' ? '' : 'none';
+    document.getElementById('ref-steam').style.display = tab === 'steam' ? '' : 'none';
     document.getElementById('ref-formulas').style.display = tab === 'formulas' ? '' : 'none';
     document.querySelectorAll('.ref-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
@@ -735,6 +744,22 @@ function initEnhancements(toolId) {
       '<div class="formula"><div class="fname">BTU released = (h<sub>steam</sub> \u2212 h<sub>water</sub>) \u00d7 lbs</div><div class="fdesc">Use steam tables for enthalpy values at operating pressure</div></div>' +
       '<div class="formula"><div class="fname">Vacuum: 1" Hg \u2248 1 ft water lift</div><div class="fdesc">28" Hg vacuum \u2248 28 ft lift capacity</div></div>';
   }
+
+  function getSteamContent() {
+    var rows1 = [[0,212,180,970.4,1150.4],[1,215.3,183.4,968.8,1152.2],[2,218.5,186.8,967.1,1153.9],[3,221.5,190,965.6,1155.6],[5,227.1,196.2,962.5,1158.7],[8,234.8,204.4,958.3,1162.7],[10,239.4,209.5,955.5,1165],[15,249.8,219.4,950.7,1170.1],[20,259,228.6,946,1174.6],[25,266.8,236.5,941.6,1178.1],[30,274.1,243.6,937.5,1181.1],[40,286.7,256.3,929.6,1185.9],[50,297.7,267.5,922.2,1189.7],[60,307.3,277.5,915.2,1192.7],[75,320,290.4,906,1196.4],[80,324.1,294,903.2,1197.2],[100,337.9,308.8,893.3,1202.1],[125,352.9,324.7,882.2,1206.9],[150,365.9,338.6,872.1,1210.7],[175,377.5,351.1,862.5,1213.6],[200,387.9,361.9,853.7,1215.6]];
+    var rows2 = [[100,0.95,-13.75,68,1037,1105],[150,3.72,-10.98,117.9,1008.2,1126.1],[170,5.99,-8.71,137.9,996.3,1134.2],[180,7.51,-7.19,148,990.2,1138.2],[200,11.53,-3.17,168,977.9,1145.9],[212,14.7,0,180,970.4,1150.4],[220,17.19,2.49,188.2,965.3,1153.5],[240,24.97,10.27,208.4,952.1,1160.5],[250,29.82,15.12,218.5,945.5,1164],[260,35.43,20.73,228.6,938.7,1167.3],[280,49.2,34.5,249.1,924,1173.1],[300,67.01,52.31,269.6,909,1178.6],[320,89.66,74.96,290.3,893.7,1184],[340,118.01,103.31,311.1,877.8,1188.9],[360,153.04,138.34,331.9,861.4,1193.3],[380,195.77,181.07,353.1,844,1197.1],[400,247.31,232.61,374.9,825.9,1200.8]];
+    var t1 = rows1.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td></tr>';}).join('');
+    var t2 = rows2.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td><td>'+r[5]+'</td></tr>';}).join('');
+    return '<h3>Saturated Steam \u2014 By Pressure</h3>' +
+      '<table><tr><th>PSIG</th><th>Temp \u00b0F</th><th>hf (BTU/lb)</th><th>hfg (BTU/lb)</th><th>hg (BTU/lb)</th></tr>' + t1 + '</table>' +
+      '<h3>Saturated Steam \u2014 By Temperature</h3>' +
+      '<table><tr><th>Temp \u00b0F</th><th>PSIA</th><th>PSIG</th><th>hf (BTU/lb)</th><th>hfg (BTU/lb)</th><th>hg (BTU/lb)</th></tr>' + t2 + '</table>' +
+      '<h3>Key Values</h3>' +
+      '<div class="formula"><div class="fname">At 0 PSIG (Atmospheric)</div><div class="fdesc">Boiling: 212\u00b0F \u2022 hf: 180 \u2022 hfg: 970.4 \u2022 hg: 1,150.4 BTU/lb</div></div>' +
+      '<div class="formula"><div class="fname">BTU from Steam Tables</div><div class="fdesc">Heat released = (hg \u2212 hf) \u00d7 lbs of steam</div><div class="fdesc">Latent only = hfg \u00d7 lbs</div></div>' +
+      '<div class="formula"><div class="fname">Quick References</div><div class="fdesc">1 BHP = 33,475 BTU/hr \u2022 1 sq ft EDR = 240 BTU/hr (steam)</div><div class="fdesc">1 gal water = 8.33 lbs \u2022 1 lb water = 1 pint</div></div>';
+  }
+
 
   // === CALCULATOR ===
   let calcDisplay = '0';
