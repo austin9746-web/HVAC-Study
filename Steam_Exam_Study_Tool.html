@@ -568,7 +568,7 @@ function initEnhancements(toolId) {
   document.head.appendChild(style);
 
   // === PERSISTENT STORAGE ===
-  const STORE_KEY = 'hvac_stats_' + toolId;
+  const STORE_KEY = 'hvac_stats_' + toolId + '_' + (window._hvacUser||'guest');
   
   function loadStats() {
     try {
@@ -589,6 +589,54 @@ function initEnhancements(toolId) {
     saveStats(stats);
   }
   
+  
+  // === SESSION STATE (pick up where you left off) ===
+  const SESSION_KEY = 'hvac_session_' + toolId + '_' + (window._hvacUser||'guest');
+  
+  function saveSession() {
+    try {
+      if (S.scr !== 'quiz') { localStorage.removeItem(SESSION_KEY); return; }
+      var state = { i: S.i, ans: S.ans, txt: S.txt, chk: S.chk, mode: S.mode, graded: S.graded, scr: S.scr };
+      if (S.activeQ) state.activeQns = S.activeQ.map(function(q){return q.n;});
+      if (S.shuf) state.shufQns = S.shuf.map(function(q){return q.n;});
+      if (typeof S.cats !== 'undefined') state.cats = S.cats;
+      if (typeof S.qtypes !== 'undefined') state.qtypes = S.qtypes;
+      localStorage.setItem(SESSION_KEY, JSON.stringify(state));
+    } catch(e) {}
+  }
+  
+  function loadSession() {
+    try {
+      var raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return false;
+      var state = JSON.parse(raw);
+      if (!state || state.scr !== 'quiz') return false;
+      S.i = state.i || 0;
+      S.ans = state.ans || {};
+      S.txt = state.txt || {};
+      S.chk = state.chk || {};
+      S.mode = state.mode || 'practice';
+      S.graded = state.graded || false;
+      S.scr = 'quiz';
+      if (state.cats && typeof S.cats !== 'undefined') S.cats = state.cats;
+      if (state.qtypes && typeof S.qtypes !== 'undefined') S.qtypes = state.qtypes;
+      // Restore filtered question set
+      if (state.activeQns) {
+        var qMap = {}; Q.forEach(function(q){qMap[q.n]=q;});
+        S.activeQ = state.activeQns.map(function(n){return qMap[n];}).filter(Boolean);
+      }
+      if (state.shufQns) {
+        var qMap2 = {}; Q.forEach(function(q){qMap2[q.n]=q;});
+        S.shuf = state.shufQns.map(function(n){return qMap2[n];}).filter(Boolean);
+      }
+      return true;
+    } catch(e) { return false; }
+  }
+  
+  function clearSavedSession() {
+    try { localStorage.removeItem(SESSION_KEY); } catch(e) {}
+  }
+
   function getWeakQuestions() {
     const stats = loadStats();
     return Q.filter(q => {
@@ -854,6 +902,7 @@ function initEnhancements(toolId) {
     S.graded = true;
     if (typeof showR === 'function') showR();
     stopTimer();
+    clearSavedSession();
     // Post score to cloud leaderboard
     try {
       var scriptUrl = localStorage.getItem('hvac_script_url');
@@ -931,6 +980,26 @@ function initEnhancements(toolId) {
     
     // Add stats + weak spots + timer toggle to start screen
     if (S.scr === 'start') {
+        // Check for saved session
+        if (!document.getElementById('resume-offered')) {
+          try {
+            var savedRaw = localStorage.getItem(SESSION_KEY);
+            if (savedRaw) {
+              var saved = JSON.parse(savedRaw);
+              if (saved && saved.scr === 'quiz') {
+                var answered = Object.keys(saved.ans || {}).length + Object.keys(saved.txt || {}).filter(function(k){return saved.txt[k];}).length;
+                var resumeTarget = document.querySelector('.start');
+                if (resumeTarget) {
+                  var resumeHTML = '<div id="resume-offered" style="background:rgba(74,158,255,.08);border:2px solid var(--accent);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center">' +
+                    '<div style="font-size:.9em;color:var(--text);margin-bottom:8px">You have an unfinished ' + saved.mode + ' session (' + answered + ' answered)</div>' +
+                    '<button class="go" onclick="if(loadSession()){render();scrollTo(0,0);}" style="margin-right:8px">Resume</button>' +
+                    '<button class="nb" onclick="clearSavedSession();this.parentElement.remove();">Start Fresh</button></div>';
+                  resumeTarget.insertAdjacentHTML('afterbegin', resumeHTML);
+                }
+              }
+            }
+          } catch(e) {}
+        }
       const stats = getOverallStats();
       const weak = getWeakQuestions();
       const startDiv = document.querySelector('.start');
