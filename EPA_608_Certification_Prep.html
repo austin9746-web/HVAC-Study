@@ -211,6 +211,11 @@ body.light .gd{background:#f0f1f4}
 .shuffle-toggle.on .st-check{background:var(--accent);border-color:var(--accent);color:#fff}
 .st-label{font-size:.88em;font-weight:600}
 .st-desc{font-size:.75em;color:var(--text2)}
+
+.nav-tools{display:flex;gap:4px;align-items:center}
+.nav-tool{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text2);cursor:pointer;font-family:inherit;font-size:.7em;font-weight:700;letter-spacing:.03em;transition:.2s}
+.nav-tool:hover{border-color:var(--accent);color:var(--accent);background:rgba(74,158,255,.06)}
+.nav-tool:active{background:var(--accent);color:#fff}
 </style></head><body>
 <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
 <a href="index.html" class="back-btn">&larr; Study Hub</a>
@@ -350,7 +355,7 @@ let exH='';if(checked&&q.ex&&q.ex[i]){const isC=i===q.a;exH=`<div class="ex-box 
 return`<div class="${c}" onclick="sel(${q.n},${i})"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('')}</div>`;
 const canChk=S.mode!=='exam'&&!checked&&done;
 el.innerHTML=`<div class="hdr"><span class="t">EPA 608 Prep</span><span class="pi">${prog}/${all.length}</span>
-<button class="gt" onclick="tg()">${S.sg?'Hide':'Show'} Map</button></div>
+<button class="gt" onclick="tg()">${S.sg?'Hide':'Show'} Map</button><div class="nav-tools"><button class="nav-tool" onclick="toggleCalc()">CALC</button><button class="nav-tool" onclick="toggleRef()">REF</button></div></div>
 <div class="pb"><div class="pf" style="width:${(prog/all.length)*100}%"></div></div>${grid}
 <div class="qc"><div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]||q.t}</span>${catBadge(q)}<span class="qp">${q.p} pt</span></div>
 <div class="qq">${esc(q.q)}</div>${opts}</div>

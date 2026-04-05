@@ -1,0 +1,14 @@
+{
+  "name": "HVAC Study Hub",
+  "short_name": "HVAC Study",
+  "description": "Interactive HVAC/R exam prep with 1,500+ questions, calculators, and field reference tools",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0c0e12",
+  "theme_color": "#0c0e12",
+  "orientation": "any",
+  "icons": [
+    {"src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230c0e12'/><text x='256' y='340' text-anchor='middle' font-family='system-ui' font-size='280' font-weight='900' fill='%234a9eff'>H</text><circle cx='380' cy='140' r='60' fill='none' stroke='%2334d399' stroke-width='12'/><line x1='380' y1='140' x2='410' y2='110' stroke='%2334d399' stroke-width='12' stroke-linecap='round'/></svg>", "sizes": "512x512", "type": "image/svg+xml"},
+    {"src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230c0e12'/><text x='96' y='130' text-anchor='middle' font-family='system-ui' font-size='110' font-weight='900' fill='%234a9eff'>H</text><circle cx='145' cy='52' r='22' fill='none' stroke='%2334d399' stroke-width='5'/><line x1='145' y1='52' x2='158' y2='40' stroke='%2334d399' stroke-width='5' stroke-linecap='round'/></svg>", "sizes": "192x192", "type": "image/svg+xml"}
+  ]
+}

@@ -203,6 +203,11 @@ body.light .gd{background:#f0f1f4}
 .shuffle-toggle.on .st-check{background:var(--accent);border-color:var(--accent);color:#fff}
 .st-label{font-size:.88em;font-weight:600}
 .st-desc{font-size:.75em;color:var(--text2)}
+
+.nav-tools{display:flex;gap:4px;align-items:center}
+.nav-tool{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text2);cursor:pointer;font-family:inherit;font-size:.7em;font-weight:700;letter-spacing:.03em;transition:.2s}
+.nav-tool:hover{border-color:var(--accent);color:var(--accent);background:rgba(74,158,255,.06)}
+.nav-tool:active{background:var(--accent);color:#fff}
 </style>
 </head>
 <body>
@@ -479,6 +484,7 @@ el.innerHTML=`<div class="hdr">
 <span class="t">💧 Hydronics HVAC Final</span>
 <span class="pi">${prog}/${all.length} answered</span>
 <button class="gt" onclick="tg()">${S.sg?'Hide':'Show'} Map</button>
+<div class="nav-tools"><button class="nav-tool" onclick="toggleCalc()">CALC</button><button class="nav-tool" onclick="toggleRef()">REF</button></div>
 </div>
 ${scoreBarHTML()}
 <div class="pb"><div class="pf" style="width:${(prog/all.length)*100}%"></div></div>
@@ -752,7 +758,7 @@ const ENHANCE_CSS = `
 
 
 /* FAB buttons */
-.fab-container{position:fixed;top:60px;right:12px;display:flex;flex-direction:column;gap:8px;z-index:998}
+.fab-container{display:none!important;position:fixed;top:60px;right:12px;display:flex;flex-direction:column;gap:8px;z-index:998}
 .fab{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2em;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:.2s}
 .fab:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.1)}
 
@@ -778,7 +784,7 @@ const ENHANCE_CSS = `
 .toggle-switch.on::after{left:23px}
 .timer-input{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:monospace;width:50px;text-align:center;font-size:.9em}
 
-@media(max-width:600px){.ref-overlay{width:100%;right:-100%}.fab-container{top:auto;bottom:70px;right:8px;flex-direction:row;gap:6px}.fab{width:40px;height:40px;font-size:.75em}.calc-overlay{width:240px;right:8px;top:auto;bottom:120px}}
+@media(max-width:600px){.ref-overlay{width:100%;right:-100%}.fab-container{display:none!important;top:auto;bottom:70px;right:8px;flex-direction:row;gap:6px}.fab{width:40px;height:40px;font-size:.75em}.calc-overlay{width:240px;right:8px;top:auto;bottom:120px}}
 `;
 
 /* --- ENHANCEMENT JS --- */
@@ -1246,7 +1252,7 @@ function initEnhancements(toolId) {
     const div = document.createElement('div');
     div.id = 'fab-btns';
     div.className = 'fab-container';
-    div.innerHTML = '<button class="fab" onclick="toggleCalc()" title="Calculator">CALC</button><button class="fab" onclick="toggleRef()" title="Reference">REF</button>';
+    // FABs moved to nav bar
     document.body.appendChild(div);
   }
 
