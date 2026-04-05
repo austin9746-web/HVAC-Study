@@ -1443,13 +1443,13 @@ function initEnhancements(toolId) {
     if (confirm('Clear all study history for this tool?')) {
       localStorage.removeItem(STORE_KEY);
       render();
-cloudLoad(function(){ render(); });
-
     }
   };
 }
 
 initEnhancements("hydronics");
+render();
+cloudLoad(function(){ render(); });
 window.addEventListener('beforeunload',function(){if(S.scr==='quiz')saveSession();});
 document.addEventListener('visibilitychange',function(){if(document.hidden&&S.scr==='quiz')saveSession();});
 </script>
