@@ -203,6 +203,14 @@ body.light .gd{background:#f0f1f4}
 .calc-btn.sci{font-size:.72em;color:var(--warn);padding:10px 2px}
 .calc-btn.sci:hover{background:rgba(251,191,36,.1)}
 @media(max-width:600px){.calc-overlay{top:auto;bottom:70px;right:4px;left:4px;width:auto}.calc-overlay.sci{width:auto}}
+
+.shuffle-toggle{display:flex;align-items:center;gap:10px;justify-content:center;margin:14px 0;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:.2s;user-select:none}
+.shuffle-toggle:hover{border-color:var(--accent)}
+.shuffle-toggle.on{border-color:var(--accent);background:rgba(74,158,255,.06)}
+.st-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.8em;transition:.2s;flex-shrink:0}
+.shuffle-toggle.on .st-check{background:var(--accent);border-color:var(--accent);color:#fff}
+.st-label{font-size:.88em;font-weight:600}
+.st-desc{font-size:.75em;color:var(--text2)}
 </style></head><body>
 <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
 <a href="index.html" class="back-btn">&larr; Study Hub</a>
@@ -296,7 +304,7 @@ const CATS=['Core','Type I','Type II','Type III'];
 const CAT_ICONS={'Core':'\u2699\ufe0f','Type I':'\ud83d\udce6','Type II':'\u2744\ufe0f','Type III':'\ud83c\udf21\ufe0f'};
 const L='ABCDEFGHIJ',TL={mc:'Multiple Choice',tf:'True / False'};
 const TP=Q.reduce((s,q)=>s+q.p,0);
-let S={scr:'start',mode:'practice',i:0,ans:{},txt:{},chk:{},sg:false,graded:false,flt:'all',shuf:null,cats:{Core:true,'Type I':true,'Type II':true,'Type III':true}};
+let S={scr:'start',mode:'practice',i:0,ans:{},txt:{},chk:{},sg:false,graded:false,flt:'all',shuf:null,randomize:false,cats:{Core:true,'Type I':true,'Type II':true,'Type III':true}};
 
 function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 function filteredQ(){return Q.filter(function(q){return S.cats[q.cat];});}
@@ -323,6 +331,7 @@ el.innerHTML='<div class="start">'+
 '<div class="mb '+(S.mode==='practice'?'on':'')+'" onclick="setM(\'practice\')"><h3>\u2705 Practice</h3><p>Check answers as you go with explanations.</p></div>'+
 '<div class="mb '+(S.mode==='exam'?'on':'')+'" onclick="setM(\'exam\')"><h3>\ud83d\udcdd Exam Simulation</h3><p>No feedback until submit. 70% to pass.</p></div>'+
 '<div class="mb '+(S.mode==='shuffle'?'on':'')+'" onclick="setM(\'shuffle\')"><h3>\ud83d\udd00 Shuffle</h3><p>Randomized with instant feedback.</p></div></div>'+
+'<div class="shuffle-toggle '+(S.randomize?'on':'')+'" onclick="toggleRandom()"><span class="st-check">'+(S.randomize?'\u2713':'')+'</span><div><div class="st-label">\ud83d\udd00 Randomize Order</div><div class="st-desc">Shuffle questions each time</div></div></div>'+
 '<button class="go" onclick="startQ()">Start \u2014 '+sc+' Questions</button>'+
 '<p class="disclaimer">Study aid based on EPA Section 608 regulations. Verify with official EPA materials before testing.</p></div>';}
 
@@ -375,7 +384,9 @@ el.innerHTML=`<div class="res"><h2>${passed?'PASSED! \u2705':'NOT YET \u274c'}</
 <div style="padding:0 4px">${rev}</div>`;}
 
 function setM(m){S.mode=m;render();}
-function startQ(){var fq=filteredQ();if(!fq.length){alert('Select at least one section.');return;}S.activeQ=fq;S.scr='quiz';S.i=0;S.ans={};S.txt={};S.chk={};S.graded=false;S.shuf=S.mode==='shuffle'?shuffle(fq):null;render();scrollTo(0,0);}
+function toggleRandom(){S.randomize=!S.randomize;render();}
+
+function startQ(){var fq=filteredQ();if(!fq.length){alert('Select at least one section.');return;}S.activeQ=fq;S.scr='quiz';S.i=0;S.ans={};S.txt={};S.chk={};S.graded=false;S.shuf=S.randomize?shuffle(fq):null;render();scrollTo(0,0);}
 function sel(n,i){if(S.chk[n])return;S.ans[n]=i;render();}
 function chk(n){S.chk[n]=true;render();}
 function go(i){const a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
@@ -386,5 +397,9 @@ function reset(){S.scr='start';S.mode='practice';S.activeQ=null;S.shuf=null;rend
 function retry(){const a=qs().filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);if(!a.length){alert('No wrong answers!');return;}S.shuf=a;S.ans={};S.chk={};S.graded=false;S.scr='quiz';S.i=0;S.mode='practice';render();scrollTo(0,0);}
 document.addEventListener('keydown',e=>{if(S.scr!=='quiz')return;if(e.key==='ArrowRight'){e.preventDefault();go(S.i+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(S.i-1);}const a=qs(),q=a[S.i];if(q.o.length>0&&!S.chk[q.n]){const k='ABCDEFGHIJ'.indexOf(e.key.toUpperCase());if(k>=0&&k<q.o.length)sel(q.n,k);}});
 render();
-</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+window.addEventListener('beforeunload',function(){if(S.scr==='quiz')saveSession();});
+document.addEventListener('visibilitychange',function(){if(document.hidden&&S.scr==='quiz')saveSession();});
+</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}window.addEventListener('beforeunload',function(){if(S.scr==='quiz')saveSession();});
+document.addEventListener('visibilitychange',function(){if(document.hidden&&S.scr==='quiz')saveSession();});
+</script>
 </body></html>
