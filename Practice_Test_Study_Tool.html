@@ -437,7 +437,7 @@ ${opts}
 <div class="nav">
 <button class="nb" onclick="go(${S.i-1})" ${S.i===0?'disabled':''}>← Prev</button>
 <div class="nc">
-${canChk?`<button class="nb ck" onclick="chk(${q.n})">Check Answer</button>`:''}
+${canChk?`<button id="chk-btn" class="nb ck" onclick="chk(${q.n})">Check Answer</button>`:isT&&!checked&&S.mode!=='exam'?`<button id="chk-btn" class="nb ck" onclick="chk(${q.n})" style="display:none">Check Answer</button>`:''}
 ${S.mode==='exam'&&!S.graded?`<button class="nb pr" onclick="submit()" style="background:#f59e0b;border-color:#f59e0b">Submit Exam</button>`:''}
 <button class="save-btn" id="save-progress-btn" onclick="saveAndConfirm()">Save</button>
 </div>
@@ -501,7 +501,7 @@ function toggleRandom(){S.randomize=!S.randomize;render();}
 
 function startQ(){var fq=typeof filteredQ==='function'?filteredQ():Q;S.activeQ=fq;S.scr='quiz';S.i=0;S.ans={};S.txt={};S.chk={};S.graded=false;S.shuf=S.randomize?shuffle(S.activeQ||Q):null;render();scrollTo(0,0);}
 function sel(n,i){if(S.chk[n])return;S.ans[n]=i;render();}
-function setT(n,v){S.txt[n]=v;}
+function setT(n,v){S.txt[n]=v;var cb=document.getElementById('chk-btn');if(cb){cb.style.display=v?'inline-block':'none';}}
 function chk(n){S.chk[n]=true;render();}
 function go(i){const a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
 function tg(){S.sg=!S.sg;render();}
