@@ -208,6 +208,9 @@ body.light .gd{background:#f0f1f4}
 .nav-tool{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text2);cursor:pointer;font-family:inherit;font-size:.7em;font-weight:700;letter-spacing:.03em;transition:.2s}
 .nav-tool:hover{border-color:var(--accent);color:var(--accent);background:rgba(74,158,255,.06)}
 .nav-tool:active{background:var(--accent);color:#fff}
+
+.nb.skip{color:var(--warn);border-color:rgba(251,191,36,.3)}
+.nb.skip:hover{border-color:var(--warn);background:rgba(251,191,36,.06)}
 </style>
 </head>
 <body>
@@ -499,6 +502,7 @@ ${opts}
 ${canChk?`<button id="chk-btn" class="nb ck" onclick="chk(${q.n})">Check Answer</button>`:isT&&!checked&&S.mode!=='exam'?`<button id="chk-btn" class="nb ck" onclick="chk(${q.n})" style="display:none">Check Answer</button>`:''}
 ${S.mode==='exam'&&!S.graded?`<button class="nb pr" onclick="submit()" style="background:#f59e0b;border-color:#f59e0b">Submit Exam</button>`:''}
 <button class="save-btn" id="save-progress-btn" onclick="saveAndConfirm()">Save</button>
+<button class="nb skip" onclick="skipQ()" title="Move to end">Skip</button>
 </div>
 <button class="nb${S.i===all.length-1?' pr':''}" onclick="${S.i===all.length-1?(S.mode==='exam'?'submit()':'showR()'):`go(${S.i+1})`}">${S.i===all.length-1?(S.mode==='exam'?'Submit':'Results'):'Next →'}</button>
 </div>`;}
@@ -562,6 +566,14 @@ function startQ(){var fq=typeof filteredQ==='function'?filteredQ():Q;S.activeQ=f
 function sel(n,i){if(S.chk[n])return;S.ans[n]=i;render();}
 function setT(n,v){S.txt[n]=v;var cb=document.getElementById('chk-btn');if(cb){cb.style.display=v?'inline-block':'none';}}
 function chk(n){S.chk[n]=true;render();}
+function skipQ(){
+var a=qs();if(S.i>=a.length-1)return;
+var q=a.splice(S.i,1)[0];
+a.push(q);
+if(S.shuf)S.shuf=a;else if(S.activeQ)S.activeQ=a;
+if(S.i>=a.length)S.i=a.length-1;
+render();scrollTo(0,0);
+}
 function go(i){const a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
 function tg(){S.sg=!S.sg;render();}
 function submit(){qs().forEach(q=>{S.chk[q.n]=true;});S.graded=true;showR();}
