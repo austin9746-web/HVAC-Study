@@ -1966,7 +1966,6 @@ function initEnhancements(toolId) {
 
 initEnhancements("master");
 render();
-cloudLoad(function(){ render(); });
 window.addEventListener('beforeunload',function(){if(S.scr==='quiz')saveSession();});
 document.addEventListener('visibilitychange',function(){if(document.hidden&&S.scr==='quiz')saveSession();});
 </script>
