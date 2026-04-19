@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>HVAC Math &amp; Formulas</title>
-<meta name="theme-color" content="#0c0e12">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HVAC Math &amp; Formulas — Study Tool</title>
 <style>
 :root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#4a9eff;--accent2:#2d7dd2;--ok:#34d399;--ok-bg:rgba(52,211,153,.08);--no:#f87171;--no-bg:rgba(248,113,113,.08);--warn:#fbbf24;--r:10px}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -107,206 +109,276 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .fb:hover{border-color:var(--text2)}
 .disclaimer{margin-top:12px;font-size:.75em;color:var(--text2);opacity:.7}
 @media(max-width:600px){.app{padding:8px}.qc{padding:16px}.start h1{font-size:1.5em}.mb{min-width:100%}.gr{grid-template-columns:repeat(auto-fill,minmax(30px,1fr))}}
-
-/* Back to hub button */
-.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;text-decoration:none;display:flex;align-items:center;gap:5px;transition:.2s}
-.back-btn:hover{border-color:var(--accent);color:var(--text);background:var(--card2)}
-/* Print results button */
-.print-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 22px;color:var(--text);font-family:inherit;font-size:.88em;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
-.print-btn:hover{border-color:var(--accent);background:var(--card2)}
-@media print{.back-btn,.fab-container,.calc-overlay,.ref-overlay,.nav,.hdr,.go,.modes,.timer-toggle,.stats-history,.print-btn,.nb{display:none!important}.app{padding:0}.qc{break-inside:avoid;border:1px solid #ccc;margin:8px 0}.start{display:none}.res,.opts,.qc{display:block!important}body{background:#fff;color:#000}.score-bar,.pb{display:none}:root{--card:#fff;--card2:#f5f5f5;--border:#ddd;--text:#000;--text2:#666;--ok:#22c55e;--no:#dc2626;--accent:#2563eb}}
-.save-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 16px;color:var(--text2);font-family:inherit;font-size:.82em;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px}.save-btn:hover{border-color:var(--ok);color:var(--ok)}.save-btn.saved{border-color:var(--ok);color:var(--ok);background:rgba(52,211,153,.08)}
-
-/* Flashcard mode */
-.fc-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:32px 28px;margin:16px 0;min-height:250px;cursor:pointer;transition:.3s;position:relative;display:flex;flex-direction:column;justify-content:center}
-.fc-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-.fc-card.flipped{border-color:var(--ok);background:rgba(52,211,153,.03)}
-.fc-label{position:absolute;top:12px;left:16px;font-size:.7em;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);font-weight:600}
-.fc-tap{position:absolute;bottom:12px;right:16px;font-size:.75em;color:var(--text2)}
-.fc-q{font-size:1.1em;line-height:1.6;text-align:center}
-.fc-a{margin-top:16px;padding-top:16px;border-top:2px solid var(--border);font-size:1em;line-height:1.5;text-align:center}
-.fc-a .fc-correct{color:var(--ok);font-weight:700;font-size:1.1em;margin-bottom:8px}
-.fc-a .fc-explain{color:var(--text2);font-size:.88em}
-.fc-controls{display:flex;gap:10px;justify-content:center;margin-top:16px}
-.fc-btn{padding:10px 20px;border-radius:8px;border:2px solid;cursor:pointer;font-family:inherit;font-size:.88em;font-weight:600;transition:.2s}
-.fc-knew{border-color:var(--ok);color:var(--ok);background:rgba(52,211,153,.06)}
-.fc-knew:hover{background:rgba(52,211,153,.15)}
-.fc-didnt{border-color:var(--no);color:var(--no);background:rgba(248,113,113,.06)}
-.fc-didnt:hover{background:rgba(248,113,113,.15)}
-.fc-progress{display:flex;gap:16px;justify-content:center;margin:12px 0;font-size:.85em}
-.fc-stat{text-align:center}
-.fc-stat .fc-sv{font-size:1.3em;font-weight:700;font-family:monospace}
-
-/* Topic analysis */
-.topic-section{margin:20px 0}
-.topic-section h3{font-size:.95em;font-weight:700;margin-bottom:12px;color:var(--accent)}
-.topic-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
-.topic-name{flex:1;font-size:.88em;font-weight:600}
-.topic-score{font-family:monospace;font-weight:700;font-size:.9em;min-width:50px;text-align:right}
-.topic-meter{width:100px;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
-.topic-fill{height:100%;border-radius:4px}
-.topic-count{font-size:.75em;color:var(--text2);min-width:40px;text-align:right}
-
-/* Light mode */
-body.light{--bg:#f5f6f8;--card:#ffffff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--accent2:#1d4ed8;--ok:#16a34a;--ok-bg:rgba(22,163,74,.06);--no:#dc2626;--no-bg:rgba(220,38,38,.06);--warn:#d97706}
-body.light .op:hover{background:#f0f1f4}
-body.light .gd{background:#f0f1f4}
-
-/* Theme toggle button */
-.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit;transition:.2s;display:flex;align-items:center;gap:4px}
-.theme-toggle:hover{border-color:var(--accent);color:var(--text)}
-
-/* Flag button */
-.flag-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:.85em;transition:.2s;color:var(--text2);font-family:inherit}
-.flag-btn:hover{border-color:var(--warn);color:var(--warn)}
-.flag-btn.flagged{background:rgba(251,191,36,.12);border-color:var(--warn);color:var(--warn)}
-.gd.gf{box-shadow:inset 0 0 0 2px var(--warn)}
-
-/* Sticky mobile nav */
-@media(max-width:600px){
-  .nav{position:sticky;bottom:0;background:var(--bg);padding:10px 8px;border-top:1px solid var(--border);margin:0 -16px -24px;z-index:100}
-  .qc{margin-bottom:70px}
-}
-
-body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#2563eb;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
-.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
-.theme-toggle:hover{border-color:var(--accent);color:var(--text)}
-.work-box{background:var(--card2);border:2px solid var(--accent);border-radius:var(--r);padding:16px;margin-top:12px;font-family:monospace;white-space:pre-wrap;font-size:.85em;line-height:1.7;color:var(--text)}
-.work-box .wl{color:var(--accent);font-weight:700}
-.work-box .wv{color:var(--ok);font-weight:700}
-.tabs{display:flex;gap:6px;margin-bottom:16px}
-.tab{flex:1;padding:12px;border-radius:var(--r);border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;font-family:inherit;font-size:.85em;font-weight:600;transition:.2s}
-.tab:hover{border-color:var(--accent)}.tab.active{border-color:var(--accent);background:rgba(74,158,255,.06);color:var(--accent)}
-.fc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
-.fc h3{font-size:.95em;font-weight:700;color:var(--accent);margin-bottom:10px;border-bottom:2px solid var(--border);padding-bottom:6px}
-.fm{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88em;flex-wrap:wrap;gap:4px}
-.fm:last-child{border:none}
-.fn{font-weight:700}.ff{font-family:monospace;color:var(--warn);font-weight:600}
-.fd{color:var(--text2);font-size:.82em;margin-top:2px;width:100%}
-@media(max-width:600px){.nav{position:sticky;bottom:0;background:var(--bg);padding:10px 8px;border-top:1px solid var(--border);margin:0 -16px -24px;z-index:100}.qc{margin-bottom:70px}}
-</style></head><body>
-<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
-<a href="index.html" class="back-btn">&larr; Study Hub</a>
+</style>
+</head>
+<body>
 <div class="app" id="app"></div>
 <script>
-function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
-function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
-function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
-setTheme(getTheme());
+const Q=[
+{n:1,p:2,t:'mc',q:'The suction pressure is 68 psig and the discharge pressure is 225 psig. What is the compression ratio?',o:['3.0:1','2.9:1','5.8:1','2.3:1'],a:1,ex:['Incorrect. You must convert to absolute pressure first.','CORRECT \u2014 Convert to absolute: suction = 68+14.7 = 82.7 psia, discharge = 225+14.7 = 239.7 psia. Ratio = 239.7 \u00f7 82.7 = 2.9:1. Always use PSIA.','Incorrect. Extremely high and unrealistic ratio.','Incorrect. Results from dividing gauge pressures without converting.']},
+{n:2,p:1,t:'mc',q:'What is the latent heat of vaporization for water at 212\u00b0F?',o:['144 BTU/lb','180 BTU/lb','970.4 BTU/lb','1 BTU/lb'],a:2,ex:['144 BTU/lb is the latent heat of FUSION (melting/freezing).','180 BTU/lb is the sensible heat from 32\u00b0F to 212\u00b0F.','CORRECT \u2014 970.4 BTU/lb to change liquid water at 212\u00b0F to steam. No temperature change.','1 BTU/lb\u00b7\u00b0F is the specific heat of liquid water.']},
+{n:3,p:1,t:'mc',q:'How many BTU/hr does 1 ton of refrigeration equal?',o:['288,000 BTU/hr','12,000 BTU/hr','144 BTU/hr','24,000 BTU/hr'],a:1,ex:['288,000 BTU is per DAY, not per hour.','CORRECT \u2014 1 ton = 12,000 BTU/hr. From melting 2,000 lbs of ice in 24 hrs: 2,000 \u00d7 144 \u00f7 24 = 12,000.','144 BTU is latent heat of fusion for 1 lb of ice.','24,000 BTU/hr = 2 tons.']},
+{n:4,p:2,t:'mc',q:'How many BTUs to freeze 75 lbs of water starting at 55\u00b0F and store at -10\u00b0F?',o:['14,100 BTU','15,675 BTU','10,800 BTU','4,875 BTU'],a:0,ex:['CORRECT \u2014 (1) Cool 55\u2192 32: 75\u00d71\u00d723=1,725. (2) Freeze: 75\u00d7144=10,800. (3) Cool ice 32\u2192-10: 75\u00d70.5\u00d742=1,575. Total=14,100.','Incorrect. Recheck calculation steps.','10,800 is only the latent heat portion.','4,875 is not correct.']},
+{n:5,p:1,t:'mc',q:'How much heat must be removed to cool 15 lbs of water from 48\u00b0F to 39\u00b0F?',o:['135 BTU','150 BTU','9 BTU','1,350 BTU'],a:0,ex:['CORRECT \u2014 Q = m \u00d7 c \u00d7 \u0394T = 15 \u00d7 1.0 \u00d7 9 = 135 BTU.','Incorrect. 150 needs a 10\u00b0F drop.','9 is just the \u0394T, not the heat removed.','1,350 has an extra \u00d710 with no basis.']},
+{n:6,p:2,t:'mc',q:'A 75-foot column of water exerts what pressure at its base?',o:['29.46 psi','32.48 psi','75.00 psi','173.21 psi'],a:1,ex:['Close but not right. Water = 0.433 psi/ft.','CORRECT \u2014 75 \u00d7 0.433 = 32.48 psi. Essential for pump sizing.','1 foot of water \u2260 1 psi.','Far too high \u2014 would need ~400 ft of head.']},
+{n:7,p:2,t:'mc',q:'Net oil pressure: suction reads 68 psig, oil pump reads 102 psig, discharge reads 220 psig. Net oil pressure?',o:['34 psi','102 psi','152 psi','220 psi'],a:0,ex:['CORRECT \u2014 Net oil = Oil pump \u2212 Suction = 102 \u2212 68 = 34 psi. Oil must overcome crankcase pressure.','102 is total oil pump reading, not NET.','152 is discharge minus suction \u2014 wrong calc.','220 is just discharge pressure.']},
+{n:8,p:2,t:'mc',q:'What is the saturation temperature of R-22 at 68 psig?',o:['117.5\u00b0F','40\u00b0F','66.2\u00b0F','34\u00b0F'],a:1,ex:['117.5\u00b0F is way too hot for 68 psig R-22.','CORRECT \u2014 R-22 PT chart: 68 psig \u2248 40\u00b0F. Classic evaporator design condition.','66.2\u00b0F corresponds to higher pressure.','34\u00b0F corresponds to lower pressure.']},
+{n:9,p:2,t:'mc',q:'The saturation temperature for R-134a at 120 psig is approximately:',o:['98\u00b0F','69\u00b0F','171.2\u00b0F','40\u00b0F'],a:0,ex:['CORRECT \u2014 R-134a at 120 psig \u2248 98\u00b0F.','69\u00b0F corresponds to ~70 psig.','171.2\u00b0F is above critical point.','40\u00b0F corresponds to ~35 psig.']},
+{n:10,p:2,t:'mc',q:'R-22 high side reads 250 psig. You want 10\u00b0F subcooling. What should the liquid line temperature be?',o:['107\u00b0F','117\u00b0F','127\u00b0F','147\u00b0F'],a:2,ex:['107\u00b0F = 30\u00b0F subcooling \u2014 too much.','117\u00b0F = 20\u00b0F subcooling.','CORRECT \u2014 Sat temp at 250 psig \u2248 137\u00b0F. Subcooling = Sat \u2212 Liquid. For 10\u00b0F: 137 \u2212 10 = 127\u00b0F.','147\u00b0F is ABOVE sat temp \u2014 impossible for subcooled liquid.']},
+{n:11,p:2,t:'mc',q:'R-410A at 95\u00b0F has a saturation pressure of approximately:',o:['181 psig','225 psig','309 psig','450 psig'],a:2,ex:['181 psig is closer to 60\u00b0F for R-410A.','225 psig is ~75\u00b0F for R-410A.','CORRECT \u2014 R-410A at 95\u00b0F \u2248 309 psig. Much higher pressures than R-22.','450 psig would be 120\u00b0F+ on R-410A.']},
+{n:12,p:2,t:'mc',q:'R-134a suction pressure is 22 psig and suction line temp is 30\u00b0F. The refrigerant is:',o:['Saturated','Subcooled','Superheated 5\u00b0F','Superheated 10\u00b0F'],a:2,ex:['At 22 psig, R-134a saturates at ~25\u00b0F. Actual temp is above, so NOT saturated.','Subcooled means below sat temp \u2014 30\u00b0F is ABOVE 25\u00b0F.','CORRECT \u2014 Sat temp at 22 psig \u2248 25\u00b0F. Superheat = 30 \u2212 25 = 5\u00b0F.','10\u00b0F superheat would need 35\u00b0F line temp.']},
+{n:13,p:2,t:'mc',q:'R-410A suction pressure is 120 psig, suction line temp is 55\u00b0F. What is the superheat?',o:['5\u00b0F','10\u00b0F','15\u00b0F','20\u00b0F'],a:2,ex:['5\u00b0F would mean sat temp of 50\u00b0F.','10\u00b0F would mean sat temp of 45\u00b0F.','CORRECT \u2014 R-410A at 120 psig \u2248 40\u00b0F sat temp. Superheat = 55 \u2212 40 = 15\u00b0F.','20\u00b0F would mean sat temp of 35\u00b0F.']},
+{n:14,p:2,t:'mc',q:'R-410A condenser pressure is 350 psig, liquid line temp is 95\u00b0F. What is the subcooling?',o:['5\u00b0F','10\u00b0F','15\u00b0F','20\u00b0F'],a:1,ex:['5\u00b0F would mean sat temp of 100\u00b0F.','CORRECT \u2014 R-410A at 350 psig \u2248 105\u00b0F sat. Subcooling = 105 \u2212 95 = 10\u00b0F.','15\u00b0F would need liquid temp of 90\u00b0F.','20\u00b0F would need 85\u00b0F liquid line.']},
+{n:15,p:2,t:'mc',q:'Nitrogen test: 150 psig at 90\u00b0F. Temp drops to 55\u00b0F overnight. No leaks. What should the gauge read?',o:['150.0 psig','145.2 psig','139.5 psig','132.0 psig'],a:2,ex:['150 assumes no change \u2014 but gas pressure varies with temperature.','145 underestimates the change.','CORRECT \u2014 Gay-Lussac: P1=164.7 PSIA, T1=549.67\u00b0R, T2=514.67\u00b0R. P2=164.7\u00d7(514.67/549.67)=154.2 PSIA=139.5 PSIG.','132 overestimates the drop.']},
+{n:16,p:2,t:'mc',q:'Using Ohm\u2019s Law: 240V circuit, 10 amps. What is the resistance?',o:['24 ohms','2,400 ohms','0.042 ohms','240 ohms'],a:0,ex:['CORRECT \u2014 R = V \u00f7 I = 240 \u00f7 10 = 24 ohms.','2,400 = V \u00d7 I = power in watts, not resistance.','0.042 = I \u00f7 V \u2014 wrong formula.','240 ohms would need only 1 amp.']},
+{n:17,p:2,t:'mc',q:'A 5,000 watt heater on 240V draws how many amps?',o:['20.8 amps','12 amps','48 amps','5 amps'],a:0,ex:['CORRECT \u2014 I = P \u00f7 V = 5,000 \u00f7 240 = 20.83 amps.','12A \u00d7 240V = 2,880W only.','48A \u00d7 240V = 11,520W.','5A \u00d7 240V = 1,200W.']},
+{n:18,p:2,t:'mc',q:'Condenser fan motor: 1.5 amps at 240V. Wattage?',o:['160 watts','240 watts','360 watts','500 watts'],a:2,ex:['160W needs ~0.67A at 240V.','240W = 1A at 240V.','CORRECT \u2014 P = V \u00d7 I = 240 \u00d7 1.5 = 360 watts.','500W needs ~2.08A at 240V.']},
+{n:19,p:1,t:'mc',q:'A system removes 36,000 BTU/hr. How many tons of cooling?',o:['1 ton','2 tons','3 tons','4 tons'],a:2,ex:['1 ton = 12,000 BTU/hr.','2 tons = 24,000 BTU/hr.','CORRECT \u2014 Tons = BTU/hr \u00f7 12,000 = 36,000 \u00f7 12,000 = 3 tons.','4 tons = 48,000 BTU/hr.']},
+{n:20,p:2,t:'mc',q:'EER of 12, 3-ton system. How many watts consumed?',o:['1,000 W','2,000 W','3,000 W','4,000 W'],a:2,ex:['1,000W gives EER of 36 \u2014 unrealistic.','2,000W gives EER of 18.','CORRECT \u2014 EER = BTU/hr \u00f7 Watts. 36,000 \u00f7 12 = 3,000W.','4,000W gives EER of 9.']},
+{n:21,p:1,t:'mc',q:'400 CFM per ton rule: a 4-ton system needs how much airflow?',o:['800 CFM','1,200 CFM','1,600 CFM','2,000 CFM'],a:2,ex:['800 CFM = 2 tons.','1,200 CFM = 3 tons.','CORRECT \u2014 400 \u00d7 4 = 1,600 CFM total supply air.','2,000 CFM = 5 tons.']},
+{n:22,p:2,t:'mc',q:'5 lbs of steam at 75 psia condenses (hfg \u2248 902 BTU/lb). How many BTUs given up?',o:['4,510 BTU','902 BTU','180 BTU','970 BTU'],a:0,ex:['CORRECT \u2014 Q = mass \u00d7 hfg = 5 \u00d7 902 = 4,510 BTU.','902 BTU/lb is for 1 pound only.','180 BTU is sensible heat for water 32\u2192212\u00b0F.','970 BTU/lb is at atmospheric pressure, not 75 psia.']},
+{n:23,p:2,t:'mc',q:'What is the specific heat of liquid water?',o:['0.5 BTU/lb\u00b7\u00b0F','1.0 BTU/lb\u00b7\u00b0F','144 BTU/lb','970 BTU/lb'],a:1,ex:['0.5 BTU/lb\u00b7\u00b0F is the specific heat of ICE.','CORRECT \u2014 Water has a specific heat of 1.0 BTU/lb\u00b7\u00b0F. 1 BTU raises 1 lb of water 1\u00b0F.','144 BTU/lb is the latent heat of fusion.','970 BTU/lb is the latent heat of vaporization.']},
+{n:24,p:1,t:'mc',q:'What is the specific heat of ice?',o:['0.5 BTU/lb\u00b7\u00b0F','1.0 BTU/lb\u00b7\u00b0F','2.0 BTU/lb\u00b7\u00b0F','0.48 BTU/lb\u00b7\u00b0F'],a:0,ex:['CORRECT \u2014 Ice has a specific heat of 0.5 BTU/lb\u00b7\u00b0F, half that of liquid water.','1.0 is the specific heat of liquid water.','2.0 BTU/lb\u00b7\u00b0F is not a common HVAC value.','0.48 is the specific heat of steam, not ice.']},
+{n:25,p:1,t:'mc',q:'What is the latent heat of fusion for water (freezing/melting)?',o:['970 BTU/lb','144 BTU/lb','180 BTU/lb','1 BTU/lb'],a:1,ex:['970 BTU/lb is the latent heat of VAPORIZATION.','CORRECT \u2014 144 BTU/lb to freeze or melt 1 lb of water at 32\u00b0F.','180 BTU is the sensible heat from 32\u00b0F to 212\u00b0F, not latent heat.','1 BTU/lb\u00b7\u00b0F is specific heat, not latent heat.']},
+{n:26,p:2,t:'mc',q:'A gas furnace input is 100,000 BTU/hr with 96% AFUE. Output?',o:['80,000 BTU/hr','92,000 BTU/hr','96,000 BTU/hr','100,000 BTU/hr'],a:2,ex:['80,000 would be 80% AFUE.','92,000 would be 92% AFUE.','CORRECT \u2014 Output = Input \u00d7 AFUE = 100,000 \u00d7 0.96 = 96,000 BTU/hr.','100,000 would be 100% efficiency \u2014 impossible.']},
+{n:27,p:2,t:'mc',q:'Hydronic formula: 10 GPM, 20\u00b0F \u0394T. How many BTU/hr?',o:['50,000','100,000','200,000','10,000'],a:1,ex:['50,000 uses factor of 250 instead of 500.','CORRECT \u2014 BTU/hr = GPM \u00d7 500 \u00d7 \u0394T = 10 \u00d7 500 \u00d7 20 = 100,000.','200,000 uses factor of 1,000.','10,000 omits the 500 factor entirely.']},
+{n:28,p:2,t:'mc',q:'Sensible heat formula: Q = 1.08 \u00d7 CFM \u00d7 \u0394T. A duct delivers 800 CFM with a 20\u00b0F temperature drop. BTU/hr?',o:['17,280','16,000','12,000','8,640'],a:0,ex:['CORRECT \u2014 Q = 1.08 \u00d7 800 \u00d7 20 = 17,280 BTU/hr. The 1.08 factor comes from 0.24 \u00d7 0.075 \u00d7 60.','16,000 omits the 1.08 factor.','12,000 is 1 ton \u2014 coincidence, not the answer.','8,640 uses 0.54 instead of 1.08.']},
+{n:29,p:2,t:'mc',q:'Total heat formula: Q = 4.5 \u00d7 CFM \u00d7 \u0394h (enthalpy change). 1,200 CFM with \u0394h of 8 BTU/lb. Total BTU/hr?',o:['43,200','38,400','9,600','54,000'],a:0,ex:['CORRECT \u2014 Q = 4.5 \u00d7 1,200 \u00d7 8 = 43,200 BTU/hr. Total heat includes both sensible and latent.','38,400 uses a factor of 4.0 instead of 4.5.','9,600 omits the 4.5 factor.','54,000 uses 4.5 \u00d7 1,200 \u00d7 10 = wrong \u0394h.']},
+{n:30,p:1,t:'mc',q:'Water weighs approximately:',o:['7.48 lbs/gal','8.33 lbs/gal','10 lbs/gal','62.4 lbs/gal'],a:1,ex:['7.48 is gallons per cubic foot, not weight.','CORRECT \u2014 Water weighs 8.33 lbs/gal (62.4 lbs/ft\u00b3).','10 lbs/gal is a rough estimate, not accurate.','62.4 lbs is per cubic foot, not per gallon.']},
+{n:31,p:1,t:'mc',q:'How many gallons in one cubic foot of water?',o:['7.48 gallons','8.33 gallons','10 gallons','12 gallons'],a:0,ex:['CORRECT \u2014 1 ft\u00b3 = 7.48 gallons. Essential for tank sizing and hydronic calculations.','8.33 is the weight in pounds per gallon, not volume.','10 gallons is not correct.','12 gallons is not correct.']},
+{n:32,p:2,t:'mc',q:'A boiler heats 500 gallons of water from 40\u00b0F to 180\u00b0F. Total BTUs needed?',o:['583,100 BTU','70,000 BTU','416,500 BTU','90,000 BTU'],a:0,ex:['CORRECT \u2014 Q = volume \u00d7 8.33 \u00d7 \u0394T = 500 \u00d7 8.33 \u00d7 140 = 583,100 BTU.','70,000 forgets the weight of water.','416,500 uses the wrong \u0394T.','90,000 is far too low.']},
+{n:33,p:2,t:'mc',q:'A pump moves 20 GPM through a system with 15 feet of head. What horsepower is needed? (HP = GPM \u00d7 Head \u00f7 3960)',o:['0.076 HP','0.50 HP','0.76 HP','1.0 HP'],a:0,ex:['CORRECT \u2014 HP = 20 \u00d7 15 \u00f7 3,960 = 0.076 HP. Real pump must be larger due to efficiency losses.','0.50 HP is much more than needed.','0.76 HP \u2014 you moved the decimal.','1.0 HP is way oversized for this flow.']},
+{n:34,p:2,t:'mc',q:'A 200,000 BTU/hr gas furnace runs on natural gas (1,000 BTU/ft\u00b3). What is the gas flow rate in CFH?',o:['100 CFH','200 CFH','500 CFH','2,000 CFH'],a:1,ex:['100 CFH \u00d7 1,000 = 100,000 BTU/hr \u2014 too low.','CORRECT \u2014 CFH = BTU/hr \u00f7 BTU/ft\u00b3 = 200,000 \u00f7 1,000 = 200 CFH.','500 CFH would be 500,000 BTU/hr input.','2,000 CFH is way too much.']},
+{n:35,p:2,t:'mc',q:'Same 200,000 BTU/hr load on propane (2,500 BTU/ft\u00b3). Gas flow rate?',o:['40 CFH','80 CFH','200 CFH','500 CFH'],a:1,ex:['40 CFH \u00d7 2,500 = 100,000 \u2014 half the needed input.','CORRECT \u2014 CFH = 200,000 \u00f7 2,500 = 80 CFH. LP has higher BTU content so less volume needed.','200 CFH is the natural gas rate, not LP.','500 CFH would be 1,250,000 BTU/hr.']},
+{n:36,p:1,t:'mc',q:'1 horsepower equals how many watts?',o:['550 watts','746 watts','1,000 watts','3,412 watts'],a:1,ex:['550 is ft\u00b7lbs/sec, not watts.','CORRECT \u2014 1 HP = 746 watts = 2,545 BTU/hr.','1,000 watts = 1 kilowatt, not 1 HP.','3,412 is BTU/hr per kilowatt.']},
+{n:37,p:1,t:'mc',q:'1 kilowatt equals how many BTU/hr?',o:['746 BTU/hr','1,000 BTU/hr','2,545 BTU/hr','3,412 BTU/hr'],a:3,ex:['746 is watts per horsepower.','1,000 BTU/hr is not correct.','2,545 BTU/hr = 1 horsepower.','CORRECT \u2014 1 kW = 3,412 BTU/hr. Used to convert electric heat to BTU output.']},
+{n:38,p:2,t:'mc',q:'A 10 kW electric heater produces how many BTU/hr?',o:['10,000 BTU/hr','25,450 BTU/hr','34,120 BTU/hr','74,600 BTU/hr'],a:2,ex:['10,000 assumes 1 kW = 1,000 BTU/hr \u2014 wrong.','25,450 uses the HP conversion, not kW.','CORRECT \u2014 10 \u00d7 3,412 = 34,120 BTU/hr. Electric heat is 100% efficient.','74,600 uses the wrong conversion factor.']},
+{n:39,p:2,t:'mc',q:'Motor FLA is 23 amps. Maximum fuse size at 175% for HACR breaker?',o:['30 amps','35 amps','40 amps','45 amps'],a:2,ex:['30A is too small \u2014 below 175%.','35A is under the calculated value.','CORRECT \u2014 23 \u00d7 1.75 = 40.25A. Round down to standard 40A fuse. NEC allows up to 175% for HACR breakers.','45A exceeds the 175% maximum.']},
+{n:40,p:2,t:'mc',q:'A 3-phase motor draws 28 amps at 208V. What is the power in kW? (P = V \u00d7 I \u00d7 1.732 \u00f7 1000)',o:['5.8 kW','10.1 kW','5,824 W','Both A and C'],a:3,ex:['5.8 kW is correct in kW.','10.1 kW uses the wrong formula.','5,824W is the same as 5.8 kW.','CORRECT \u2014 P = 208 \u00d7 28 \u00d7 1.732 = 10,087 VA apparent. For resistive: 208 \u00d7 28 \u00d7 1.732 / 1000 = 10.09 kVA. Actual 5,824W = 5.8 kW at typical PF.']},
+{n:41,p:2,t:'mc',q:'Suction pressure is 45 psig (R-410A). What is the evaporator saturation temperature?',o:['20\u00b0F','25\u00b0F','30\u00b0F','35\u00b0F'],a:1,ex:['20\u00b0F is too low for 45 psig R-410A.','CORRECT \u2014 R-410A at ~45 psig saturates around 25\u00b0F.','30\u00b0F corresponds to a higher suction pressure.','35\u00b0F is too warm for 45 psig.']},
+{n:42,p:2,t:'mc',q:'R-454B at 80\u00b0F has a saturation pressure of approximately:',o:['145 psig','180 psig','223 psig','245 psig'],a:2,ex:['145 psig is too low for 80\u00b0F R-454B.','180 psig is closer to 65\u00b0F.','CORRECT \u2014 R-454B at 80\u00b0F \u2248 223 psig. Slightly lower than R-410A at same temp.','245 psig is R-410A at 80\u00b0F, not R-454B.']},
+{n:43,p:2,t:'mc',q:'What is the boiling point of R-410A at atmospheric pressure (0 psig)?',o:['-15\u00b0F','-41\u00b0F','-61\u00b0F','-44\u00b0F'],a:2,ex:['-15\u00b0F is the boiling point of R-134a.','- 41\u00b0F is the boiling point of R-22.','-61\u00b0F is CORRECT \u2014 R-410A boils at approximately -60.8\u00b0F at 0 psig.','-44\u00b0F is not correct for R-410A.']},
+{n:44,p:1,t:'mc',q:'1 BTU is defined as the heat needed to raise ___ of water by 1\u00b0F.',o:['1 ounce','1 pound','1 gallon','1 cubic foot'],a:1,ex:['1 ounce is not the BTU definition.','CORRECT \u2014 1 BTU raises 1 pound of water 1\u00b0F. The fundamental unit of heat measurement in HVAC.','1 gallon of water = 8.33 BTU per \u00b0F.','1 cubic foot = 62.4 BTU per \u00b0F.']},
+{n:45,p:2,t:'mc',q:'Sensible heat ratio: a system removes 36,000 BTU/hr total, 27,000 BTU/hr sensible. What is the SHR?',o:['0.50','0.65','0.75','0.80'],a:2,ex:['0.50 means half sensible, half latent.','0.65 would mean 23,400 BTU/hr sensible.','CORRECT \u2014 SHR = Sensible \u00f7 Total = 27,000 \u00f7 36,000 = 0.75.','0.80 would mean 28,800 BTU/hr sensible.']},
+{n:46,p:2,t:'mc',q:'How many BTUs to raise 100 gallons of water from 60\u00b0F to 140\u00b0F?',o:['8,000 BTU','66,640 BTU','80,000 BTU','14,400 BTU'],a:1,ex:['8,000 forgets water weight (8.33 lbs/gal).','CORRECT \u2014 Q = 100 \u00d7 8.33 \u00d7 80 = 66,640 BTU.','80,000 uses 10 lbs/gal instead of 8.33.','14,400 uses wrong weight and \u0394T.']},
+{n:47,p:2,t:'mc',q:'A walk-in cooler needs 18,000 BTU/hr cooling. The compressor runs 16 hrs/day. Required system capacity?',o:['18,000 BTU/hr','24,000 BTU/hr','27,000 BTU/hr','36,000 BTU/hr'],a:2,ex:['18,000 assumes 24-hr run time.','24,000 is close but not right.','CORRECT \u2014 Capacity = Load \u00d7 24 \u00f7 Runtime = 18,000 \u00d7 24 \u00f7 16 = 27,000 BTU/hr. System must handle the load in fewer hours.','36,000 uses 12 hrs runtime.']},
+{n:48,p:2,t:'mc',q:'Duct velocity: 800 CFM through a 10" round duct (area = 0.545 ft\u00b2). What is the velocity?',o:['800 FPM','1,200 FPM','1,468 FPM','436 FPM'],a:2,ex:['800 FPM means area would need to be 1.0 ft\u00b2.','1,200 FPM is not correct for this area.','CORRECT \u2014 V = CFM \u00f7 Area = 800 \u00f7 0.545 = 1,468 FPM.','436 FPM = 800 \u00d7 0.545 \u2014 backwards.']},
+{n:49,p:2,t:'mc',q:'Convert 25\u00b0C to Fahrenheit:',o:['45\u00b0F','57\u00b0F','77\u00b0F','93\u00b0F'],a:2,ex:['45\u00b0F = about 7\u00b0C.','57\u00b0F = about 14\u00b0C.','CORRECT \u2014 \u00b0F = (\u00b0C \u00d7 9/5) + 32 = (25 \u00d7 1.8) + 32 = 45 + 32 = 77\u00b0F.','93\u00b0F = about 34\u00b0C.']},
+{n:50,p:2,t:'mc',q:'Convert 68\u00b0F to Celsius:',o:['10\u00b0C','15\u00b0C','20\u00b0C','25\u00b0C'],a:2,ex:['10\u00b0C = 50\u00b0F.','15\u00b0C = 59\u00b0F.','CORRECT \u2014 \u00b0C = (\u00b0F \u2212 32) \u00d7 5/9 = (68 \u2212 32) \u00d7 5/9 = 36 \u00d7 5/9 = 20\u00b0C.','25\u00b0C = 77\u00b0F.']},
+{n:51,p:2,t:'mc',q:'How many BTUs per hour does a 40-gallon electric water heater with a 4,500W element produce?',o:['4,500 BTU/hr','9,000 BTU/hr','15,354 BTU/hr','34,120 BTU/hr'],a:2,ex:['BTU \u2260 watts. Must convert.','9,000 uses wrong factor.','CORRECT \u2014 4,500W \u00d7 3.412 = 15,354 BTU/hr.','34,120 = 10 kW, not 4.5 kW.']},
+{n:52,p:2,t:'mc',q:'A nitrogen standing pressure test starts at 300 psig and 75\u00b0F. Temp rises to 100\u00b0F. Expected pressure?',o:['300 psig','310 psig','314 psig','325 psig'],a:2,ex:['300 assumes no change \u2014 wrong.','310 underestimates.','CORRECT \u2014 P2 = (300+14.7)\u00d7(559.67/534.67)\u2212 14.7 = 314.7\u221214.7 \u2248 314 psig.','325 overestimates.']},
+{n:53,p:2,t:'mc',q:'Motor nameplate: 230V, 15 FLA. Minimum wire ampacity at 125%?',o:['15 amps','18.75 amps','20 amps','25 amps'],a:1,ex:['15A is the FLA \u2014 wire must be rated higher.','CORRECT \u2014 15 \u00d7 1.25 = 18.75 amps minimum wire ampacity per NEC.','20A is a standard breaker size, not min ampacity.','25A is higher than required.']},
+{n:54,p:2,t:'mc',q:'Total resistance of three 30-ohm resistors in parallel?',o:['10 ohms','30 ohms','90 ohms','15 ohms'],a:0,ex:['CORRECT \u2014 1/Rt = 1/30 + 1/30 + 1/30 = 3/30 = 1/10. Rt = 10 ohms. Parallel always reduces total resistance.','30 ohms would be one resistor alone, or all in series with only one.','90 ohms is all three in SERIES (30+30+30).','15 ohms would be two 30-ohm in parallel.']},
+{n:55,p:2,t:'mc',q:'Suction pressure is 58 psig, discharge is 290 psig (R-410A). Compression ratio?',o:['3.0:1','4.0:1','4.2:1','5.0:1'],a:2,ex:['3.0:1 is too low.','4.0:1 would need different pressures.','CORRECT \u2014 Absolute: (290+14.7)\u00f7(58+14.7) = 304.7\u00f772.7 = 4.19 \u2248 4.2:1.','5.0:1 is too high.']},
+{n:56,p:2,t:'mc',q:'How many BTUs to make 10 lbs of steam from 70\u00b0F water at atmospheric pressure?',o:['9,704 BTU','11,504 BTU','14,220 BTU','970 BTU'],a:1,ex:['9,704 is just latent heat (10\u00d7970.4), missing sensible.','CORRECT \u2014 Sensible: 10\u00d71\u00d7142=1,420 + Latent: 10\u00d7970.4=9,704 + Superheat: 0. Total heat from 70\u00b0F water = 1,420 + ~10,084 = ~11,504.','14,220 adds extra heat not needed.','970 BTU/lb is for 1 pound only.']},
+{n:57,p:1,t:'mc',q:'Standard atmospheric pressure at sea level is:',o:['14.7 psia','0 psig','29.92 in. Hg','All of these'],a:3,ex:['14.7 psia is correct.','0 psig is correct \u2014 gauge reads zero at atmospheric.','29.92 inches of mercury is correct.','CORRECT \u2014 All three describe the same pressure in different units.']},
+{n:58,p:2,t:'mc',q:'A 5-ton rooftop unit has a SEER of 16. Annual cooling hours = 1,000. Estimated annual kWh?',o:['3,750 kWh','5,000 kWh','12,000 kWh','60,000 kWh'],a:0,ex:['CORRECT \u2014 Total BTU = 60,000 BTU/hr \u00d7 1,000 hrs = 60,000,000 BTU. kWh = BTU \u00f7 (SEER \u00d7 1000) = 60M \u00f7 16,000 = 3,750 kWh.','5,000 uses wrong SEER math.','12,000 ignores SEER entirely.','60,000 is cooling output in BTU/hr.']},
+{n:59,p:2,t:'mc',q:'A system has COP of 4.0 and provides 48,000 BTU/hr cooling. Electrical input in kW?',o:['3.52 kW','12.0 kW','48.0 kW','1.0 kW'],a:0,ex:['CORRECT \u2014 Input = Output \u00f7 COP. Convert: 48,000 \u00f7 3,412 = 14.07 kW cooling. Input = 14.07 \u00f7 4.0 = 3.52 kW.','12.0 kW divides BTU directly by COP without converting.','48 kW ignores COP.','1.0 kW is too low.']},
+{n:60,p:2,t:'mc',q:'Convert 20 psig to inches of water column (1 psi = 27.7 in. WC):',o:['554 in. WC','277 in. WC','740 in. WC','20 in. WC'],a:0,ex:['CORRECT \u2014 20 \u00d7 27.7 = 554 in. WC. Used for converting gas pressures.','277 = 10 psi \u00d7 27.7.','740 uses wrong factor.','20 in. WC \u2260 20 psig \u2014 different units entirely.']},
+{n:61,p:2,t:'num',q:'120,000 BTU/hr cooling, COP of 3.0. Watts input? (1W = 3.412 BTU/hr). Round to nearest whole number.',a:'11713',ex:['Input = 120,000 \u00f7 3.0 \u00f7 3.412 = 11,713 watts. COP ratio uses same units: convert BTU/hr to watts first.']},
+{n:62,p:2,t:'num',q:'Hydronic system: 15 GPM, 18\u00b0F \u0394T. BTU/hr delivered? (Use factor of 500)',a:'135000',ex:['BTU/hr = GPM \u00d7 500 \u00d7 \u0394T = 15 \u00d7 500 \u00d7 18 = 135,000 BTU/hr.']},
+{n:63,p:2,t:'num',q:'How many BTUs to heat 250 gallons of water from 50\u00b0F to 180\u00b0F? (Water = 8.33 lbs/gal)',a:'270725',ex:['Q = gallons \u00d7 8.33 \u00d7 \u0394T = 250 \u00d7 8.33 \u00d7 130 = 270,725 BTU.']},
+{n:64,p:2,t:'num',q:'Sensible cooling: 1,500 CFM with 22\u00b0F temperature drop. BTU/hr? (Q = 1.08 \u00d7 CFM \u00d7 \u0394T)',a:'35640',ex:['Q = 1.08 \u00d7 1,500 \u00d7 22 = 35,640 BTU/hr of sensible cooling.']},
+{n:65,p:2,t:'num',q:'Compression ratio: suction 72 psig, discharge 315 psig. (Use absolute pressures, answer to one decimal)',a:'3.8',ex:['CR = (315+14.7) \u00f7 (72+14.7) = 329.7 \u00f7 86.7 = 3.8:1.']}
+];
 
-const Q=[{n:1,cat:'BTU & Heat',p:2,t:'mc',q:'A technician measures airflow at 1,200 CFM through a cooling coil. The return air is 80°F and the supply air is 58°F. What is the sensible cooling capacity in BTU/hr?',o:['28,512 BTU/hr','25,920 BTU/hr','14,256 BTU/hr','31,680 BTU/hr'],a:0,ex:['CORRECT — Q = 1.08 × CFM × ΔT = 1.08 × 1,200 × (80-58) = 1.08 × 1,200 × 22 = 28,512 BTU/hr. The constant 1.08 accounts for air density and specific heat at standard conditions.','Incorrect. You may have used 1.0 instead of 1.08 as the constant.','Incorrect. You may have divided by 2 somewhere.','Incorrect. Check your temperature difference.'],work:'Formula: Q = 1.08 × CFM × ΔT\nGiven: CFM = 1,200 | Return = 80°F | Supply = 58°F\nStep 1: ΔT = 80 - 58 = 22°F\nStep 2: Q = 1.08 × 1,200 × 22\nStep 3: Q = 1.08 × 26,400 = 28,512 BTU/hr'},{n:2,cat:'BTU & Heat',p:2,t:'mc',q:'A hydronic system circulates 8 GPM of water. The supply temperature is 180°F and the return is 160°F. What is the heat output in BTU/hr?',o:['96,000 BTU/hr','80,000 BTU/hr','72,000 BTU/hr','160,000 BTU/hr'],a:1,ex:['Incorrect. Check the constant used.','CORRECT — Q = 500 × GPM × ΔT = 500 × 8 × (180-160) = 500 × 8 × 20 = 80,000 BTU/hr. The constant 500 accounts for water weight (8.33 lb/gal) × specific heat (1.0) × 60 min/hr.','Incorrect.','Incorrect. You may have used 1,000 instead of 500.'],work:'Formula: Q = 500 × GPM × ΔT\nGiven: GPM = 8 | Supply = 180°F | Return = 160°F\nStep 1: ΔT = 180 - 160 = 20°F\nStep 2: Q = 500 × 8 × 20 = 80,000 BTU/hr\nNote: 500 comes from 8.33 lb/gal × 1.0 Btu/lb·°F × 60 min/hr ≈ 500'},{n:3,cat:'BTU & Heat',p:2,t:'mc',q:'How many BTUs are required to raise 40 gallons of water from 50°F to 140°F?',o:['29,988 BTU','36,000 BTU','33,320 BTU','30,000 BTU'],a:0,ex:['CORRECT — Q = Weight × ΔT × Specific Heat. Weight = 40 gal × 8.33 lb/gal = 333.2 lbs. Q = 333.2 × (140-50) × 1.0 = 333.2 × 90 = 29,988 BTU.','Incorrect. You may have used 8.0 lb/gal instead of 8.33.','Incorrect.','Incorrect. Close but not accounting for actual water weight.'],work:'Formula: Q = m × c × ΔT\nGiven: Volume = 40 gal | Start = 50°F | End = 140°F\nStep 1: Mass = 40 gal × 8.33 lb/gal = 333.2 lbs\nStep 2: ΔT = 140 - 50 = 90°F\nStep 3: Q = 333.2 × 1.0 × 90 = 29,988 BTU'},{n:4,cat:'BTU & Heat',p:2,t:'mc',q:'A building has a heat loss of 120,000 BTU/hr. How many square feet of steam radiation (EDR) are needed?',o:['500 sq ft EDR','800 sq ft EDR','720 sq ft EDR','480 sq ft EDR'],a:0,ex:['CORRECT — Each square foot of steam EDR delivers 240 BTU/hr. EDR = 120,000 ÷ 240 = 500 sq ft.','Incorrect. You may have used 150 BTU/hr (that\'s for hot water EDR, not steam).','Incorrect.','Incorrect.'],work:'Formula: EDR = Total BTU/hr ÷ BTU per sq ft\nGiven: Heat loss = 120,000 BTU/hr | Steam EDR = 240 BTU/hr per sq ft\nStep 1: EDR = 120,000 ÷ 240 = 500 sq ft\nNote: Steam EDR = 240 BTU/hr per sq ft | Hot Water EDR = 150 BTU/hr per sq ft'},{n:5,cat:'BTU & Heat',p:2,t:'mc',q:'A boiler is rated at 4 BHP (Boiler Horsepower). What is its output in BTU/hr?',o:['100,000 BTU/hr','133,900 BTU/hr','167,375 BTU/hr','200,000 BTU/hr'],a:1,ex:['Incorrect.','CORRECT — 1 BHP = 33,475 BTU/hr. So 4 × 33,475 = 133,900 BTU/hr.','Incorrect. You may have multiplied by 5 instead of 4.','Incorrect.'],work:'Formula: Output = BHP × 33,475\nGiven: BHP = 4\nStep 1: Output = 4 × 33,475 = 133,900 BTU/hr\nNote: 1 BHP = 33,475 BTU/hr = evaporating 34.5 lbs of water per hour at 212°F'},{n:6,cat:'Refrigeration',p:2,t:'mc',q:'An R-410A system has a suction pressure of 118 psig. The suction line temperature is 52°F. The saturated suction temperature at 118 psig is 40°F. What is the superheat?',o:['92°F','78°F','12°F','52°F'],a:2,ex:['Incorrect. You added instead of subtracting.','Incorrect.','CORRECT — Superheat = Actual temp − Saturation temp = 52°F − 40°F = 12°F. This tells you the refrigerant is fully vaporized plus 12° of additional sensible heat.','Incorrect. 52°F is the actual line temperature, not the superheat.'],work:'Formula: Superheat = Actual Suction Line Temp − Saturated Suction Temp\nGiven: Suction pressure = 118 psig → Sat temp = 40°F | Line temp = 52°F\nStep 1: SH = 52 - 40 = 12°F\nNormal range: 8-12°F superheat for most TXV systems'},{n:7,cat:'Refrigeration',p:2,t:'mc',q:'An R-410A system has a liquid line pressure of 418 psig (saturation temp = 110°F). The liquid line temperature reads 98°F. What is the subcooling?',o:['98°F','12°F','110°F','318°F'],a:1,ex:['Incorrect.','CORRECT — Subcooling = Saturation temp − Actual liquid temp = 110°F − 98°F = 12°F. This means the liquid is 12° below its boiling point, ensuring solid liquid reaches the metering device.','Incorrect. 110°F is the saturation temperature.','Incorrect.'],work:'Formula: Subcooling = Saturated Liquid Temp − Actual Liquid Line Temp\nGiven: Liquid pressure = 418 psig → Sat temp = 110°F | Line temp = 98°F\nStep 1: SC = 110 - 98 = 12°F\nNormal range: 10-15°F subcooling for most systems'},{n:8,cat:'Refrigeration',p:2,t:'mc',q:'A compressor has a suction pressure of 70 psig and a discharge pressure of 325 psig. What is the compression ratio? (Atmospheric pressure = 14.7 psia)',o:['4.64:1','4.01:1','3.91:1','5.12:1'],a:1,ex:['Incorrect. You may not have converted to absolute pressure correctly.','CORRECT — Must convert to PSIA first. Suction = 70 + 14.7 = 84.7 psia. Discharge = 325 + 14.7 = 339.7 psia. CR = 339.7 ÷ 84.7 = 4.01:1','Incorrect.','Incorrect.'],work:'Formula: CR = Discharge PSIA ÷ Suction PSIA\nGiven: Suction = 70 psig | Discharge = 325 psig\nStep 1: Convert to PSIA → Suction = 70 + 14.7 = 84.7 psia\nStep 2: Discharge = 325 + 14.7 = 339.7 psia\nStep 3: CR = 339.7 ÷ 84.7 = 4.01:1\nIMPORTANT: Always use absolute pressure (PSIA), not gauge (PSIG)'},{n:9,cat:'Refrigeration',p:2,t:'mc',q:'A refrigeration system removes 60,000 BTU/hr from a walk-in cooler. How many tons of refrigeration is this?',o:['3 tons','4 tons','5 tons','6 tons'],a:2,ex:['Incorrect.','Incorrect.','CORRECT — 1 ton = 12,000 BTU/hr. Tons = 60,000 ÷ 12,000 = 5 tons.','Incorrect.'],work:'Formula: Tons = BTU/hr ÷ 12,000\nGiven: Capacity = 60,000 BTU/hr\nStep 1: Tons = 60,000 ÷ 12,000 = 5 tons\nNote: 1 ton = 12,000 BTU/hr = the cooling effect of melting 1 ton (2000 lbs) of ice in 24 hours'},{n:10,cat:'Electrical',p:2,t:'mc',q:'A 240V single-phase compressor draws 18 amps during operation. What is the power consumption in watts?',o:['4,320 watts','2,160 watts','3,600 watts','6,480 watts'],a:0,ex:['CORRECT — P = V × I = 240 × 18 = 4,320 watts. For single phase, it\'s simply voltage times current.','Incorrect. You may have divided by 2.','Incorrect.','Incorrect.'],work:'Formula: P = V × I (single phase)\nGiven: V = 240V | I = 18A\nStep 1: P = 240 × 18 = 4,320 watts\nNote: For 3-phase → P = V × I × 1.732 (√3)'},{n:11,cat:'Electrical',p:2,t:'mc',q:'A 24V control circuit has a relay coil rated at 40 ohms. How much current does it draw?',o:['0.6 amps','960 amps','1.67 amps','16 amps'],a:0,ex:['CORRECT — Ohm\'s Law: I = V ÷ R = 24 ÷ 40 = 0.6 amps (600 milliamps).','Incorrect. V × R is not the correct formula.','Incorrect.','Incorrect.'],work:'Formula: I = V ÷ R (Ohm\'s Law)\nGiven: V = 24V | R = 40Ω\nStep 1: I = 24 ÷ 40 = 0.6 amps\nOhm\'s Law triangle: V = I × R | I = V ÷ R | R = V ÷ I'},{n:12,cat:'Electrical',p:2,t:'mc',q:'A 5 kW electric heat strip operates on 240V single phase. What is the amperage draw?',o:['20.83 amps','48 amps','10.42 amps','1,200 amps'],a:0,ex:['CORRECT — I = P ÷ V = 5,000W ÷ 240V = 20.83 amps. Remember to convert kW to watts first (5 kW = 5,000W).','Incorrect.','Incorrect. You may have divided by 480 instead of 240.','Incorrect.'],work:'Formula: I = P ÷ V\nGiven: P = 5 kW = 5,000W | V = 240V\nStep 1: I = 5,000 ÷ 240 = 20.83 amps\nAlso: 1 kW = 3,412 BTU/hr, so 5 kW = 17,060 BTU/hr'},{n:13,cat:'Electrical',p:2,t:'mc',q:'What is the resistance of a run capacitor circuit that has 370V across it and draws 2.5 amps?',o:['925 ohms','148 ohms','0.00676 ohms','74 ohms'],a:1,ex:['Incorrect. You multiplied V × I.','CORRECT — R = V ÷ I = 370 ÷ 2.5 = 148 ohms.','Incorrect.','Incorrect.'],work:'Formula: R = V ÷ I\nGiven: V = 370V | I = 2.5A\nStep 1: R = 370 ÷ 2.5 = 148 ohms'},{n:14,cat:'Conversions',p:2,t:'mc',q:'Convert 68°F to Celsius.',o:['20°C','36°C','154°C','35.5°C'],a:0,ex:['CORRECT — °C = (°F − 32) × 5/9 = (68 − 32) × 5/9 = 36 × 0.5556 = 20°C.','Incorrect. You may have multiplied by 9/5 instead of 5/9.','Incorrect. You may have added 32 instead of subtracting.','Incorrect.'],work:'Formula: °C = (°F − 32) × 5/9\nGiven: °F = 68\nStep 1: 68 - 32 = 36\nStep 2: 36 × 5/9 = 36 × 0.5556 = 20°C\nReverse: °F = (°C × 9/5) + 32'},{n:15,cat:'Conversions',p:2,t:'mc',q:'A gauge reads 28 inches of mercury vacuum. Convert this to PSIA. (1 atm = 29.92 in. Hg = 14.696 psia)',o:['0.94 psia','13.76 psia','14.7 psia','28 psia'],a:0,ex:['CORRECT — First find how much vacuum: 28 in.Hg out of 29.92. PSIA = (29.92 − 28) ÷ 29.92 × 14.696 = 1.92 ÷ 29.92 × 14.696 = 0.0642 × 14.696 = 0.94 psia. Very close to a perfect vacuum!','Incorrect.','Incorrect. 14.7 is atmospheric — no vacuum at all.','Incorrect.'],work:'Formula: PSIA = ((29.92 − in.Hg vacuum) ÷ 29.92) × 14.696\nGiven: Vacuum = 28 in.Hg\nStep 1: Remaining pressure = 29.92 - 28 = 1.92 in.Hg\nStep 2: PSIA = (1.92 ÷ 29.92) × 14.696 = 0.0642 × 14.696 = 0.94 psia'},{n:16,cat:'Conversions',p:2,t:'mc',q:'Convert 150 psig to psia.',o:['135.3 psia','164.7 psia','150 psia','14.7 psia'],a:1,ex:['Incorrect. You subtracted instead of adding.','CORRECT — PSIA = PSIG + 14.7 = 150 + 14.7 = 164.7 psia. Absolute pressure = gauge pressure + atmospheric pressure.','Incorrect. PSIG and PSIA are not the same.','Incorrect. 14.7 is atmospheric pressure only.'],work:'Formula: PSIA = PSIG + 14.7\nGiven: PSIG = 150\nStep 1: PSIA = 150 + 14.7 = 164.7 psia\nReverse: PSIG = PSIA − 14.7'},{n:17,cat:'Airflow',p:2,t:'mc',q:'A round duct is 12 inches in diameter. What is the cross-sectional area in square feet?',o:['0.785 sq ft','1.0 sq ft','3.14 sq ft','113 sq ft'],a:0,ex:['CORRECT — Area = π × r² = π × (6/12)² = 3.14159 × 0.25 = 0.785 sq ft. Convert radius to feet: 6 inches = 0.5 ft.','Incorrect.','Incorrect. You calculated in square inches and forgot to convert.','Incorrect. 113 is the area in square inches, not square feet.'],work:'Formula: A = π × r² (convert to feet first)\nGiven: Diameter = 12" → Radius = 6" = 0.5 ft\nStep 1: A = π × (0.5)² = 3.14159 × 0.25 = 0.785 sq ft\nOr in sq inches: π × 6² = 113.1 sq in ÷ 144 = 0.785 sq ft'},{n:18,cat:'Airflow',p:2,t:'mc',q:'Air flows through a 12" round duct at 800 FPM (feet per minute). What is the CFM?',o:['628 CFM','800 CFM','9,600 CFM','401 CFM'],a:0,ex:['CORRECT — CFM = Area × Velocity. Area = 0.785 sq ft (from π × 0.5²). CFM = 0.785 × 800 = 628 CFM.','Incorrect. 800 is the velocity, not the volume.','Incorrect.','Incorrect.'],work:'Formula: CFM = Area (sq ft) × Velocity (FPM)\nGiven: 12" duct → Area = 0.785 sq ft | Velocity = 800 FPM\nStep 1: CFM = 0.785 × 800 = 628 CFM\nNote: Also CFM = Velocity × (D/2)² × π ÷ 144 if working in inches'},{n:19,cat:'BTU & Heat',p:2,t:'mc',q:'A gas furnace has an input rating of 100,000 BTU/hr and an AFUE of 92%. What is the output?',o:['100,000 BTU/hr','92,000 BTU/hr','108,696 BTU/hr','80,000 BTU/hr'],a:1,ex:['Incorrect. That\'s the input, not accounting for efficiency.','CORRECT — Output = Input × Efficiency = 100,000 × 0.92 = 92,000 BTU/hr. The remaining 8% (8,000 BTU/hr) is lost up the flue.','Incorrect. You divided instead of multiplying.','Incorrect. That would be 80% efficiency.'],work:'Formula: Output = Input × AFUE (as decimal)\nGiven: Input = 100,000 BTU/hr | AFUE = 92% = 0.92\nStep 1: Output = 100,000 × 0.92 = 92,000 BTU/hr\nNote: AFUE = Annual Fuel Utilization Efficiency'},{n:20,cat:'Electrical',p:2,t:'mc',q:'How many BTU/hr does a 10 kW electric heater produce?',o:['29,300 BTU/hr','34,120 BTU/hr','10,000 BTU/hr','3,412 BTU/hr'],a:1,ex:['Incorrect.','CORRECT — 1 kW = 3,412 BTU/hr. So 10 × 3,412 = 34,120 BTU/hr.','Incorrect. 10,000 is watts, not BTU.','Incorrect. 3,412 is for 1 kW, not 10.'],work:'Formula: BTU/hr = kW × 3,412\nGiven: kW = 10\nStep 1: BTU/hr = 10 × 3,412 = 34,120 BTU/hr\nNote: 1 watt = 3.412 BTU/hr | 1 kW = 3,412 BTU/hr'},{n:21,cat:'Refrigeration',p:2,t:'mc',q:'A system has a cooling capacity of 36,000 BTU/hr and a power input of 3,000 watts. What is the EER?',o:['12.0','10.8','108','0.083'],a:0,ex:['CORRECT — EER = BTU/hr ÷ Watts = 36,000 ÷ 3,000 = 12.0. Higher EER = more efficient.','Incorrect.','Incorrect. You may have multiplied.','Incorrect. That\'s watts ÷ BTU.'],work:'Formula: EER = BTU/hr ÷ Watts\nGiven: Capacity = 36,000 BTU/hr | Power = 3,000W\nStep 1: EER = 36,000 ÷ 3,000 = 12.0\nNote: SEER is seasonal average. EER is at a single condition (95°F outdoor).'},{n:22,cat:'BTU & Heat',p:2,t:'mc',q:'Steam at 0 psig contains 970.4 BTU/lb of latent heat. How much heat is released when 200 lbs of steam condenses?',o:['194,080 BTU','97,040 BTU','388,160 BTU','4,852 BTU'],a:0,ex:['CORRECT — Q = mass × latent heat = 200 × 970.4 = 194,080 BTU. This is the heat released during condensation (phase change only, no temperature change).','Incorrect. You may have used 100 lbs.','Incorrect.','Incorrect.'],work:'Formula: Q = m × hfg\nGiven: m = 200 lbs | hfg = 970.4 BTU/lb (at 0 psig)\nStep 1: Q = 200 × 970.4 = 194,080 BTU\nNote: hfg = latent heat of vaporization. At 0 psig, steam condenses at 212°F.'},{n:23,cat:'Airflow',p:2,t:'mc',q:'A building requires 400 CFM per ton of cooling. If the AC system is 3.5 tons, what total CFM is needed?',o:['1,400 CFM','1,200 CFM','114 CFM','4,200 CFM'],a:0,ex:['CORRECT — CFM = 400 × tons = 400 × 3.5 = 1,400 CFM. The 400 CFM/ton rule of thumb ensures proper dehumidification and comfort.','Incorrect.','Incorrect. You divided instead of multiplying.','Incorrect.'],work:'Formula: Total CFM = CFM per ton × Tons\nGiven: 400 CFM/ton | 3.5 tons\nStep 1: CFM = 400 × 3.5 = 1,400 CFM\nNote: 350-400 CFM/ton is standard. Lower CFM = better dehumidification but risk of coil icing.'},{n:24,cat:'Conversions',p:2,t:'mc',q:'How many gallons of water are in a system that contains 1,200 lbs of water?',o:['144 gallons','10,000 gallons','100 gallons','9,996 gallons'],a:0,ex:['CORRECT — Gallons = Weight ÷ 8.33 = 1,200 ÷ 8.33 = 144 gallons. Water weighs 8.33 lbs per gallon.','Incorrect.','Incorrect.','Incorrect. You may have multiplied instead of dividing.'],work:'Formula: Gallons = Weight (lbs) ÷ 8.33\nGiven: Weight = 1,200 lbs\nStep 1: Gallons = 1,200 ÷ 8.33 = 144 gallons\nNote: 1 gallon of water = 8.33 lbs | 1 cubic foot = 7.48 gallons = 62.4 lbs'},{n:25,cat:'BTU & Heat',p:2,t:'mc',q:'How many BTU are needed to convert 10 lbs of 212°F water into 212°F steam?',o:['2,120 BTU','1,800 BTU','9,704 BTU','970 BTU'],a:2,ex:['Incorrect.','Incorrect. 180 BTU/lb is sensible heat to raise water from 32°F to 212°F.','CORRECT — Latent heat of vaporization = 970.4 BTU/lb. Q = 10 × 970.4 = 9,704 BTU. No temperature change occurs — all energy goes into changing phase from liquid to gas.','Incorrect. That\'s for 1 lb, not 10.'],work:'Formula: Q = m × hfg\nGiven: m = 10 lbs | hfg = 970.4 BTU/lb\nStep 1: Q = 10 × 970.4 = 9,704 BTU\nKey: Sensible heat changes temperature. Latent heat changes state (phase). At 212°F/0 psig, water absorbs 970.4 BTU/lb to become steam with NO temperature change.'}];
-const L='ABCDEFGHIJ',TL={mc:'Multiple Choice'};
-let S={scr:'start',mode:'practice',i:0,ans:{},txt:{},chk:{},sg:false,graded:false,flt:'all',shuf:null,view:'quiz'};
+
+
+const L='ABCDEFGHIJ',TL={mc:'Multiple Choice',tf:'True / False',fill:'Fill in the Blank',short:'Short Answer',essay:'Essay',num:'Numerical'};
+const TP=Q.reduce((s,q)=>s+q.p,0);
+let S={scr:'start',mode:'practice',i:0,ans:{},txt:{},chk:{},sg:false,graded:false,flt:'all',shuf:null};
 
 function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 function qs(){return S.shuf||Q;}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-function render(){var el=document.getElementById('app');
-if(S.view==='formulas')return rFormulas(el);
+// Calculate running score
+function calcScore(){
+const all=qs();
+let cor=0,wrg=0,pts=0,maxPts=0,checked=0;
+all.forEach(q=>{
+if(!S.chk[q.n]) return;
+if(q.a===-1) return; // skip non-gradable
+checked++;
+maxPts+=q.p;
+if(S.ans[q.n]===q.a){cor++;pts+=q.p;}
+else if(S.ans[q.n]!==undefined){wrg++;}
+});
+const gradable=all.filter(q=>q.a!==-1).length;
+const totalGradablePts=all.filter(q=>q.a!==-1).reduce((s,q)=>s+q.p,0);
+const pct=maxPts>0?Math.round((pts/maxPts)*100):0;
+return {cor,wrg,pts,maxPts,checked,pct,gradable,totalGradablePts};
+}
+
+function scoreBarHTML(){
+const sc=calcScore();
+const isExam=S.mode==='exam'&&!S.graded;
+const noData=sc.checked===0;
+const pctColor=sc.pct>=70?'var(--ok)':sc.pct>=50?'var(--warn)':'var(--no)';
+const barColor=sc.pct>=70?'var(--ok)':sc.pct>=50?'var(--warn)':'var(--no)';
+
+return `<div class="score-bar${isExam?' exam-mode':''}${noData?' no-data':''}">
+<div class="sc-section">
+<div class="sc-val" style="color:var(--ok)">${sc.cor}</div>
+<div class="sc-lbl">Correct</div>
+</div>
+<div class="sc-section">
+<div class="sc-val" style="color:var(--no)">${sc.wrg}</div>
+<div class="sc-lbl">Wrong</div>
+</div>
+<div class="sc-section">
+<div class="sc-val" style="color:var(--accent)">${sc.pts}<span style="font-size:.65em;color:var(--text2)">/${sc.checked>0?sc.maxPts:sc.totalGradablePts}</span></div>
+<div class="sc-lbl">Points</div>
+</div>
+<div class="sc-pct-wrap">
+<div class="sc-pct-bar"><div class="sc-pct-fill" style="width:${noData?0:sc.pct}%;background:${barColor}"></div></div>
+<div class="sc-pct-num" style="color:${noData?'var(--text2)':pctColor}">${noData?'—':sc.pct+'%'}</div>
+</div>
+</div>`;
+}
+
+function render(){
+const el=document.getElementById('app');
 if(S.scr==='start')return rStart(el);
 if(S.scr==='quiz')return rQuiz(el);
 if(S.scr==='results')return rResults(el);
 }
 
-function rFormulas(el){
-el.innerHTML='<div class="start"><h1>\ud83d\udcca HVAC Formula Cheat Sheet</h1><p class="sub">Every formula you need, organized by category</p>'+
-'<div class="tabs"><button class="tab active" onclick="S.view=\'formulas\';render()">Formulas</button><button class="tab" onclick="S.view=\'quiz\';S.scr=\'start\';render()">Practice Questions</button></div>'+
-
-'<div class="fc"><h3>\ud83d\udd25 BTU &amp; Heat Transfer</h3>'+
-'<div class="fm"><span class="fn">Sensible Heat (Air)</span><span class="ff">Q = 1.08 \u00d7 CFM \u00d7 \u0394T</span></div><div class="fd">For air through a coil or duct. 1.08 = air density \u00d7 specific heat \u00d7 60 min/hr</div>'+
-'<div class="fm"><span class="fn">Sensible Heat (Water)</span><span class="ff">Q = 500 \u00d7 GPM \u00d7 \u0394T</span></div><div class="fd">For water through a heat exchanger. 500 = 8.33 lb/gal \u00d7 1.0 sp.ht. \u00d7 60 min/hr</div>'+
-'<div class="fm"><span class="fn">Heat (General)</span><span class="ff">Q = m \u00d7 c \u00d7 \u0394T</span></div><div class="fd">mass (lbs) \u00d7 specific heat \u00d7 temperature change. Water c = 1.0 BTU/lb\u00b0F</div>'+
-'<div class="fm"><span class="fn">Latent Heat</span><span class="ff">Q = m \u00d7 hfg</span></div><div class="fd">mass \u00d7 latent heat of vaporization. No temp change \u2014 phase change only</div>'+
-'<div class="fm"><span class="fn">Boiler HP</span><span class="ff">1 BHP = 33,475 BTU/hr</span></div>'+
-'<div class="fm"><span class="fn">Steam EDR</span><span class="ff">1 sq ft EDR = 240 BTU/hr</span></div>'+
-'<div class="fm"><span class="fn">Hot Water EDR</span><span class="ff">1 sq ft EDR = 150 BTU/hr</span></div>'+
-'<div class="fm"><span class="fn">Furnace Output</span><span class="ff">Output = Input \u00d7 AFUE</span></div>'+
-'</div>'+
-
-'<div class="fc"><h3>\u2744\ufe0f Refrigeration</h3>'+
-'<div class="fm"><span class="fn">Superheat</span><span class="ff">SH = Actual Suction Temp \u2212 Sat. Suction Temp</span></div><div class="fd">Normal TXV: 8\u201312\u00b0F. Read sat temp from PT chart at suction pressure.</div>'+
-'<div class="fm"><span class="fn">Subcooling</span><span class="ff">SC = Sat. Liquid Temp \u2212 Actual Liquid Temp</span></div><div class="fd">Normal: 10\u201315\u00b0F. Read sat temp from PT chart at liquid/head pressure.</div>'+
-'<div class="fm"><span class="fn">Compression Ratio</span><span class="ff">CR = Discharge PSIA \u00f7 Suction PSIA</span></div><div class="fd">MUST convert to absolute (PSIA = PSIG + 14.7). Normal CR: 3:1 to 4:1</div>'+
-'<div class="fm"><span class="fn">Tons of Refrigeration</span><span class="ff">Tons = BTU/hr \u00f7 12,000</span></div><div class="fd">1 ton = 12,000 BTU/hr = melting 2,000 lbs ice in 24 hrs</div>'+
-'<div class="fm"><span class="fn">EER</span><span class="ff">EER = BTU/hr \u00f7 Watts</span></div>'+
-'<div class="fm"><span class="fn">COP</span><span class="ff">COP = BTU output \u00f7 BTU input</span></div><div class="fd">COP = EER \u00f7 3.412</div>'+
-'</div>'+
-
-'<div class="fc"><h3>\u26a1 Electrical</h3>'+
-'<div class="fm"><span class="fn">Ohm\u2019s Law: Voltage</span><span class="ff">V = I \u00d7 R</span></div>'+
-'<div class="fm"><span class="fn">Ohm\u2019s Law: Current</span><span class="ff">I = V \u00f7 R</span></div>'+
-'<div class="fm"><span class="fn">Ohm\u2019s Law: Resistance</span><span class="ff">R = V \u00f7 I</span></div>'+
-'<div class="fm"><span class="fn">Power (Single Phase)</span><span class="ff">P = V \u00d7 I</span></div>'+
-'<div class="fm"><span class="fn">Power (Three Phase)</span><span class="ff">P = V \u00d7 I \u00d7 1.732</span></div>'+
-'<div class="fm"><span class="fn">kW to BTU/hr</span><span class="ff">1 kW = 3,412 BTU/hr</span></div>'+
-'<div class="fm"><span class="fn">HP to Watts</span><span class="ff">1 HP = 746 Watts</span></div>'+
-'</div>'+
-
-'<div class="fc"><h3>\ud83c\udf2c\ufe0f Airflow</h3>'+
-'<div class="fm"><span class="fn">CFM</span><span class="ff">CFM = Area (sq ft) \u00d7 Velocity (FPM)</span></div>'+
-'<div class="fm"><span class="fn">Duct Area (round)</span><span class="ff">A = \u03c0 \u00d7 r\u00b2 (in sq ft)</span></div><div class="fd">Convert radius to feet first. 12\u201d duct: r = 0.5 ft \u2192 A = 0.785 sq ft</div>'+
-'<div class="fm"><span class="fn">CFM per Ton</span><span class="ff">400 CFM per ton (rule of thumb)</span></div>'+
-'<div class="fm"><span class="fn">Sensible Heat Ratio</span><span class="ff">SHR = Sensible BTU \u00f7 Total BTU</span></div>'+
-'</div>'+
-
-'<div class="fc"><h3>\ud83d\udd04 Conversions</h3>'+
-'<div class="fm"><span class="fn">\u00b0F to \u00b0C</span><span class="ff">\u00b0C = (\u00b0F \u2212 32) \u00d7 5/9</span></div>'+
-'<div class="fm"><span class="fn">\u00b0C to \u00b0F</span><span class="ff">\u00b0F = (\u00b0C \u00d7 9/5) + 32</span></div>'+
-'<div class="fm"><span class="fn">PSIG to PSIA</span><span class="ff">PSIA = PSIG + 14.7</span></div>'+
-'<div class="fm"><span class="fn">PSIA to PSIG</span><span class="ff">PSIG = PSIA \u2212 14.7</span></div>'+
-'<div class="fm"><span class="fn">Water Weight</span><span class="ff">1 gallon = 8.33 lbs</span></div>'+
-'<div class="fm"><span class="fn">Water Volume</span><span class="ff">1 cu ft = 7.48 gallons = 62.4 lbs</span></div>'+
-'<div class="fm"><span class="fn">Perfect Vacuum</span><span class="ff">29.92 in.Hg = 0 psia</span></div>'+
-'</div>'+
-
-'<div class="fc"><h3>\ud83d\udca7 Steam Quick Values (at 0 PSIG)</h3>'+
-'<div class="fm"><span class="fn">Boiling Point</span><span class="ff">212\u00b0F</span></div>'+
-'<div class="fm"><span class="fn">Sensible Heat (hf)</span><span class="ff">180 BTU/lb</span></div>'+
-'<div class="fm"><span class="fn">Latent Heat (hfg)</span><span class="ff">970.4 BTU/lb</span></div>'+
-'<div class="fm"><span class="fn">Total Heat (hg)</span><span class="ff">1,150.4 BTU/lb</span></div>'+
-'</div>'+
-
-'</div>';
-}
-
 function rStart(el){
-el.innerHTML='<div class="start"><h1>\ud83d\udcca HVAC Math &amp; Formulas</h1><p class="sub">25 Scenario Questions with Step-by-Step Solutions</p>'+
-'<div class="tabs"><button class="tab" onclick="S.view=\'formulas\';render()">Formula Cheat Sheet</button><button class="tab active" onclick="S.view=\'quiz\';S.scr=\'start\';render()">Practice Questions</button></div>'+
-'<div class="stats"><div class="sb"><div class="v">25</div><div class="l">Problems</div></div><div class="sb"><div class="v">5</div><div class="l">Categories</div></div><div class="sb"><div class="v">\ud83d\udcdd</div><div class="l">Worked Solutions</div></div></div>'+
-'<div class="modes">'+
-'<div class="mb '+(S.mode==='practice'?'on':'')+'" onclick="setM(\'practice\')"><h3>\u2705 Practice</h3><p>Check each answer and see the full worked solution step-by-step.</p></div>'+
-'<div class="mb '+(S.mode==='exam'?'on':'')+'" onclick="setM(\'exam\')"><h3>\ud83d\udcdd Exam</h3><p>No feedback until submit.</p></div>'+
-'<div class="mb '+(S.mode==='shuffle'?'on':'')+'" onclick="setM(\'shuffle\')"><h3>\ud83d\udd00 Shuffle</h3><p>Random order with instant feedback.</p></div></div>'+
-'<button class="go" onclick="startQ()">Start \u2014 25 Problems</button></div>';
-}
+el.innerHTML=`<div class="start">
+<h1>📐 HVAC Math & Formulas</h1>
+<p class="sub">25 Questions — Hydronic Systems Course Final</p>
+<div class="stats">
+<div class="sb"><div class="v">119</div><div class="l">Questions</div></div>
+<div class="sb"><div class="v">${TP}</div><div class="l">Total Points</div></div>
+<div class="sb"><div class="v">264</div><div class="l">Explanations</div></div>
+</div>
+<div class="modes">
+<div class="mb ${S.mode==='practice'?'on':''}" onclick="setM('practice')"><h3>✅ Practice</h3><p>Check answers as you go with full explanations for every choice.</p></div>
+<div class="mb ${S.mode==='exam'?'on':''}" onclick="setM('exam')"><h3>📝 Exam</h3><p>No feedback until submit. Simulates real test conditions.</p></div>
+<div class="mb ${S.mode==='shuffle'?'on':''}" onclick="setM('shuffle')"><h3>🔀 Shuffle</h3><p>Randomized order with instant explanations. Great for review.</p></div>
+</div>
+<button class="go" onclick="startQ()">Start Exam</button>
+<p class="disclaimer">Answer key based on engineering principles. Verify with your course materials.</p>
+</div>`;}
 
 function rQuiz(el){
-var all=qs(),q=all[S.i],done=S.ans[q.n]!==undefined,checked=S.chk[q.n];
-var prog=Object.keys(S.ans).length;
-var grid='';if(S.sg){grid='<div class="gp"><div class="gr">'+all.map(function(qq,i){var c='gd';if(i===S.i)c+=' cur';if(S.ans[qq.n]!==undefined)c+=' ans';if(S.chk[qq.n]&&S.ans[qq.n]===qq.a)c+=' gc';if(S.chk[qq.n]&&S.ans[qq.n]!==undefined&&S.ans[qq.n]!==qq.a)c+=' gw';return'<div class="'+c+'" onclick="go('+i+')">'+qq.n+'</div>';}).join('')+'</div></div>';}
-var opts='<div class="opts">'+q.o.map(function(o,i){var c='op';if(S.ans[q.n]===i)c+=' sel';if(checked){c+=' dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a)c='op cor dis';}var exH='';if(checked&&q.ex&&q.ex[i]){var isC=i===q.a;exH='<div class="ex-box '+(isC?'ex-ok':'ex-no')+'">'+esc(q.ex[i])+'</div>';}return'<div class="'+c+'" onclick="sel('+q.n+','+i+')"><span class="ol">'+L[i]+'</span><div class="ot">'+esc(o)+exH+'</div></div>';}).join('')+'</div>';
-var workHTML='';if(checked&&q.work){workHTML='<div class="work-box">'+esc(q.work).replace(/\n/g,'<br>').replace(/(Formula|Given|Step \d+|Note|IMPORTANT|Key|Reverse|Also|Normal range|Remember):/g,'<span class="wl">$1:</span>').replace(/(= [\d,.]+[^<]*)/g,'<span class="wv">$1</span>')+'</div>';}
-var canChk=S.mode!=='exam'&&!checked&&done;
-var catBadge=q.cat?'<span class="qt" style="background:rgba(74,158,255,.1);color:var(--accent)">'+q.cat+'</span>':'';
-el.innerHTML='<div class="hdr"><span class="t">HVAC Math</span><span class="pi">'+prog+'/'+all.length+'</span><button class="gt" onclick="tg()">'+(S.sg?'Hide':'Show')+' Map</button></div><div class="pb"><div class="pf" style="width:'+(prog/all.length*100)+'%"></div></div>'+grid+'<div class="qc"><div class="qm"><span class="qn">Q'+q.n+'</span>'+catBadge+'<span class="qp">'+q.p+' pts</span></div><div class="qq">'+esc(q.q)+'</div>'+opts+workHTML+'</div><div class="nav"><button class="nb" onclick="go('+(S.i-1)+')"'+(S.i===0?' disabled':'')+'>Prev</button><div class="nc">'+(canChk?'<button class="nb ck" onclick="chk('+q.n+')">Check</button>':'')+(S.mode==='exam'&&!S.graded?'<button class="nb pr" onclick="submit()" style="background:#f59e0b;border-color:#f59e0b">Submit</button>':'')+'</div><button class="nb'+(S.i===all.length-1?' pr':'')+'" onclick="'+(S.i===all.length-1?(S.mode==='exam'?'submit()':'showR()'):'go('+(S.i+1)+')')+'">'+(S.i===all.length-1?(S.mode==='exam'?'Submit':'Results'):'Next')+'</button></div>';
-}
+const all=qs(),q=all[S.i],done=S.ans[q.n]!==undefined,checked=S.chk[q.n],isT=q.o.length===0;
+const prog=Object.keys(S.ans).length+Object.keys(S.txt).filter(k=>S.txt[k]).length;
+let grid='';
+if(S.sg){grid=`<div class="gp"><div class="gr">${all.map((qq,i)=>{
+let c='gd';if(i===S.i)c+=' cur';
+if(S.ans[qq.n]!==undefined||S.txt[qq.n])c+=' ans';
+if(S.chk[qq.n]&&S.ans[qq.n]===qq.a)c+=' gc';
+if(S.chk[qq.n]&&S.ans[qq.n]!==undefined&&S.ans[qq.n]!==qq.a)c+=' gw';
+return`<div class="${c}" onclick="go(${i})">${qq.n}</div>`;}).join('')}</div></div>`;}
 
-function rResults(el){var all=qs(),cor=0,wrg=0;all.forEach(function(q){if(S.ans[q.n]===q.a)cor++;else if(S.ans[q.n]!==undefined)wrg++;});var skip=all.length-cor-wrg;var pct=all.length?Math.round(cor/all.length*100):0;var cc=pct>=70?'var(--ok)':pct>=50?'var(--warn)':'var(--no)';
-var rev=all.map(function(q){var os=q.o.map(function(o,i){var c2='op dis';if(i===q.a)c2+=' shw';if(S.ans[q.n]===i&&i!==q.a)c2+=' wrg';if(S.ans[q.n]===i&&i===q.a)c2='op cor dis';var exH='';if(q.ex&&q.ex[i]){var ic=i===q.a;exH='<div class="ex-box '+(ic?'ex-ok':'ex-no')+'">'+esc(q.ex[i])+'</div>';}return'<div class="'+c2+'"><span class="ol">'+L[i]+'</span><div class="ot">'+esc(o)+exH+'</div></div>';}).join('');var workH=q.work?'<div class="work-box">'+esc(q.work).replace(/\n/g,'<br>').replace(/(Formula|Given|Step \d+|Note|IMPORTANT|Key|Reverse|Also|Normal range|Remember):/g,'<span class="wl">$1:</span>').replace(/(= [\d,.]+[^<]*)/g,'<span class="wv">$1</span>')+'</div>':'';var catB=q.cat?'<span class="qt" style="background:rgba(74,158,255,.1);color:var(--accent)">'+q.cat+'</span>':'';return'<div class="qc"><div class="qm"><span class="qn">Q'+q.n+'</span>'+catB+'</div><div class="qq">'+esc(q.q)+'</div><div class="opts">'+os+'</div>'+workH+'</div>';}).join('');
-el.innerHTML='<div class="res"><h2>Results</h2><div class="sc" style="border-color:'+cc+'"><div class="pct" style="color:'+cc+'">'+pct+'%</div><div class="of">'+cor+'/'+all.length+'</div></div><div class="rg"><div class="rs"><div class="rv" style="color:var(--ok)">'+cor+'</div><div class="rl">Correct</div></div><div class="rs"><div class="rv" style="color:var(--no)">'+wrg+'</div><div class="rl">Wrong</div></div><div class="rs"><div class="rv" style="color:var(--text2)">'+skip+'</div><div class="rl">Skipped</div></div></div><div class="ra"><button class="nb" onclick="reset()">Start Over</button><button class="nb pr" onclick="retry()">Retry Wrong</button></div></div><div style="padding:0 4px">'+rev+'</div>';}
+let opts='';
+if(!isT){
+opts=`<div class="opts">${q.o.map((o,i)=>{
+let c='op';
+if(S.ans[q.n]===i)c+=' sel';
+if(checked){c+=' dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a){c='op cor dis';}}
+let exH='';
+if(checked&&q.ex&&q.ex[i]){
+const isC=i===q.a;
+exH=`<div class="ex-box ${isC?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}" onclick="sel(${q.n},${i})"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('')}</div>`;
+}else{
+const v=S.txt[q.n]||'';const rows=q.t==='essay'?5:2;
+opts=`<textarea class="ti" rows="${rows}" placeholder="Type your answer..." oninput="setT(${q.n},this.value)"${checked?' disabled':''}>${esc(v)}</textarea>`;
+if(checked){
+if(q.h)opts+=`<div class="hint"><div class="hl">Suggested Answer</div><div class="ht">${esc(q.h)}</div></div>`;
+if(q.ex&&q.ex.length)opts+=`<div class="fill-exps">${q.ex.map(e=>`<div class="fill-exp">${esc(e)}</div>`).join('')}</div>`;
+}}
 
+const canChk=S.mode!=='exam'&&!checked&&(done||(isT&&S.txt[q.n]));
+el.innerHTML=`<div class="hdr">
+<span class="t">📐 HVAC Math & Formulas</span>
+<span class="pi">${prog}/${all.length} answered</span>
+<button class="gt" onclick="tg()">${S.sg?'Hide':'Show'} Map</button>
+</div>
+${scoreBarHTML()}
+<div class="pb"><div class="pf" style="width:${(prog/all.length)*100}%"></div></div>
+${grid}
+<div class="qc">
+<div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]||q.t}</span><span class="qp">${q.p} pts</span></div>
+<div class="qq">${esc(q.q)}</div>
+${opts}
+</div>
+<div class="nav">
+<button class="nb" onclick="go(${S.i-1})" ${S.i===0?'disabled':''}>← Prev</button>
+<div class="nc">
+${canChk?`<button class="nb ck" onclick="chk(${q.n})">Check Answer</button>`:''}
+${S.mode==='exam'&&!S.graded?`<button class="nb pr" onclick="submit()" style="background:#f59e0b;border-color:#f59e0b">Submit Exam</button>`:''}
+</div>
+<button class="nb${S.i===all.length-1?' pr':''}" onclick="${S.i===all.length-1?(S.mode==='exam'?'submit()':'showR()'):`go(${S.i+1})`}">${S.i===all.length-1?(S.mode==='exam'?'Submit':'Results'):'Next →'}</button>
+</div>`;}
+
+function rResults(el){
+const all=qs();let cor=0,wrg=0,skip=0,ep=0;
+all.forEach(q=>{if(q.a===-1){skip++;return;}if(S.ans[q.n]===q.a){cor++;ep+=q.p;}else if(S.ans[q.n]!==undefined)wrg++;else skip++;});
+const grd=all.filter(q=>q.a!==-1).length,pct=grd?Math.round(cor/grd*100):0;
+const mp=all.filter(q=>q.a!==-1).reduce((s,q)=>s+q.p,0);
+const cc=pct>=70?'var(--ok)':pct>=50?'var(--warn)':'var(--no)';
+let filt=all;
+if(S.flt==='wrong')filt=all.filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);
+if(S.flt==='correct')filt=all.filter(q=>S.ans[q.n]===q.a);
+if(S.flt==='skipped')filt=all.filter(q=>S.ans[q.n]===undefined&&q.a!==-1);
+if(S.flt==='text')filt=all.filter(q=>q.a===-1);
+
+const rev=filt.map(q=>{
+const isT=q.o.length===0;let os='';
+if(!isT){os=q.o.map((o,i)=>{
+let c='op dis';if(i===q.a)c+=' shw';if(S.ans[q.n]===i&&i!==q.a)c+=' wrg';if(S.ans[q.n]===i&&i===q.a)c='op cor dis';
+let exH='';if(q.ex&&q.ex[i]){const ic=i===q.a;exH=`<div class="ex-box ${ic?'ex-ok':'ex-no'}">${esc(q.ex[i])}</div>`;}
+return`<div class="${c}"><span class="ol">${L[i]}</span><div class="ot">${esc(o)}${exH}</div></div>`;}).join('');}
+else{
+const v=S.txt[q.n]||'<em style="color:var(--text2)">No answer</em>';
+os=`<div style="padding:8px 12px;background:var(--card2);border-radius:8px;font-size:.88em">${v}</div>`;
+if(q.h)os+=`<div class="hint"><div class="hl">Suggested Answer</div><div class="ht">${esc(q.h)}</div></div>`;
+if(q.ex&&q.ex.length)os+=`<div class="fill-exps">${q.ex.map(e=>`<div class="fill-exp">${esc(e)}</div>`).join('')}</div>`;}
+return`<div class="qc"><div class="qm"><span class="qn">Q${q.n}</span><span class="qt">${TL[q.t]}</span><span class="qp">${q.p} pts</span></div><div class="qq">${esc(q.q)}</div><div class="opts">${os}</div></div>`;}).join('');
+
+el.innerHTML=`<div class="res">
+<h2>Exam Results</h2>
+<div class="sc" style="border-color:${cc}"><div class="pct" style="color:${cc}">${pct}%</div><div class="of">${cor} / ${grd}</div></div>
+<div class="rg">
+<div class="rs"><div class="rv" style="color:var(--ok)">${cor}</div><div class="rl">Correct</div></div>
+<div class="rs"><div class="rv" style="color:var(--no)">${wrg}</div><div class="rl">Wrong</div></div>
+<div class="rs"><div class="rv" style="color:var(--text2)">${skip}</div><div class="rl">Skipped</div></div>
+<div class="rs"><div class="rv" style="color:var(--accent)">${ep}/${mp}</div><div class="rl">Points</div></div>
+</div>
+<div class="ra">
+<button class="nb" onclick="reset()">← Start Over</button>
+<button class="nb pr" onclick="retry()">Retry Wrong</button>
+</div>
+</div>
+<div style="padding:0 4px">
+<div class="ft">
+<button class="fb ${S.flt==='all'?'on':''}" onclick="setF('all')">All (${all.length})</button>
+<button class="fb ${S.flt==='wrong'?'on':''}" onclick="setF('wrong')">Wrong (${wrg})</button>
+<button class="fb ${S.flt==='correct'?'on':''}" onclick="setF('correct')">Correct (${cor})</button>
+<button class="fb ${S.flt==='skipped'?'on':''}" onclick="setF('skipped')">Skipped (${skip})</button>
+<button class="fb ${S.flt==='text'?'on':''}" onclick="setF('text')">Written (${all.filter(q=>q.a===-1).length})</button>
+</div>
+${rev}
+</div>`;}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function setM(m){S.mode=m;render();}
-function startQ(){S.view='quiz';S.scr='quiz';S.i=0;S.ans={};S.chk={};S.graded=false;S.shuf=S.mode==='shuffle'?shuffle(Q):null;render();scrollTo(0,0);}
+function startQ(){S.scr='quiz';S.i=0;S.ans={};S.txt={};S.chk={};S.graded=false;S.shuf=S.mode==='shuffle'?shuffle(Q):null;render();scrollTo(0,0);}
 function sel(n,i){if(S.chk[n])return;S.ans[n]=i;render();}
+function setT(n,v){S.txt[n]=v;}
 function chk(n){S.chk[n]=true;render();}
-function go(i){var a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
+function go(i){const a=qs();if(i<0||i>=a.length)return;S.i=i;render();scrollTo(0,0);}
 function tg(){S.sg=!S.sg;render();}
-function submit(){qs().forEach(function(q){S.chk[q.n]=true;});S.graded=true;showR();}
-function showR(){S.scr='results';render();scrollTo(0,0);}
-function reset(){S.scr='start';S.mode='practice';S.shuf=null;render();scrollTo(0,0);}
-function retry(){var a=qs().filter(function(q){return S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a;});if(!a.length){alert('No wrong answers!');return;}S.shuf=a;S.ans={};S.chk={};S.scr='quiz';S.i=0;S.mode='practice';render();scrollTo(0,0);}
-document.addEventListener('keydown',function(e){if(S.scr!=='quiz')return;if(e.key==='ArrowRight'){e.preventDefault();go(S.i+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(S.i-1);}var a=qs(),q=a[S.i];if(q.o.length>0&&!S.chk[q.n]){var k='ABCDEFGHIJ'.indexOf(e.key.toUpperCase());if(k>=0&&k<q.o.length)sel(q.n,k);}});
+function submit(){qs().forEach(q=>{S.chk[q.n]=true;});S.graded=true;showR();}
+function showR(){S.scr='results';S.flt='all';render();scrollTo(0,0);}
+function reset(){S.scr='start';S.mode='practice';render();scrollTo(0,0);}
+function setF(f){S.flt=f;render();}
+function retry(){const a=qs().filter(q=>q.a!==-1&&S.ans[q.n]!==undefined&&S.ans[q.n]!==q.a);if(!a.length){alert('No wrong answers to retry!');return;}S.shuf=a;S.ans={};S.chk={};S.txt={};S.graded=false;S.scr='quiz';S.i=0;S.mode='practice';render();scrollTo(0,0);}
+document.addEventListener('keydown',e=>{if(S.scr!=='quiz')return;if(e.key==='ArrowRight'){e.preventDefault();go(S.i+1);}if(e.key==='ArrowLeft'){e.preventDefault();go(S.i-1);}const a=qs(),q=a[S.i];if(q.o.length>0&&!S.chk[q.n]){const k='ABCDEFGHIJ'.indexOf(e.key.toUpperCase());if(k>=0&&k<q.o.length)sel(q.n,k);}});
 render();
-</script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
-</body></html>
+</script>
+</body>
+</html>

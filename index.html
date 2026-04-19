@@ -1229,7 +1229,7 @@ function highlightTerms(text, terms) {
 // Leaderboard removed
 
 const TOOLS = [
-  { id: 'master', file: 'Master_HVAC_Exam.html', icon: '\ud83c\udfc6', name: 'Master Exam', desc: 'All subjects combined — 600 questions with category selectors.', questions: 600, types: '5 subjects', master: true, section: 'exams' },
+  { id: 'master', file: 'Master_HVAC_Exam.html', icon: '\ud83c\udfc6', name: 'Master Exam', desc: 'All subjects combined — 600 questions with category selectors.', questions: 577, types: '5 subjects', master: true, section: 'exams' },
   { id: 'hydronics', file: 'Hydronics_Final_Study_Tool.html', icon: '\ud83d\udca7', name: 'Hydronics Final', desc: 'Hydronic heating/cooling — piping, valves, pumps, heat transfer.', questions: 119, types: 'MC, T/F, Short, Fill, Essay', section: 'exams' },
   { id: 'steam', file: 'Steam_Exam_Study_Tool.html', icon: '\u2699\ufe0f', name: 'Steam Final', desc: 'Steam systems — boilers, traps, condensate, pressure, safety.', questions: 143, types: 'MC, T/F, Fill, Numerical', section: 'exams' },
   { id: 'hvacr', file: 'HVACR_Practice_Exam_Full.html', icon: '\u2744\ufe0f', name: 'HVAC/R Refrigeration', desc: 'Core refrigeration — cycle, components, PT relationships, charging.', questions: 120, types: 'Multiple Choice', section: 'exams' },
@@ -1238,7 +1238,7 @@ const TOOLS = [
   { id: 'practice', file: 'Practice_Test_Study_Tool.html', icon: '\ud83d\udcd0', name: 'Practice Test', desc: 'Fundamentals — BTU, pressure, volume, density, conversions.', questions: 61, types: 'Multiple Choice', section: 'exams' },
   { id: 'epa608', file: 'EPA_608_Certification_Prep.html', icon: '\ud83d\udee1\ufe0f', name: 'EPA 608 Certification', desc: 'Universal certification prep — Core, Type I, II, III. Refrigerant handling and regulations.', questions: 67, types: 'Multiple Choice', section: 'specialty' },
   { id: 'wiring', file: 'Wiring_Diagrams_Study_Tool.html', icon: '\u26a1', name: 'Wiring Diagrams', desc: 'Thermostat circuits, contactors, capacitors, motor terminals with interactive schematics.', questions: 22, types: 'Multiple Choice', section: 'specialty' },
-  { id: 'hvacmath', file: 'HVAC_Math_Formulas.html', icon: '\ud83d\udcca', name: 'HVAC Math & Formulas', desc: 'Scenario problems with step-by-step worked solutions. BTU, electrical, refrigeration, airflow.', questions: 25, types: 'Worked Solutions', section: 'specialty' },
+  { id: 'hvacmath', file: 'HVAC_Math_Formulas.html', icon: '\ud83d\udcca', name: 'HVAC Math & Formulas', desc: '25 calculation problems with worked solutions: BTU, compression ratio, superheat/subcooling, Ohm\'s Law, tonnage, COP.', questions: 25, types: 'MC, Numerical', section: 'specialty' },
   { id: 'tubebend', file: 'Tube_Bending_Calculator.html', icon: '\ud83d\udd27', name: 'Tube Bending Layout', desc: 'Setback, Advance, Holdback, Gain — 5-step procedure from your notebook. Bender charts.', questions: 0, types: 'Calculator', section: 'tools' },
   { id: 'emtbend', file: 'EMT_Conduit_Bending.html', icon: '\ud83d\udca1', name: 'EMT Conduit Bending', desc: 'Stub-ups, back-to-back, offsets, 3pt/4pt saddles, kicks. Full hand bender calculator.', questions: 0, types: 'Calculator', section: 'tools' },
   { id: 'pipefitting', file: 'Threaded_Pipe_Reference.html', icon: '\ud83d\udee0\ufe0f', name: 'Threaded Pipe Reference', desc: 'Cut length calculator with take-offs, thread engagement, NPT data, and pipe dimensions.', questions: 0, types: 'Calculator', section: 'tools' },
@@ -1246,7 +1246,9 @@ const TOOLS = [
   { id: 'charging', file: 'Refrigerant_Charging.html', icon: '\u2744\ufe0f', name: 'Charging Walkthrough', desc: 'Step-by-step subcooling and superheat methods. Enter gauge readings for live diagnosis.', questions: 0, types: 'Interactive', section: 'tools' },
   { id: 'gaspipe', file: 'Gas_Pipe_Sizing.html', icon: '\ud83d\udd25', name: 'Gas Pipe & Duct Sizing', desc: 'Gas pipe sizing from code tables plus duct sizing with equivalent lengths.', questions: 0, types: 'Calculator', section: 'tools' },
   { id: 'troubleshoot', file: 'Troubleshooting_Flowcharts.html', icon: '\ud83d\udd27', name: 'Troubleshooting', desc: '5 interactive diagnostic trees: no-start, high head, low suction, no heat, short cycling.', questions: 0, types: 'Interactive', section: 'tools' },
+  { id: 'vfdxref', file: 'VFD_Cross_Reference.html', icon: '\u26a1', name: 'VFD Cross Reference', desc: 'Parameter mapping and control wiring between ABB, Danfoss, Allen-Bradley, Yaskawa, Siemens, Toshiba.', questions: 0, types: 'Reference', section: 'tools' },
   { id: 'n2test', file: 'Nitrogen_Pressure_Test.html', icon: '\ud83e\uddea', name: 'Nitrogen Pressure Test', desc: 'Temperature compensation calculator. Is it a leak or temp change? Gay-Lussac\'s Law with full tables.', questions: 0, types: 'Calculator', section: 'tools' },
+  { id: 'mathreview', file: 'HVAC_Math_Review.html', icon: '\ud83e\uddee', name: 'Math Review', desc: '360 math questions pulled from all exams. BTU, pressure, gas laws, superheat, electrical, conversions.', questions: 360, types: 'All Types', section: 'specialty' },
   { id: 'symbols', file: 'Electrical_Symbols.html', icon: '\u26a1', name: 'Electrical Symbols', desc: '19 HVAC schematic symbols as flashcards with SVG diagrams.', questions: 19, types: 'Flashcards', section: 'specialty' },
 ];
 
