@@ -1,5 +1,5 @@
 // HVAC Study Hub — Service Worker v1
-const CACHE_NAME = 'hvac-study-v2';
+const CACHE_NAME = 'hvac-study-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -22,6 +22,8 @@ const ASSETS = [
   './Troubleshooting_Flowcharts.html',
   './Nitrogen_Pressure_Test.html',
   './Electrical_Symbols.html',
+  './HVAC_Math_Review.html',
+  './VFD_Cross_Reference.html',
   './manifest.json'
 ];
 

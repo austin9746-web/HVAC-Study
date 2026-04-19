@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VFD Cross Reference Tool</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#a78bfa;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#7c3aed;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:960px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.6em;font-weight:800;text-align:center;margin:44px 0 6px}
+.sub{text-align:center;color:var(--text2);margin-bottom:16px;font-size:.88em}
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tab{flex:1;min-width:100px;padding:10px;border-radius:var(--r);border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;font-family:inherit;font-size:.82em;font-weight:600;transition:.2s}
+.tab:hover{border-color:var(--accent)}.tab.active{border-color:var(--accent);background:rgba(167,139,250,.06);color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.card h2{font-size:1.05em;font-weight:700;color:var(--accent);margin-bottom:8px}
+.desc{font-size:.85em;color:var(--text2);margin-bottom:14px;line-height:1.5}
+.ir{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:14px}
+.ig{flex:1;min-width:180px}
+.ig label{display:block;font-size:.73em;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.ig select,.ig input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:.95em;font-family:inherit;outline:none}
+.ig select:focus,.ig input:focus{border-color:var(--accent)}
+.swap-btn{padding:10px 16px;border:2px solid var(--border);border-radius:8px;background:var(--card);color:var(--accent);font-size:1.2em;cursor:pointer;font-family:inherit;transition:.2s;flex-shrink:0}
+.swap-btn:hover{border-color:var(--accent);background:rgba(167,139,250,.06)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.82em}
+th{padding:8px;background:var(--card2);color:var(--accent);font-size:.72em;text-transform:uppercase;text-align:left;position:sticky;top:0;z-index:1}
+td{padding:8px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover td{background:rgba(167,139,250,.03)}
+td.param{font-family:monospace;font-weight:700;color:var(--ok);white-space:nowrap}
+td.pname{color:var(--text)}
+.cat-header td{background:var(--card2);font-weight:700;color:var(--accent);font-size:.85em;padding:10px 8px;border:none}
+.note{background:rgba(251,191,36,.06);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:var(--text2);margin-top:12px;line-height:1.5}
+.note strong{color:var(--warn)}
+.wire-card{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin:8px 0}
+.wire-card h3{font-size:.85em;color:var(--accent);margin-bottom:6px}
+.wire-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:.85em}
+.wire-row:last-child{border:none}
+.wl{color:var(--text2)}.wv{font-family:monospace;font-weight:700}
+.wv.from{color:var(--no)}.wv.to{color:var(--ok)}
+.arrow{color:var(--accent);font-weight:700;margin:0 6px}
+.search-box{margin-bottom:14px}
+.search-box input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:.9em;font-family:inherit;outline:none}
+.search-box input:focus{border-color:var(--accent)}
+.badge{display:inline-block;font-size:.68em;padding:2px 8px;border-radius:10px;font-weight:600}
+.badge.hvac{background:rgba(52,211,153,.1);color:var(--ok)}
+.badge.motor{background:rgba(74,158,255,.1);color:#4a9eff}
+.badge.comm{background:rgba(251,191,36,.1);color:var(--warn)}
+.badge.io{background:rgba(248,113,113,.1);color:var(--no)}
+@media(max-width:600px){.app{padding:8px}h1{font-size:1.3em;margin-top:50px}.ir{flex-direction:column}td,th{padding:5px 4px;font-size:.75em}}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app">
+<h1>&#x26a1; VFD Cross Reference</h1>
+<p class="sub">Parameter mapping &amp; control wiring between brands</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="sT('params')">Parameters</button>
+  <button class="tab" onclick="sT('wiring')">Control Wiring</button>
+  <button class="tab" onclick="sT('hvac')">HVAC Quick Setup</button>
+  <button class="tab" onclick="sT('ref')">Reference</button>
+</div>
+
+<div id="tab-params" class="card">
+  <h2>Parameter Cross Reference</h2>
+  <div class="desc">Select the VFD you're replacing (FROM) and the new VFD (TO). The table maps every common parameter between brands.</div>
+  <div class="ir">
+    <div class="ig"><label>From (Old VFD)</label><select id="vfd-from" onchange="renderParams()"></select></div>
+    <div class="ig" style="flex:0;min-width:auto"><button class="swap-btn" onclick="swapVFD()" title="Swap">&hArr;</button></div>
+    <div class="ig"><label>To (New VFD)</label><select id="vfd-to" onchange="renderParams()"></select></div>
+  </div>
+  <div class="search-box"><input type="text" id="param-search" placeholder="Filter parameters..." oninput="renderParams()"></div>
+  <div id="param-table"></div>
+</div>
+
+<div id="tab-wiring" class="card" style="display:none">
+  <h2>Control Wiring Cross Reference</h2>
+  <div class="desc">Terminal-to-terminal mapping for control wiring when swapping drives. Select both brands to see which terminals to reconnect.</div>
+  <div class="ir">
+    <div class="ig"><label>From (Old VFD)</label><select id="wire-from" onchange="renderWiring()"></select></div>
+    <div class="ig" style="flex:0;min-width:auto"><button class="swap-btn" onclick="swapWire()" title="Swap">&hArr;</button></div>
+    <div class="ig"><label>To (New VFD)</label><select id="wire-to" onchange="renderWiring()"></select></div>
+  </div>
+  <div id="wire-table"></div>
+</div>
+
+<div id="tab-hvac" class="card" style="display:none">
+  <h2>HVAC Quick Setup Guide</h2>
+  <div class="desc">Common parameter settings for a typical HVAC fan/pump application. Select your new VFD brand to see the exact parameters to set.</div>
+  <div class="ir">
+    <div class="ig"><label>VFD Brand</label><select id="hvac-brand" onchange="renderHVAC()"></select></div>
+    <div class="ig"><label>Application</label><select id="hvac-app" onchange="renderHVAC()">
+      <option value="fan">Supply/Return Fan</option>
+      <option value="pump">Chilled/Hot Water Pump</option>
+      <option value="tower">Cooling Tower Fan</option>
+    </select></div>
+  </div>
+  <div id="hvac-table"></div>
+</div>
+
+<div id="tab-ref" class="card" style="display:none">
+  <h2>Quick Reference</h2>
+  <div class="card" style="border-color:var(--accent)">
+    <h2>VFD Brands Covered</h2>
+    <div class="tbl-wrap"><table>
+      <tr><th>Brand</th><th>Common Series</th><th>Param Prefix</th><th>Notes</th></tr>
+      <tr><td>ABB</td><td>ACS310, ACS355, ACS580</td><td>P xx.xx (group.param)</td><td>Widely used in HVAC. Excellent BMS integration.</td></tr>
+      <tr><td>Danfoss</td><td>VLT FC 102, FC 302</td><td>P xxx (3-digit)</td><td>HVAC-specific models. Strong on pressure/temp PID.</td></tr>
+      <tr><td>Allen-Bradley</td><td>PowerFlex 525, 755</td><td>P xxx (3-digit) or Axx/Fxx</td><td>Rockwell ecosystem. Common in BAS-controlled buildings.</td></tr>
+      <tr><td>Yaskawa</td><td>GA500, GA700</td><td>X-xx (letter-number)</td><td>Reliable. Good for pumps. Z1000 is HVAC-specific.</td></tr>
+      <tr><td>Siemens</td><td>SINAMICS G120</td><td>P xxxx (4-digit)</td><td>Integrates with Siemens BMS. Modular design.</td></tr>
+      <tr><td>Toshiba</td><td>VF-AS1, VF-S15</td><td>F xxx (3-digit)</td><td>Compact. Common in smaller HVAC applications.</td></tr>
+    </table></div>
+  </div>
+  <div class="note" style="margin-top:14px"><strong>Important:</strong> Always verify parameters against the specific model's manual. Parameter numbers can differ between models within the same brand. This tool covers the most common series for each brand. Motor nameplate data must be re-entered for every VFD swap — never assume the old settings carry over.</div>
+  <div class="card" style="border-color:var(--warn);margin-top:14px">
+    <h2>Pre-Swap Checklist</h2>
+    <div style="font-size:.88em;line-height:2;color:var(--text2)">
+      &#x2610; Record ALL parameter settings from old VFD before removing<br>
+      &#x2610; Photo the control wiring at old VFD terminals<br>
+      &#x2610; Check incoming voltage (208/230/460/575) matches new VFD rating<br>
+      &#x2610; Verify HP/kW rating matches or exceeds motor nameplate<br>
+      &#x2610; Check carrier frequency (switching freq) — may need adjustment for cable length<br>
+      &#x2610; Note the BMS signal type (0-10V, 4-20mA, BACnet, Modbus, etc.)<br>
+      &#x2610; Record PID setpoint and tuning values if applicable<br>
+      &#x2610; Check min/max frequency limits and accel/decel ramp times<br>
+      &#x2610; Verify fault relay (NO/NC) wiring matches BAS alarm input<br>
+      &#x2610; Test run in HAND mode before switching to AUTO
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+// ====== VFD DATA ======
+var BRANDS = ['ABB','Danfoss','Allen-Bradley','Yaskawa','Siemens','Toshiba'];
+
+// Parameters: [category, description, ABB ACS580, Danfoss FC102, AB PF525, Yaskawa GA500, Siemens G120, Toshiba VFS15]
+var PARAMS = [
+  // Motor Nameplate
+  ['Motor','Motor Nominal Voltage','P99.06','P1-22','P041','E2-01','P0304','F304'],
+  ['Motor','Motor Nominal Current (FLA)','P99.07','P1-24','P042','E2-02','P0305','F305'],
+  ['Motor','Motor Nominal Frequency','P99.08','P1-23','P043','E2-03','P0310','F306'],
+  ['Motor','Motor Nominal Speed (RPM)','P99.09','P1-25','P044','E2-04','P0311','F307'],
+  ['Motor','Motor Nominal Power (HP/kW)','P99.05','P1-20','P040','E2-00','P0307','F303'],
+  ['Motor','Motor Control Mode','P99.04','P1-00','P035','A1-02','P1300','F302'],
+  ['Motor','Motor Autotune/ID Run','P99.13','P1-29','P046','T1-01','P1910','F600'],
+
+  // Basic Operation
+  ['Basic','Command Source (Local/Remote)','P10.01','P0-01','P046','b1-02','P0700','F001'],
+  ['Basic','Speed Reference Source','P11.01','P3-15','P047','b1-01','P1000','F002'],
+  ['Basic','Minimum Frequency','P20.01','P4-12','P033','E1-04','P1080','F008'],
+  ['Basic','Maximum Frequency','P20.02','P4-14','P034','E1-06','P1082','F009'],
+  ['Basic','Base Frequency','P20.06','P1-23','P036','E1-06','P0310','F006'],
+  ['Basic','Acceleration Time','P22.01','P3-41','P049','C1-01','P1120','F009'],
+  ['Basic','Deceleration Time','P22.02','P3-42','P050','C1-02','P1121','F010'],
+  ['Basic','Direction of Rotation','P10.03','P4-10','P048','b1-04','P1110','F020'],
+  ['Basic','Start Mode','P21.01','P1-60','P060','b1-03','P1200','F024'],
+  ['Basic','Stop Mode','P21.03','P3-80','P061','b1-03','P1201','F025'],
+  ['Basic','Carrier/Switching Frequency','P25.01','P1-41','P038','C6-02','P1800','F300'],
+  ['Basic','Jog Frequency','P23.01','P3-19','P054','d1-17','P1058','F015'],
+  ['Basic','Password/Lock','P16.01','P0-60','P052','A1-04','P0013','F900'],
+
+  // Analog I/O
+  ['Analog I/O','Analog Input 1 Function','P12.02','P6-10','P200','H3-02','P0756','F050'],
+  ['Analog I/O','AI1 Signal Type (V/mA)','P12.03','P6-11','P201','H3-09','P0757','F051'],
+  ['Analog I/O','AI1 Minimum (0V/4mA)','P12.04','P6-14','P202','H3-04','P0758','F052'],
+  ['Analog I/O','AI1 Maximum (10V/20mA)','P12.05','P6-15','P203','H3-05','P0759','F053'],
+  ['Analog I/O','Analog Output 1 Function','P13.04','P6-50','P320','H4-01','P0771','F060'],
+  ['Analog I/O','AO1 Minimum','P13.05','P6-52','P321','H4-04','P0777','F061'],
+  ['Analog I/O','AO1 Maximum','P13.06','P6-53','P322','H4-05','P0778','F062'],
+
+  // Digital I/O
+  ['Digital I/O','Digital Input 1 Function','P12.11','P5-10','P300','H1-01','P0701','F100'],
+  ['Digital I/O','Digital Input 2 Function','P12.12','P5-11','P301','H1-02','P0702','F101'],
+  ['Digital I/O','Digital Input 3 Function','P12.13','P5-12','P302','H1-03','P0703','F102'],
+  ['Digital I/O','Digital Input 4 Function','P12.14','P5-13','P303','H1-04','P0704','F103'],
+  ['Digital I/O','Relay Output 1 Function','P13.01','P5-40','P340','H2-01','P0731','F130'],
+  ['Digital I/O','Relay Output 2 Function','P13.02','P5-41','P341','H2-02','P0732','F131'],
+
+  // PID
+  ['PID','PID Enable','P40.01','P7-00','P160','b5-01','P2200','F700'],
+  ['PID','PID Setpoint','P40.02','P7-01','P166','b5-02','P2201','F701'],
+  ['PID','PID Feedback Source','P40.06','P7-20','P161','b5-03','P2264','F702'],
+  ['PID','PID Proportional Gain (P)','P40.07','P7-02','P162','b5-04','P2280','F703'],
+  ['PID','PID Integral Time (I)','P40.08','P7-03','P163','b5-05','P2285','F704'],
+  ['PID','PID Derivative Time (D)','P40.09','P7-04','P164','b5-06','P2274','F705'],
+  ['PID','PID Output Min','P40.10','P7-14','P165','b5-07','P2291','F706'],
+  ['PID','PID Output Max','P40.11','P7-15','P167','b5-08','P2292','F707'],
+  ['PID','PID Units (psi/°F/%)','P40.04','P7-30','P168','b5-15','P2230','—'],
+  ['PID','PID Sleep Mode','P40.30','P7-40','P176','b5-18','P2365','F730'],
+
+  // Communication
+  ['Comm','Protocol Selection','P51.01','P8-01','P080','F1-01','P2010','F800'],
+  ['Comm','Comm Address (Node ID)','P51.02','P8-03','P081','F1-04','P2011','F801'],
+  ['Comm','Comm Baud Rate','P51.03','P8-04','P082','F1-05','P2012','F802'],
+  ['Comm','Comm Parity','P51.04','P8-05','P083','F1-06','P2013','F803'],
+  ['Comm','Comm Timeout Action','P51.06','P8-06','P085','F1-08','P2014','F805'],
+
+  // Protection
+  ['Protection','Overcurrent Trip Level','P30.01','P14-01','P070','L5-02','P0640','F400'],
+  ['Protection','Motor Overload (OL)','P30.07','P1-90','P071','L1-01','P0610','F401'],
+  ['Protection','Stall Prevention','P30.10','P14-10','P072','L3-04','P1745','F402'],
+  ['Protection','DC Braking Level','P21.07','P2-00','P055','b2-01','P1233','F030'],
+  ['Protection','DC Braking Time','P21.08','P2-02','P056','b2-02','P1234','F031'],
+  ['Protection','Fault Reset Mode','P31.01','P14-20','P073','L5-01','P2100','F410'],
+  ['Protection','Auto Restart Attempts','P31.10','P14-22','P074','L5-07','P1210','F411'],
+
+  // HVAC Specific
+  ['HVAC','Fire Mode / Bypass','P40.50','P24-09','P096','A1-06','P2364','—'],
+  ['HVAC','Sleep/Wake Frequency','P40.31','P7-41','P177','b5-19','P2366','F731'],
+  ['HVAC','Flying Start (catch spinning)','P21.01','P1-73','P062','b3-01','P1200','F026'],
+  ['HVAC','Energy Optimization','P25.10','P1-03','P093','A1-08','P1300','—'],
+  ['HVAC','Fan/Pump Mode','P99.04','P1-00','P035','A1-02','P1300','F004'],
+];
+
+// Control wiring terminals
+// [function, ABB ACS580, Danfoss FC102, AB PF525, Yaskawa GA500, Siemens G120, Toshiba VFS15]
+var WIRING = [
+  ['Power','L1/R, L2/S, L3/T','L1, L2, L3','L1, L2, L3 (Input)','L1/R, L2/S, L3/T','L1, L2, L3','R/L1, S/L2, T/L3'],
+  ['Motor Output','U, V, W','U, V, W (96,97,98)','T1, T2, T3 (Motor)','U/T1, V/T2, W/T3','U, V, W','U/T1, V/T2, W/T3'],
+  ['PE / Ground','PE','PE (95)','PE','G (Ground)','PE','G'],
+  ['DC Bus (+/−)','UDC+, UDC−','88(+), 89(−)','+(DC), −(DC)','B1(+), B2(−)','+DC, −DC','PA, PB'],
+  ['Braking Resistor','UDC+, BRK−','81(+), 82(BR)','+(DC), DB','B1, B2','P+, PB','PA, PB'],
+  ['+24V Control Supply','AI: +24V (DIDO)','12 (+24V)','TB2: +24V','+V (control)','9 (+24V out)','+24V'],
+  ['0V / Common','DGND','20 (GND)','TB2: COM','COM','10 (0V)','CM1'],
+  ['Analog In 1 (speed ref)','AI1','53 (AI1)','TB2: 0-10V IN 1','A1','3 (AI0)','FV'],
+  ['Analog In 1 Common','AGND','55 (AI COM)','TB2: AIN COM','AC','4 (AI COM)','CM1'],
+  ['Analog In 2','AI2','54 (AI2)','TB2: 0-10V IN 2','A2','—','FI'],
+  ['Analog Out 1','AO1','42 (AO1)','TB2: AO1','FM','12 (AO0)','FM'],
+  ['Analog Out Common','AGND','39 (AO COM)','TB2: AO COM','AC','—','CM2'],
+  ['4-20mA Input','AI1 (set to mA)','60 (AI53 for mA)','TB2: 4-20 IN','A1 (jumper)','3 (set to mA)','FI'],
+  ['Digital In 1 (Run FWD)','DI1','18 (DI1)','TB3: IN1','S1','5 (DI0)','FWD/F'],
+  ['Digital In 2 (Run REV)','DI2','19 (DI2)','TB3: IN2','S2','6 (DI1)','REV/R'],
+  ['Digital In 3','DI3','27 (DI3)','TB3: IN3','S3','7 (DI2)','S1'],
+  ['Digital In 4','DI4','29 (DI4)','TB3: IN4','S4','8 (DI3)','S2'],
+  ['DI Common (sink)','DGND','20','TB3: IN COM','SC','—','CM1'],
+  ['Relay Out 1 (Run)','RO1: 01C,01NO','01(C), 02(NO)','TB1: RLY1','MA, MB, MC','14,15 (RO)','RA, RB, RC'],
+  ['Relay Out 2 (Fault)','RO2: 02C,02NO','03(C), 04(NO)','TB1: RLY2','M1, M2','—','RA2, RB2'],
+  ['RS-485 (BACnet/Modbus)','A(+), B(−)','68(+), 69(−)','TB4: S+, S−','R+, R−','14(+), 15(−)','S+, S−'],
+  ['Shield','Cable shield → PE','Screen → 61','Shield → TB4','Shield → G','Shield → PE','Shield → G'],
+];
+
+// HVAC presets by brand [param_label, value_fan, value_pump, value_tower]
+var HVAC_PRESETS = {
+  'ABB': [
+    ['Motor Control Mode (P99.04)','V/f (1)','V/f (1)','V/f (1)'],
+    ['Speed Ref Source (P11.01)','AI1 (1)','AI1 (1)','AI1 (1)'],
+    ['Min Frequency (P20.01)','12 Hz','15 Hz','10 Hz'],
+    ['Max Frequency (P20.02)','60 Hz','60 Hz','60 Hz'],
+    ['Accel Time (P22.01)','30 sec','20 sec','45 sec'],
+    ['Decel Time (P22.02)','30 sec','20 sec','45 sec'],
+    ['AI1 Type (P12.03)','0-10V or 4-20mA','0-10V or 4-20mA','0-10V or 4-20mA'],
+    ['Relay 1 (P13.01)','Run (1)','Run (1)','Run (1)'],
+    ['Relay 2 (P13.02)','Fault (3)','Fault (3)','Fault (3)'],
+    ['Flying Start (P21.01)','Enable','Enable','Enable'],
+    ['Carrier Freq (P25.01)','4-8 kHz','4-8 kHz','2-4 kHz'],
+    ['Stall Prevention (P30.10)','Enable','Enable','Enable'],
+  ],
+  'Danfoss': [
+    ['Motor Control Mode (P1-00)','V/f (0)','V/f (0)','V/f (0)'],
+    ['Speed Ref Source (P3-15)','AI53 (1)','AI53 (1)','AI53 (1)'],
+    ['Min Frequency (P4-12)','12 Hz','15 Hz','10 Hz'],
+    ['Max Frequency (P4-14)','60 Hz','60 Hz','60 Hz'],
+    ['Accel Time (P3-41)','30 sec','20 sec','45 sec'],
+    ['Decel Time (P3-42)','30 sec','20 sec','45 sec'],
+    ['AI53 Type (P6-10)','0-10V or 4-20mA','0-10V or 4-20mA','0-10V or 4-20mA'],
+    ['Relay 1 (P5-40)','Run (9)','Run (9)','Run (9)'],
+    ['Relay 2 (P5-41)','Alarm (5)','Alarm (5)','Alarm (5)'],
+    ['Flying Start (P1-73)','Enable (2)','Enable (2)','Enable (2)'],
+    ['Carrier Freq (P1-41)','4-8 kHz','4-8 kHz','2-4 kHz'],
+    ['Fire Mode (P24-09)','Set per code','Set per code','Set per code'],
+  ],
+  'Allen-Bradley': [
+    ['Motor Control Mode (P035)','V/Hz (0)','V/Hz (0)','V/Hz (0)'],
+    ['Speed Ref Source (P047)','Analog In (5)','Analog In (5)','Analog In (5)'],
+    ['Min Frequency (P033)','12 Hz','15 Hz','10 Hz'],
+    ['Max Frequency (P034)','60 Hz','60 Hz','60 Hz'],
+    ['Accel Time (P049)','30 sec','20 sec','45 sec'],
+    ['Decel Time (P050)','30 sec','20 sec','45 sec'],
+    ['AI Type (P201)','0-10V (0) or 4-20mA (1)','0-10V or 4-20mA','0-10V or 4-20mA'],
+    ['Relay 1 (P340)','Run (1)','Run (1)','Run (1)'],
+    ['Relay 2 (P341)','Fault (2)','Fault (2)','Fault (2)'],
+    ['Flying Start (P062)','Enable (1)','Enable (1)','Enable (1)'],
+    ['Carrier Freq (P038)','4 kHz','4 kHz','2 kHz'],
+    ['Auto Restart (P074)','3 attempts','3 attempts','3 attempts'],
+  ],
+  'Yaskawa': [
+    ['Motor Control Mode (A1-02)','V/f (0)','V/f (0)','V/f (0)'],
+    ['Speed Ref Source (b1-01)','Terminal (1)','Terminal (1)','Terminal (1)'],
+    ['Min Frequency (E1-04)','12 Hz','15 Hz','10 Hz'],
+    ['Max Frequency (E1-06)','60 Hz','60 Hz','60 Hz'],
+    ['Accel Time (C1-01)','30 sec','20 sec','45 sec'],
+    ['Decel Time (C1-02)','30 sec','20 sec','45 sec'],
+    ['AI1 Signal (H3-09)','0-10V (0) or 4-20mA (2)','0-10V or 4-20mA','0-10V or 4-20mA'],
+    ['Relay 1 (H2-01)','Run (0)','Run (0)','Run (0)'],
+    ['Relay 2 (H2-02)','Fault (E)','Fault (E)','Fault (E)'],
+    ['Flying Start (b3-01)','Enable (1)','Enable (1)','Enable (1)'],
+    ['Carrier Freq (C6-02)','4-8 kHz','4-8 kHz','2-4 kHz'],
+    ['Stall Prevention (L3-04)','Enable','Enable','Enable'],
+  ],
+  'Siemens': [
+    ['Motor Control Mode (P1300)','V/f (0)','V/f (0)','V/f (0)'],
+    ['Speed Ref Source (P1000)','Analog (2)','Analog (2)','Analog (2)'],
+    ['Min Frequency (P1080)','12 Hz','15 Hz','10 Hz'],
+    ['Max Frequency (P1082)','60 Hz','60 Hz','60 Hz'],
+    ['Accel Time (P1120)','30 sec','20 sec','45 sec'],
+    ['Decel Time (P1121)','30 sec','20 sec','45 sec'],
+    ['AI Type (P0757)','0-10V (2) or 4-20mA (4)','0-10V or 4-20mA','0-10V or 4-20mA'],
+    ['Relay 1 (P0731)','Run','Run','Run'],
+    ['Relay 2 (P0732)','Fault','Fault','Fault'],
+    ['Flying Start (P1200)','Enable','Enable','Enable'],
+    ['Carrier Freq (P1800)','4 kHz','4 kHz','2 kHz'],
+    ['Auto Restart (P1210)','Enable','Enable','Enable'],
+  ],
+  'Toshiba': [
+    ['Motor Control Mode (F302)','V/f (0)','V/f (0)','V/f (0)'],
+    ['Speed Ref Source (F002)','Terminal (1)','Terminal (1)','Terminal (1)'],
+    ['Min Frequency (F008)','12 Hz','15 Hz','10 Hz'],
+    ['Max Frequency (F009)','60 Hz','60 Hz','60 Hz'],
+    ['Accel Time (F009)','30 sec','20 sec','45 sec'],
+    ['Decel Time (F010)','30 sec','20 sec','45 sec'],
+    ['AI Type (F051)','0-10V (0) or 4-20mA (1)','0-10V or 4-20mA','0-10V or 4-20mA'],
+    ['Relay 1 (F130)','Run','Run','Run'],
+    ['Relay 2 (F131)','Fault','Fault','Fault'],
+    ['Flying Start (F026)','Enable (1)','Enable (1)','Enable (1)'],
+    ['Carrier Freq (F300)','4-8 kHz','4-8 kHz','2-4 kHz'],
+    ['Auto Restart (F411)','Enable','Enable','Enable'],
+  ],
+};
+
+var BI = {ABB:0,Danfoss:1,'Allen-Bradley':2,Yaskawa:3,Siemens:4,Toshiba:5};
+
+function buildSelects(){
+  var opts = BRANDS.map(function(b){return '<option value="'+b+'">'+b+'</option>';}).join('');
+  ['vfd-from','wire-from','hvac-brand'].forEach(function(id){document.getElementById(id).innerHTML=opts;});
+  var opts2 = BRANDS.map(function(b,i){return '<option value="'+b+'"'+(i===1?' selected':'')+'>'+b+'</option>';}).join('');
+  ['vfd-to','wire-to'].forEach(function(id){document.getElementById(id).innerHTML=opts2;});
+}
+
+function sT(id){['params','wiring','hvac','ref'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===id?'':'none';});document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',['params','wiring','hvac','ref'][i]===id);});}
+
+function swapVFD(){var a=document.getElementById('vfd-from'),b=document.getElementById('vfd-to'),t=a.value;a.value=b.value;b.value=t;renderParams();}
+function swapWire(){var a=document.getElementById('wire-from'),b=document.getElementById('wire-to'),t=a.value;a.value=b.value;b.value=t;renderWiring();}
+
+function renderParams(){
+  var from=document.getElementById('vfd-from').value;
+  var to=document.getElementById('vfd-to').value;
+  var fi=BI[from],ti=BI[to];
+  var search=(document.getElementById('param-search').value||'').toLowerCase();
+  
+  var cats=['Motor','Basic','Analog I/O','Digital I/O','PID','Comm','Protection','HVAC'];
+  var catBadge={Motor:'motor',Basic:'motor','Analog I/O':'io','Digital I/O':'io',PID:'hvac',Comm:'comm',Protection:'motor',HVAC:'hvac'};
+  
+  var html='<div class="tbl-wrap"><table><tr><th>'+from+' Param</th><th>Description</th><th>'+to+' Param</th></tr>';
+  var lastCat='';
+  PARAMS.forEach(function(p){
+    if(search && p[1].toLowerCase().indexOf(search)<0 && p[2+fi].toLowerCase().indexOf(search)<0 && p[2+ti].toLowerCase().indexOf(search)<0) return;
+    if(p[0]!==lastCat){
+      lastCat=p[0];
+      html+='<tr class="cat-header"><td colspan="3"><span class="badge '+catBadge[p[0]]+'">'+p[0]+'</span></td></tr>';
+    }
+    html+='<tr><td class="param">'+p[2+fi]+'</td><td class="pname">'+p[1]+'</td><td class="param">'+p[2+ti]+'</td></tr>';
+  });
+  html+='</table></div>';
+  document.getElementById('param-table').innerHTML=html;
+}
+
+function renderWiring(){
+  var from=document.getElementById('wire-from').value;
+  var to=document.getElementById('wire-to').value;
+  var fi=BI[from]+1,ti=BI[to]+1;
+  
+  var cats={Power:[], Control:[], 'Analog I/O':[], 'Digital I/O':[], Relay:[], Comm:[]};
+  WIRING.forEach(function(w){
+    var fn=w[0].toLowerCase();
+    if(fn.indexOf('power')>=0||fn.indexOf('motor')>=0||fn.indexOf('pe ')>=0||fn.indexOf('ground')>=0||fn.indexOf('dc bus')>=0||fn.indexOf('brak')>=0) cats.Power.push(w);
+    else if(fn.indexOf('24v')>=0||fn.indexOf('0v')>=0||fn.indexOf('common')>=0||fn.indexOf('shield')>=0) cats.Control.push(w);
+    else if(fn.indexOf('analog')>=0||fn.indexOf('4-20')>=0) cats['Analog I/O'].push(w);
+    else if(fn.indexOf('digital')>=0||fn.indexOf('di ')>=0||fn.indexOf('sink')>=0) cats['Digital I/O'].push(w);
+    else if(fn.indexOf('relay')>=0) cats.Relay.push(w);
+    else if(fn.indexOf('485')>=0||fn.indexOf('bacnet')>=0||fn.indexOf('modbus')>=0) cats.Comm.push(w);
+    else cats.Control.push(w);
+  });
+  
+  var html='';
+  for(var cat in cats){
+    if(!cats[cat].length) continue;
+    html+='<div class="wire-card"><h3>'+cat+'</h3>';
+    cats[cat].forEach(function(w){
+      html+='<div class="wire-row"><span class="wl">'+w[0]+'</span><span><span class="wv from">'+w[fi]+'</span><span class="arrow">&rarr;</span><span class="wv to">'+w[ti]+'</span></span></div>';
+    });
+    html+='</div>';
+  }
+  document.getElementById('wire-table').innerHTML=html;
+}
+
+function renderHVAC(){
+  var brand=document.getElementById('hvac-brand').value;
+  var app=document.getElementById('hvac-app').value;
+  var appIdx={fan:1,pump:2,tower:3}[app];
+  var appName={fan:'Fan',pump:'Pump',tower:'Cooling Tower'}[app];
+  var data=HVAC_PRESETS[brand];
+  if(!data){document.getElementById('hvac-table').innerHTML='<p>No data for '+brand+'</p>';return;}
+  
+  var html='<div class="tbl-wrap"><table><tr><th>Parameter</th><th>'+appName+' Setting</th></tr>';
+  data.forEach(function(row){
+    html+='<tr><td class="param">'+row[0]+'</td><td>'+row[appIdx]+'</td></tr>';
+  });
+  html+='</table></div>';
+  html+='<div class="note"><strong>'+appName+' Notes:</strong> ';
+  if(app==='fan') html+='Set min freq to prevent motor overheating (typically 12-15 Hz). Enable flying start if fan may be spinning from draft. Use V/f control unless sensorless vector is required for low-speed torque.';
+  else if(app==='pump') html+='Higher min freq (15-20 Hz) to prevent pump cavitation. Enable PID if maintaining pressure setpoint. Shorter ramp times than fans. Watch for water hammer on fast decel.';
+  else html+='Longer ramp times for large rotating mass. Lower carrier frequency to reduce cable stress. Enable stall prevention. Consider reversing rotation seasonally if cooling tower allows.';
+  html+='</div>';
+  
+  document.getElementById('hvac-table').innerHTML=html;
+}
+
+buildSelects();
+renderParams();
+renderWiring();
+renderHVAC();
+</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body></html>
