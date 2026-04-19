@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VFD Cross Reference &amp; Tools</title>
+<meta name="theme-color" content="#0c0e12">
+<style>
+:root{--bg:#0c0e12;--card:#161a21;--card2:#1e232c;--border:#2a303d;--text:#e0e3e9;--text2:#7d8594;--accent:#a78bfa;--ok:#34d399;--no:#f87171;--warn:#fbbf24;--r:12px}
+body.light{--bg:#f5f6f8;--card:#fff;--card2:#f0f1f4;--border:#d4d8e0;--text:#1a1d24;--text2:#6b7280;--accent:#7c3aed;--ok:#16a34a;--no:#dc2626;--warn:#d97706}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:1000px;margin:0 auto;padding:16px}
+.theme-toggle{position:fixed;top:12px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-size:.8em;cursor:pointer;z-index:999;font-family:inherit}
+.back-btn{position:fixed;top:12px;left:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:.8em;z-index:999;font-family:inherit;text-decoration:none}
+h1{font-size:1.6em;font-weight:800;text-align:center;margin:44px 0 6px}
+.sub{text-align:center;color:var(--text2);margin-bottom:16px;font-size:.9em}
+.tabs{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap}
+.tab{flex:1;min-width:90px;padding:10px 8px;border-radius:var(--r);border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;font-family:inherit;font-size:.78em;font-weight:600;transition:.2s}
+.tab:hover{border-color:var(--accent)}.tab.active{border-color:var(--accent);background:rgba(167,139,250,.06);color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.card h2{font-size:1.05em;font-weight:700;color:var(--accent);margin-bottom:4px}
+.card h3{font-size:.95em;font-weight:700;color:var(--accent);margin:12px 0 6px}
+.desc{font-size:.85em;color:var(--text2);margin-bottom:14px;line-height:1.5}
+.ir{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-bottom:12px}
+.ig{flex:1;min-width:140px}
+.ig label{display:block;font-size:.72em;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.ig input,.ig select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:1em;font-family:monospace;outline:none}
+.ig input:focus,.ig select:focus{border-color:var(--accent)}
+.rb{background:rgba(167,139,250,.04);border:2px solid var(--accent);border-radius:var(--r);padding:16px;margin-top:14px}
+.rb h3{font-size:.85em;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+.ri{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.88em;gap:8px}
+.ri:last-child{border:none}.rl{color:var(--text2)}.rv{font-family:monospace;font-weight:700;color:var(--ok);text-align:right}
+.search-box{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:.95em;font-family:monospace;outline:none;margin-bottom:10px}
+.search-box:focus{border-color:var(--accent)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.8em;min-width:700px}
+th{padding:9px 8px;background:var(--card2);color:var(--accent);font-size:.7em;text-transform:uppercase;text-align:left;font-weight:700;letter-spacing:.04em;position:sticky;top:0;z-index:1;white-space:nowrap}
+td{padding:8px;border-top:1px solid var(--border);font-family:monospace;font-size:.88em;vertical-align:top}
+td.cat{color:var(--accent);font-weight:700;font-size:.72em;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+td.desc-col{font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);font-size:.84em;white-space:normal;min-width:180px}
+tr:hover td{background:rgba(167,139,250,.04)}
+td.hi{background:rgba(167,139,250,.12);color:var(--accent);font-weight:700}
+.note{background:rgba(251,191,36,.06);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:var(--text2);margin-top:12px;line-height:1.5}
+.note strong{color:var(--warn)}
+.tip{background:rgba(52,211,153,.05);border-left:3px solid var(--ok);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.85em;color:var(--text2);margin-top:12px;line-height:1.5}
+.tip strong{color:var(--ok)}
+.flag-a2l{background:rgba(251,191,36,.12);color:var(--warn);font-size:.7em;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:4px}
+.verdict{padding:14px;border-radius:var(--r);margin-top:12px;text-align:center}
+.verdict.ok{background:rgba(52,211,153,.08);color:var(--ok);border:2px solid var(--ok)}
+.verdict.warn{background:rgba(251,191,36,.08);color:var(--warn);border:2px solid var(--warn)}
+.verdict.no{background:rgba(248,113,113,.08);color:var(--no);border:2px solid var(--no)}
+.vt{font-size:1.05em;font-weight:700;margin-bottom:4px}.vd{font-size:.85em;line-height:1.5}
+.step{counter-reset:stp}
+.sitem{counter-increment:stp;padding:12px 12px 12px 48px;border-bottom:1px solid var(--border);position:relative;font-size:.88em;line-height:1.6}
+.sitem:last-child{border:none}
+.sitem::before{content:counter(stp);position:absolute;left:8px;top:12px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.82em;font-weight:700}
+.fault-row{display:flex;gap:0;padding:10px 12px;border-bottom:1px solid var(--border);align-items:center}
+.fault-row:last-child{border:none}
+.fault-code{font-family:monospace;font-weight:700;color:var(--no);background:rgba(248,113,113,.08);padding:4px 10px;border-radius:6px;font-size:.85em;min-width:80px;text-align:center;margin-right:12px}
+.fault-desc{flex:1;font-size:.85em}
+.fault-cat{font-size:.7em;color:var(--text2);text-transform:uppercase;margin-left:8px;letter-spacing:.04em}
+.brand-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.bpill{padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:.78em;cursor:pointer;font-family:inherit;transition:.15s}
+.bpill:hover{border-color:var(--accent)}
+.bpill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:12px}
+.ts-btn{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left;transition:.2s;font-family:inherit;color:var(--text)}
+.ts-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.ts-btn .ti{font-size:1.1em;margin-bottom:2px}
+.ts-btn .tn{font-size:.88em;font-weight:700}
+.ts-btn .td{font-size:.75em;color:var(--text2);margin-top:2px}
+.diag-node{background:var(--card);border:2px solid var(--accent);border-radius:var(--r);padding:18px;margin:12px 0}
+.diag-q{font-size:1em;font-weight:700;margin-bottom:4px}
+.diag-info{font-size:.85em;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.diag-btns{display:flex;flex-direction:column;gap:6px}
+.diag-btn{background:var(--card2);border:2px solid var(--border);border-radius:8px;padding:11px 14px;cursor:pointer;font-family:inherit;font-size:.88em;font-weight:600;color:var(--text);text-align:left;transition:.15s}
+.diag-btn:hover{border-color:var(--accent);background:rgba(167,139,250,.06)}
+.diag-fix{background:rgba(52,211,153,.06);border:2px solid var(--ok);border-radius:var(--r);padding:18px;margin:12px 0}
+.diag-fix h4{color:var(--ok);font-size:.9em;margin-bottom:6px}
+.diag-fix p{font-size:.88em;line-height:1.6}
+.nb{padding:8px 16px;border:2px solid var(--border);background:var(--card);color:var(--text);border-radius:8px;cursor:pointer;font-family:inherit;font-size:.82em;font-weight:600;transition:.15s;margin-right:6px;margin-bottom:6px}
+.nb:hover{border-color:var(--accent)}
+.hist{font-size:.78em;color:var(--text2);margin:8px 0;line-height:1.8}
+.hist-step{background:var(--card2);border-left:3px solid var(--accent);padding:6px 10px;margin-bottom:3px;border-radius:0 6px 6px 0}
+@media(max-width:600px){.app{padding:8px}h1{font-size:1.3em;margin-top:50px}table{font-size:.72em}th,td{padding:6px 5px}.ir{flex-direction:column}}
+
+.fn-header{background:var(--card2);border-radius:var(--r);padding:14px;margin-bottom:14px}
+.fn-name{font-size:1.1em;font-weight:700;color:var(--accent);margin-bottom:4px}
+.fn-purpose{font-size:.85em;color:var(--text2);line-height:1.5}
+.fn-split{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:700px){.fn-split{grid-template-columns:1fr}}
+.fn-col{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.fn-col h4{color:var(--accent);font-size:.9em;margin-bottom:8px}
+.fn-diag{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:14px;font-family:'Courier New',Consolas,monospace;font-size:.78em;line-height:1.6;white-space:pre;overflow-x:auto;color:var(--text);margin:8px 0}
+.fn-notes{font-size:.82em;color:var(--text2);line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.fn-step{padding:8px 12px 8px 40px;position:relative;font-size:.85em;border-left:3px solid var(--accent);background:rgba(167,139,250,.04);margin-bottom:6px;border-radius:0 6px 6px 0}
+.fn-step-num{position:absolute;left:8px;top:8px;width:24px;height:24px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75em}
+.fn-compare-box{margin-top:14px;background:rgba(52,211,153,.05);border:2px solid var(--ok);border-radius:var(--r);padding:14px}
+.fn-compare-box h4{color:var(--ok);font-size:.92em;margin-bottom:8px}
+.fn-term-map{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:8px;border-bottom:1px solid var(--border);font-size:.85em}
+.fn-term-map:last-child{border:none}
+.fn-term-map .arrow{color:var(--accent);font-weight:700}
+.fn-term-map .label{color:var(--text2);font-size:.72em;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.fn-term-map .term{font-family:monospace;font-weight:700;font-size:.95em}
+</style></head><body>
+<button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">Light</button>
+<a href="index.html" class="back-btn">&larr; Study Hub</a>
+<div class="app">
+<h1>&#x26a1; VFD Cross Reference &amp; Tools</h1>
+<p class="sub">Parameters \xb7 Wiring \xb7 Sizing \xb7 Fault Codes \xb7 Troubleshooting</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="sT('params')">Parameters</button>
+  <button class="tab" onclick="sT('wiring')">Function Wiring</button>
+  <button class="tab" onclick="sT('sizing')">Sizing</button>
+  <button class="tab" onclick="sT('faults')">Fault Codes</button>
+  <button class="tab" onclick="sT('trouble')">Troubleshoot</button>
+  <button class="tab" onclick="sT('hvac')">HVAC Setup</button>
+  <button class="tab" onclick="sT('ref')">Reference</button>
+</div>
+
+<div id="tab-params" class="card">
+  <h2>Parameter Cross Reference</h2>
+  <div class="desc">Find the equivalent parameter across 6 major VFD brands. Pick a FROM and TO brand to highlight both columns, or search to filter.</div>
+  <div class="ir">
+    <div class="ig"><label>From Brand</label><select id="p-from" onchange="drawParams()"><option>ABB ACS580</option><option>Danfoss FC102</option><option>Allen-Bradley PF525</option><option>Yaskawa GA500</option><option>Siemens G120</option><option>Toshiba VFS15</option></select></div>
+    <div class="ig"><label>To Brand</label><select id="p-to" onchange="drawParams()"><option>ABB ACS580</option><option selected>Danfoss FC102</option><option>Allen-Bradley PF525</option><option>Yaskawa GA500</option><option>Siemens G120</option><option>Toshiba VFS15</option></select></div>
+  </div>
+  <input type="text" class="search-box" id="p-search" placeholder="&#x1f50d; Search parameters (e.g. 'PID', 'accel', 'analog', 'relay')..." oninput="drawParams()">
+  <div id="p-count" style="font-size:.8em;color:var(--text2);margin-bottom:8px"></div>
+  <div id="param-table"></div>
+</div>
+
+<div id="tab-wiring" class="card" style="display:none">
+  <h2>Function Wiring Cross Reference</h2>
+  <div class="desc">Pick a common VFD function, then compare exactly how to wire it across brands. Includes terminal-level wiring diagrams for start/stop, speed reference, safety interlocks, and more.</div>
+  <div class="ir">
+    <div class="ig"><label>Function</label><select id="fn-select" onchange="drawFunctionWiring()"></select></div>
+    <div class="ig"><label>FROM brand</label><select id="fn-from" onchange="drawFunctionWiring()"></select></div>
+    <div class="ig"><label>TO brand</label><select id="fn-to" onchange="drawFunctionWiring()"></select></div>
+  </div>
+  <div id="function-wiring-content"></div>
+  
+  <h3 style="margin-top:24px">Terminal Reference Table</h3>
+  <div class="desc">Quick lookup for every terminal by function across all brands.</div>
+  <input type="text" class="search-box" id="w-search" placeholder="&#x1f50d; Search terminals (e.g. 'analog', 'relay', 'ground', '24V')..." oninput="drawWiring()">
+  <div id="wire-table"></div>
+</div>
+
+<div id="tab-sizing" class="card" style="display:none">
+  <h2>VFD Sizing Calculator</h2>
+  <div class="desc">Select your motor and application. The tool calculates recommended VFD current rating with proper service factor.</div>
+  <div class="ir">
+    <div class="ig"><label>Motor HP</label><select id="s-hp" onchange="calcSize()"><option>0.5</option><option>0.75</option><option>1</option><option>1.5</option><option>2</option><option>3</option><option selected>5</option><option>7.5</option><option>10</option><option>15</option><option>20</option><option>25</option><option>30</option><option>40</option><option>50</option><option>60</option><option>75</option><option>100</option><option>125</option><option>150</option><option>200</option></select></div>
+    <div class="ig"><label>Voltage</label><select id="s-volt" onchange="calcSize()"><option>208</option><option selected>230</option><option>460</option><option>575</option></select></div>
+    <div class="ig"><label>Application</label><select id="s-app" onchange="calcSize()"><option value="vt" selected>Variable Torque (fan/pump)</option><option value="ct">Constant Torque (compressor/conveyor)</option><option value="hd">Heavy Duty (hoist/grinder)</option></select></div>
+  </div>
+  <div id="s-result"></div>
+  
+  <h3 style="margin-top:20px">HP \u2194 kW \u2194 Amps Quick Convert</h3>
+  <div class="ir">
+    <div class="ig"><label>Enter HP</label><input type="number" id="c-hp" value="5" step="0.5" oninput="calcConv('hp')"></div>
+    <div class="ig"><label>or kW</label><input type="number" id="c-kw" value="3.73" step="0.1" oninput="calcConv('kw')"></div>
+    <div class="ig"><label>at voltage</label><select id="c-v" onchange="calcConv('hp')"><option>208</option><option selected>230</option><option>460</option><option>575</option></select></div>
+  </div>
+  <div id="c-result"></div>
+</div>
+
+<div id="tab-faults" class="card" style="display:none">
+  <h2>Fault Code Lookup</h2>
+  <div class="desc">Select a brand and search or scroll through the common fault codes. Based on most-common service calls.</div>
+  <div class="brand-pills" id="fault-brands"></div>
+  <input type="text" class="search-box" id="f-search" placeholder="&#x1f50d; Search by code or symptom (e.g. 'F01', 'overcurrent', 'ground')..." oninput="drawFaults()">
+  <div id="fault-list"></div>
+</div>
+
+<div id="tab-trouble" class="card" style="display:none">
+  <h2>VFD Troubleshooting</h2>
+  <div class="desc">Interactive decision trees for common VFD problems. Each step explains what to check and why.</div>
+  <div id="trouble-area"></div>
+</div>
+
+<div id="tab-hvac" class="card" style="display:none">
+  <h2>HVAC Quick Setup by Application</h2>
+  <div class="desc">Typical parameter values for fans, pumps, and cooling towers. Use as a starting point &mdash; always verify against motor nameplate and application.</div>
+  <div class="ir">
+    <div class="ig"><label>Brand</label><select id="h-brand" onchange="drawHVAC()"><option>ABB</option><option>Danfoss</option><option>Allen-Bradley</option><option>Yaskawa</option></select></div>
+  </div>
+  <div id="hvac-table"></div>
+</div>
+
+<div id="tab-ref" class="card" style="display:none">
+  <h2>Quick Reference</h2>
+  
+  <div class="card" style="border-color:var(--accent);margin-top:12px">
+    <h2>Cable Length &amp; Reflected Wave</h2>
+    <div class="desc">Long motor cables cause voltage reflections that stress motor insulation. These are the NEMA MG-1 Part 31 limits.</div>
+    <div class="tbl-wrap"><table style="min-width:auto">
+      <tr><th>Motor Voltage</th><th>Max Cable</th><th>Above Max &rarr; Add</th><th>Reduce Carrier To</th></tr>
+      <tr><td>230V</td><td>200 ft</td><td>dV/dt filter</td><td>4 kHz</td></tr>
+      <tr><td>460V</td><td>100 ft</td><td>dV/dt filter or line reactor</td><td>2-4 kHz</td></tr>
+      <tr><td>575V</td><td>50 ft</td><td>Sine wave filter (strongly)</td><td>2 kHz</td></tr>
+    </table></div>
+    <div class="note"><strong>Cable length > limit:</strong> Use inverter-duty motors (NEMA MG-1 Part 31 rated for 1600V peak spikes). For runs over 300 ft, use a sine wave output filter.</div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent);margin-top:12px">
+    <h2>VFD Duty Types</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:8px">
+      <div style="background:var(--card2);padding:12px;border-radius:8px">
+        <div style="color:var(--accent);font-weight:700;font-size:.88em;margin-bottom:4px">Variable Torque (VT)</div>
+        <div style="font-size:.82em;color:var(--text2);line-height:1.5">Fans, pumps, blowers. Torque \u221d speed\u00b2. Can use smallest VFD. 110% overload for 60 sec. Most HVAC applications.</div>
+      </div>
+      <div style="background:var(--card2);padding:12px;border-radius:8px">
+        <div style="color:var(--accent);font-weight:700;font-size:.88em;margin-bottom:4px">Constant Torque (CT)</div>
+        <div style="font-size:.82em;color:var(--text2);line-height:1.5">Compressors, conveyors, positive displacement. Full torque at all speeds. Need next size up. 150% overload for 60 sec.</div>
+      </div>
+      <div style="background:var(--card2);padding:12px;border-radius:8px">
+        <div style="color:var(--accent);font-weight:700;font-size:.88em;margin-bottom:4px">Heavy Duty (HD)</div>
+        <div style="font-size:.82em;color:var(--text2);line-height:1.5">Hoists, grinders, crushers. Starts against high load. Two sizes up from VT. 200%+ overload. Rarely used in HVAC.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent);margin-top:12px">
+    <h2>Pre-Swap Checklist</h2>
+    <div style="font-size:.88em;line-height:2;color:var(--text2)">
+      &#x2610; Record ALL parameter settings from old VFD before removing<br>
+      &#x2610; Photo the control wiring at old VFD terminals<br>
+      &#x2610; Check incoming voltage (208/230/460/575) matches new VFD rating<br>
+      &#x2610; Verify HP/kW rating matches or exceeds motor nameplate<br>
+      &#x2610; Check carrier frequency (switching freq) \u2014 may need adjustment for cable length<br>
+      &#x2610; Note the BMS signal type (0-10V, 4-20mA, BACnet, Modbus, etc.)<br>
+      &#x2610; Record PID setpoint and tuning values if applicable<br>
+      &#x2610; Check min/max frequency limits and accel/decel ramp times<br>
+      &#x2610; Verify fault relay (NO/NC) wiring matches BAS alarm input<br>
+      &#x2610; Check for any digital I/O programming (run permissives, etc.)<br>
+      &#x2610; Test run in HAND mode before switching to AUTO<br>
+      &#x2610; Verify rotation direction matches before coupling load<br>
+      &#x2610; Document final parameters for future service
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent);margin-top:12px">
+    <h2>Brands Covered in This Tool</h2>
+    <div class="tbl-wrap"><table>
+      <tr><th>Brand</th><th>Model Family</th><th>HVAC Series</th></tr>
+      <tr><td>ABB</td><td>ACS580</td><td>ACH580 (HVAC-specific)</td></tr>
+      <tr><td>Danfoss</td><td>FC102</td><td>VLT HVAC Drive FC102</td></tr>
+      <tr><td>Allen-Bradley</td><td>PowerFlex 525</td><td>PowerFlex 755</td></tr>
+      <tr><td>Yaskawa</td><td>GA500</td><td>Z1000 (HVAC-specific)</td></tr>
+      <tr><td>Siemens</td><td>SINAMICS G120</td><td>G120P (pump/fan)</td></tr>
+      <tr><td>Toshiba</td><td>VFS15</td><td>VFAS3 (HVAC)</td></tr>
+    </table></div>
+  </div>
+</div>
+
+</div>
+<script>
+function getTheme(){try{return localStorage.getItem('hvac_theme')||'dark';}catch(e){return'dark';}}
+function setTheme(t){document.body.className=t==='light'?'light':'';try{localStorage.setItem('hvac_theme',t);}catch(e){}var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'Light':'Dark';}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+setTheme(getTheme());
+
+// ============ DATA ============
+var BRAND_COLS = ['ABB ACS580','Danfoss FC102','Allen-Bradley PF525','Yaskawa GA500','Siemens G120','Toshiba VFS15'];
+var BRAND_IDX = {'ABB ACS580':2,'Danfoss FC102':3,'Allen-Bradley PF525':4,'Yaskawa GA500':5,'Siemens G120':6,'Toshiba VFS15':7};
+
+// [category, description, ABB, Danfoss, AB, Yaskawa, Siemens, Toshiba]
+var PARAMS = [
+  ['Motor','Motor Nominal Voltage','P99.06','P1-22','P041','E2-01','P0304','F304'],
+  ['Motor','Motor Nominal Current (FLA)','P99.07','P1-24','P042','E2-02','P0305','F305'],
+  ['Motor','Motor Nominal Frequency','P99.08','P1-23','P043','E2-03','P0310','F306'],
+  ['Motor','Motor Nominal Speed (RPM)','P99.09','P1-25','P044','E2-04','P0311','F307'],
+  ['Motor','Motor Nominal Power (HP/kW)','P99.05','P1-20','P040','E2-00','P0307','F303'],
+  ['Motor','Motor Control Mode','P99.04','P1-00','P035','A1-02','P1300','F302'],
+  ['Motor','Motor Autotune/ID Run','P99.13','P1-29','P046','T1-01','P1910','F600'],
+  ['Basic','Command Source (Local/Remote)','P10.01','P0-01','P046','b1-02','P0700','F001'],
+  ['Basic','Speed Reference Source','P11.01','P3-15','P047','b1-01','P1000','F002'],
+  ['Basic','Minimum Frequency','P20.01','P4-12','P033','E1-04','P1080','F008'],
+  ['Basic','Maximum Frequency','P20.02','P4-14','P034','E1-06','P1082','F009'],
+  ['Basic','Base Frequency','P20.06','P1-23','P036','E1-06','P0310','F006'],
+  ['Basic','Acceleration Time','P22.01','P3-41','P049','C1-01','P1120','F009'],
+  ['Basic','Deceleration Time','P22.02','P3-42','P050','C1-02','P1121','F010'],
+  ['Basic','Direction of Rotation','P10.03','P4-10','P048','b1-04','P1110','F020'],
+  ['Basic','Start Mode','P21.01','P1-60','P060','b1-03','P1200','F024'],
+  ['Basic','Stop Mode','P21.03','P3-80','P061','b1-03','P1201','F025'],
+  ['Basic','Carrier/Switching Frequency','P25.01','P1-41','P038','C6-02','P1800','F300'],
+  ['Basic','Jog Frequency','P23.01','P3-19','P054','d1-17','P1058','F015'],
+  ['Basic','Password/Lock','P16.01','P0-60','P052','A1-04','P0013','F900'],
+  ['Analog I/O','Analog Input 1 Function','P12.02','P6-10','P200','H3-02','P0756','F050'],
+  ['Analog I/O','AI1 Signal Type (V/mA)','P12.03','P6-11','P201','H3-09','P0757','F051'],
+  ['Analog I/O','AI1 Minimum (0V/4mA)','P12.04','P6-14','P202','H3-04','P0758','F052'],
+  ['Analog I/O','AI1 Maximum (10V/20mA)','P12.05','P6-15','P203','H3-05','P0759','F053'],
+  ['Analog I/O','Analog Output 1 Function','P13.04','P6-50','P320','H4-01','P0771','F060'],
+  ['Analog I/O','AO1 Minimum','P13.05','P6-52','P321','H4-04','P0777','F061'],
+  ['Analog I/O','AO1 Maximum','P13.06','P6-53','P322','H4-05','P0778','F062'],
+  ['Digital I/O','Digital Input 1 Function','P12.11','P5-10','P300','H1-01','P0701','F100'],
+  ['Digital I/O','Digital Input 2 Function','P12.12','P5-11','P301','H1-02','P0702','F101'],
+  ['Digital I/O','Digital Input 3 Function','P12.13','P5-12','P302','H1-03','P0703','F102'],
+  ['Digital I/O','Digital Input 4 Function','P12.14','P5-13','P303','H1-04','P0704','F103'],
+  ['Digital I/O','Relay Output 1 Function','P13.01','P5-40','P340','H2-01','P0731','F130'],
+  ['Digital I/O','Relay Output 2 Function','P13.02','P5-41','P341','H2-02','P0732','F131'],
+  ['PID','PID Enable','P40.01','P7-00','P160','b5-01','P2200','F700'],
+  ['PID','PID Setpoint','P40.02','P7-01','P166','b5-02','P2201','F701'],
+  ['PID','PID Feedback Source','P40.06','P7-20','P161','b5-03','P2264','F702'],
+  ['PID','PID Proportional Gain (P)','P40.07','P7-02','P162','b5-04','P2280','F703'],
+  ['PID','PID Integral Time (I)','P40.08','P7-03','P163','b5-05','P2285','F704'],
+  ['PID','PID Derivative Time (D)','P40.09','P7-04','P164','b5-06','P2274','F705'],
+  ['PID','PID Output Min','P40.10','P7-14','P165','b5-07','P2291','F706'],
+  ['PID','PID Output Max','P40.11','P7-15','P167','b5-08','P2292','F707'],
+  ['PID','PID Units (psi/\u00b0F/%)','P40.04','P7-30','P168','b5-15','P2230','\u2014'],
+  ['PID','PID Sleep Mode','P40.30','P7-40','P176','b5-18','P2365','F730'],
+  ['Comm','Protocol Selection','P51.01','P8-01','P080','F1-01','P2010','F800'],
+  ['Comm','Comm Address (Node ID)','P51.02','P8-03','P081','F1-04','P2011','F801'],
+  ['Comm','Comm Baud Rate','P51.03','P8-04','P082','F1-05','P2012','F802'],
+  ['Comm','Comm Parity','P51.04','P8-05','P083','F1-06','P2013','F803'],
+  ['Comm','Comm Timeout Action','P51.06','P8-06','P085','F1-08','P2014','F805'],
+  ['Protection','Overcurrent Trip Level','P30.01','P14-01','P070','L5-02','P0640','F400'],
+  ['Protection','Motor Overload (OL)','P30.07','P1-90','P071','L1-01','P0610','F401'],
+  ['Protection','Stall Prevention','P30.10','P14-10','P072','L3-04','P1745','F402'],
+  ['Protection','DC Braking Level','P21.07','P2-00','P055','b2-01','P1233','F030'],
+  ['Protection','DC Braking Time','P21.08','P2-02','P056','b2-02','P1234','F031'],
+  ['Protection','Fault Reset Mode','P31.01','P14-20','P073','L5-01','P2100','F410'],
+  ['Protection','Auto Restart Attempts','P31.10','P14-22','P074','L5-07','P1210','F411'],
+  ['HVAC','Fire Mode / Bypass','P40.50','P24-09','P096','A1-06','P2364','\u2014'],
+  ['HVAC','Sleep/Wake Frequency','P40.31','P7-41','P177','b5-19','P2366','F731'],
+  ['HVAC','Flying Start (catch spinning)','P21.01','P1-73','P062','b3-01','P1200','F026'],
+  ['HVAC','Energy Optimization','P25.10','P1-03','P093','A1-08','P1300','\u2014'],
+  ['HVAC','Fan/Pump Mode','P99.04','P1-00','P035','A1-02','P1300','F004'],
+];
+
+// Wiring: [function, ABB, Danfoss, AB, Yaskawa, Siemens, Toshiba]
+var WIRING = [
+  ['Power Input (3-phase)','L1/R, L2/S, L3/T','L1, L2, L3','L1, L2, L3','L1/R, L2/S, L3/T','L1, L2, L3','R/L1, S/L2, T/L3'],
+  ['Motor Output','U, V, W','U, V, W (96,97,98)','T1, T2, T3','U/T1, V/T2, W/T3','U, V, W','U/T1, V/T2, W/T3'],
+  ['PE / Ground','PE','PE (95)','PE','G (Ground)','PE','G'],
+  ['DC Bus (+/\u2212)','UDC+, UDC\u2212','88(+), 89(\u2212)','+(DC), \u2212(DC)','B1(+), B2(\u2212)','+DC, \u2212DC','PA, PB'],
+  ['Braking Resistor','UDC+, BRK\u2212','81(+), 82(BR)','+(DC), DB','B1, B2','P+, PB','PA, PB'],
+  ['+24V Control Supply','AI: +24V','12 (+24V)','TB2: +24V','+V','9 (+24V out)','+24V'],
+  ['0V / Common','DGND','20 (GND)','TB2: COM','COM','10 (0V)','CM1'],
+  ['Analog In 1 (speed ref)','AI1','53 (AI1)','TB2: 0-10V IN 1','A1','3 (AI0)','FV'],
+  ['Analog In 1 Common','AGND','55 (AI COM)','TB2: AIN COM','AC','4 (AI COM)','CM1'],
+  ['Analog In 2','AI2','54 (AI2)','TB2: 0-10V IN 2','A2','\u2014','FI'],
+  ['Analog Out 1','AO1','42 (AO1)','TB2: AO1','FM','12 (AO0)','FM'],
+  ['Analog Out Common','AGND','39 (AO COM)','TB2: AO COM','AC','\u2014','CM2'],
+  ['4-20mA Input','AI1 (set to mA)','60 (AI53 for mA)','TB2: 4-20 IN','A1 (jumper)','3 (set to mA)','FI'],
+  ['Digital In 1 (Run FWD)','DI1','18 (DI1)','TB3: IN1','S1','5 (DI0)','FWD/F'],
+  ['Digital In 2 (Run REV)','DI2','19 (DI2)','TB3: IN2','S2','6 (DI1)','REV/R'],
+  ['Digital In 3','DI3','27 (DI3)','TB3: IN3','S3','7 (DI2)','S1'],
+  ['Digital In 4','DI4','29 (DI4)','TB3: IN4','S4','8 (DI3)','S2'],
+  ['DI Common (sink)','DGND','20','TB3: IN COM','SC','\u2014','CM1'],
+  ['Relay Out 1 (Run)','RO1: 01C,01NO','01(C), 02(NO)','TB1: RLY1','MA, MB, MC','14,15 (RO)','RA, RB, RC'],
+  ['Relay Out 2 (Fault)','RO2: 02C,02NO','03(C), 04(NO)','TB1: RLY2','M1, M2','\u2014','RA2, RB2'],
+  ['RS-485 (BACnet/Modbus)','A(+), B(\u2212)','68(+), 69(\u2212)','TB4: S+, S\u2212','R+, R\u2212','14(+), 15(\u2212)','S+, S\u2212'],
+  ['Shield','Cable shield \u2192 PE','Screen \u2192 61','Shield \u2192 TB4','Shield \u2192 G','Shield \u2192 PE','Shield \u2192 G'],
+];
+
+// NEMA FLA table: [HP, FLA at 230V, FLA at 460V, FLA at 575V]
+// 3-phase NEC Table 430.250 values
+var FLA_TABLE = {
+  0.5:[2.2,1.1,0.9], 0.75:[3.2,1.6,1.3], 1:[4.2,2.1,1.7],
+  1.5:[6.0,3.0,2.4], 2:[6.8,3.4,2.7], 3:[9.6,4.8,3.9],
+  5:[15.2,7.6,6.1], 7.5:[22,11,9], 10:[28,14,11],
+  15:[42,21,17], 20:[54,27,22], 25:[68,34,27],
+  30:[80,40,32], 40:[104,52,41], 50:[130,65,52],
+  60:[154,77,62], 75:[192,96,77], 100:[248,124,99],
+  125:[312,156,125], 150:[360,180,144], 200:[480,240,192]
+};
+
+// Fault codes by brand
+var FAULTS = {
+  'ABB ACS580': [
+    {c:'2310',d:'Overcurrent',cat:'Power',fix:'Check motor for short/ground fault. Verify motor not locked/jammed. Check cable for damage. Increase accel time. Verify V/Hz curve.'},
+    {c:'3210',d:'DC Overvoltage',cat:'Power',fix:'Increase deceleration time. Check line voltage (should be <10% above nominal). Add braking resistor if regenerative load. Reduce carrier frequency.'},
+    {c:'3220',d:'DC Undervoltage',cat:'Power',fix:'Check incoming line voltage. Look for voltage dips, loose connections, or blown input fuses. Verify correct voltage class.'},
+    {c:'3130',d:'Input Phase Loss',cat:'Power',fix:'Check all 3 incoming phases. Verify fuses/breakers. Check terminal tightness on L1/L2/L3.'},
+    {c:'3381',d:'Output Phase Loss',cat:'Power',fix:'Check motor cables U/V/W. Measure continuity through motor windings. Check terminal tightness.'},
+    {c:'2330',d:'Earth/Ground Fault',cat:'Safety',fix:'Check motor insulation with megger (>1M\u03a9). Inspect cable for damage. Disconnect motor \u2014 if fault clears, problem is motor/cable.'},
+    {c:'4210',d:'IGBT Overtemperature',cat:'Thermal',fix:'Clean heatsink/fins. Check cooling fan operation. Verify ambient <104\u00b0F (40\u00b0C). Reduce carrier frequency. Check enclosure ventilation.'},
+    {c:'4310',d:'Motor Overtemperature',cat:'Thermal',fix:'Check motor thermistor/PTC wiring. Reduce load. Verify motor is properly sized. Check for blocked ventilation.'},
+    {c:'7310',d:'Motor Stall',cat:'Control',fix:'Check for mechanical binding. Verify torque boost if starting heavy load. Increase accel time. Run autotune.'},
+    {c:'7081',d:'Control Panel Lost',cat:'Comm',fix:'Check keypad cable. Try disconnecting/reconnecting. Replace keypad if cable is good.'},
+    {c:'7510',d:'Fieldbus Comm Lost',cat:'Comm',fix:'Check RS-485 wiring (A+/B\u2212). Verify termination resistors. Check address and baud rate match BMS.'},
+    {c:'F080',d:'AI Supervision',cat:'I/O',fix:'Analog input below threshold. Check 4-20mA wiring for open circuit. Verify sensor power.'}
+  ],
+  'Danfoss FC102': [
+    {c:'A13',d:'Overcurrent',cat:'Power',fix:'Check for motor short, locked rotor, or overload. Increase ramp times. Check cable condition.'},
+    {c:'A14',d:'Earth Fault',cat:'Safety',fix:'Megger test motor and cables. Check for moisture in motor windings. Inspect junction boxes.'},
+    {c:'A7',d:'DC Overvoltage',cat:'Power',fix:'Increase decel time (par 3-42). Check line voltage stability. Consider brake resistor for regen loads.'},
+    {c:'A8',d:'DC Undervoltage',cat:'Power',fix:'Check incoming voltage. Look for voltage sags. Check input fuses.'},
+    {c:'A9',d:'Inverter Overload',cat:'Thermal',fix:'Reduce load. Increase acceleration time. Check ambient temperature <104\u00b0F.'},
+    {c:'A10',d:'Motor ETR Overload',cat:'Thermal',fix:'Motor overloaded. Check belt tension on fans. Clean impellers on pumps. Verify motor sized correctly.'},
+    {c:'A28',d:'Brake Check Failed',cat:'Power',fix:'Test brake resistor resistance. Check IGBT brake chopper. Disable test if no brake resistor installed.'},
+    {c:'A38',d:'Internal Fault',cat:'Internal',fix:'Power cycle drive. If repeats, drive fault \u2014 contact Danfoss support with fault code and log.'},
+    {c:'A47',d:'24V Supply Low',cat:'Power',fix:'Check control wiring for short. Disconnect external 24V loads to isolate. Replace drive if internal supply failed.'},
+    {c:'A69',d:'Power Card Temp',cat:'Thermal',fix:'Clean drive heatsink. Check cooling fans. Verify airflow around drive. Ambient should be <104\u00b0F.'},
+    {c:'A2',d:'Live Zero Error',cat:'I/O',fix:'4-20mA signal dropped below 2mA. Check wiring, sensor power, and input configuration (par 6-01).'}
+  ],
+  'Allen-Bradley PF525': [
+    {c:'F004',d:'Undervoltage',cat:'Power',fix:'Check incoming line voltage. Voltage must be within \u00b110% of nominal. Check fuses and input terminals.'},
+    {c:'F005',d:'Overvoltage',cat:'Power',fix:'Increase decel time (A68). Check line voltage. Add brake resistor if deceling heavy loads.'},
+    {c:'F006',d:'Motor Stalled',cat:'Control',fix:'Check for mechanical load. Increase accel time (A67). Run autotune (P046=3). Check V/Hz curve.'},
+    {c:'F007',d:'Motor Overload',cat:'Thermal',fix:'Motor overloaded. Check FLA parameter (P033 matches nameplate). Reduce load or size up VFD.'},
+    {c:'F008',d:'Heatsink Overtemperature',cat:'Thermal',fix:'Clean heatsink. Verify cooling fan runs. Check ambient <104\u00b0F. Reduce carrier freq (A082).'},
+    {c:'F012',d:'HW Overcurrent',cat:'Power',fix:'Serious fault. Check motor cables for short. Inspect motor. Check for IGBT damage (internal).'},
+    {c:'F013',d:'Ground Fault',cat:'Safety',fix:'Megger motor and cables. Inspect motor junction box for moisture. Check cable insulation.'},
+    {c:'F029',d:'Analog Input Lost',cat:'I/O',fix:'4-20mA below 2mA. Check sensor, wiring, and input config (t062). Verify jumper position for mA.'},
+    {c:'F033',d:'Auto Restart Exhausted',cat:'Control',fix:'Drive attempted to restart too many times. Fix root cause. Reset manually (P1-04).'},
+    {c:'F042',d:'Control Board Fault',cat:'Internal',fix:'Power cycle. If repeats, replace control board or drive. Check for firmware update.'},
+    {c:'F063',d:'Comm Loss',cat:'Comm',fix:'BMS lost communication. Check RS-485 wiring, termination, and settings. Verify BMS scan rate.'}
+  ],
+  'Yaskawa GA500': [
+    {c:'oC',d:'Overcurrent',cat:'Power',fix:'Check motor wiring for shorts. Verify motor not locked. Increase accel time (C1-01). Run autotune (T1-01=2).'},
+    {c:'ov',d:'Overvoltage',cat:'Power',fix:'Increase decel time (C1-02). Check input voltage. Enable stall prevention (L3-04). Add brake resistor for regen.'},
+    {c:'Uv1',d:'Undervoltage',cat:'Power',fix:'Check incoming voltage. Verify within spec. Check fuses. Look for voltage sags at startup.'},
+    {c:'GF',d:'Ground Fault',cat:'Safety',fix:'Megger motor (>1M\u03a9). Check cable insulation. Inspect motor for moisture. Disconnect motor to isolate.'},
+    {c:'oL1',d:'Motor Overload',cat:'Thermal',fix:'Electronic thermal tripped. Reduce load. Check E2-01 (motor FLA) matches nameplate.'},
+    {c:'oL2',d:'Drive Overload',cat:'Thermal',fix:'Drive itself overloaded. Verify drive sized correctly. Increase accel time. Reduce duty cycle.'},
+    {c:'oH',d:'Heatsink Overtemp',cat:'Thermal',fix:'Clean heatsink. Replace cooling fan if worn. Check ambient temperature. Reduce carrier (C6-02).'},
+    {c:'PF',d:'Input Phase Loss',cat:'Power',fix:'Check all 3 input phases. Verify fuses. Check terminal tightness L1/L2/L3.'},
+    {c:'LF',d:'Output Phase Loss',cat:'Power',fix:'Check U/V/W to motor. Measure motor winding resistance. Tighten terminals.'},
+    {c:'CE',d:'Comm Error',cat:'Comm',fix:'BMS comm lost. Check wiring, baud (H5-02), address (H5-01), and termination.'},
+    {c:'bUS',d:'Serial Comm Timeout',cat:'Comm',fix:'Master device not communicating. Check RS-485, address conflicts, baud rate match.'},
+    {c:'STo',d:'Safe Torque Off',cat:'Safety',fix:'Safe Torque Off circuit open. Check STO input wiring (H1, H2). Verify jumpers if STO not used.'}
+  ]
+};
+
+// HVAC Presets
+var HVAC_PRESETS = {
+  'ABB': [
+    ['Motor Control Mode (P99.04)','V/f (1)','V/f (1)','V/f (1)'],
+    ['Speed Ref Source (P11.01)','AI1 (1)','AI1 (1)','AI1 (1)'],
+    ['Min Frequency (P20.01)','12 Hz','15 Hz','10 Hz'],
+    ['Max Frequency (P20.02)','60 Hz','60 Hz','60 Hz'],
+    ['Accel Time (P22.01)','30 sec','20 sec','45 sec'],
+    ['Decel Time (P22.02)','30 sec','20 sec','45 sec'],
+    ['AI1 Type (P12.03)','0-10V or 4-20mA','0-10V or 4-20mA','0-10V or 4-20mA'],
+    ['Relay 1 (P13.01)','Run (1)','Run (1)','Run (1)'],
+    ['Relay 2 (P13.02)','Fault (3)','Fault (3)','Fault (3)'],
+    ['Flying Start (P21.01)','Enable','Enable','Enable'],
+    ['Carrier Freq (P25.01)','4-8 kHz','4-8 kHz','2-4 kHz'],
+    ['Stall Prevention (P30.10)','Enable','Enable','Enable'],
+    ['PID Enable (P40.01)','Disable (fan VAV)','Enable (pump)','Enable (tower)'],
+    ['Sleep Mode (P40.30)','Enable','Enable','Disable'],
+  ],
+  'Danfoss': [
+    ['Motor Control Mode (P1-00)','V/f (0)','V/f (0)','V/f (0)'],
+    ['Speed Ref Source (P3-15)','AI53 (1)','AI53 (1)','AI53 (1)'],
+    ['Min Frequency (P4-12)','12 Hz','15 Hz','10 Hz'],
+    ['Max Frequency (P4-14)','60 Hz','60 Hz','60 Hz'],
+    ['Accel Time (P3-41)','30 sec','20 sec','45 sec'],
+    ['Decel Time (P3-42)','30 sec','20 sec','45 sec'],
+    ['AI53 Type (P6-10)','0-10V or 4-20mA','0-10V or 4-20mA','0-10V or 4-20mA'],
+    ['Relay 1 (P5-40)','Run (9)','Run (9)','Run (9)'],
+    ['Relay 2 (P5-41)','Alarm (5)','Alarm (5)','Alarm (5)'],
+    ['Flying Start (P1-73)','Enable (2)','Enable (2)','Enable (2)'],
+    ['Carrier Freq (P1-41)','4-8 kHz','4-8 kHz','2-4 kHz'],
+    ['Fire Mode (P24-09)','Set per code','Set per code','Set per code'],
+    ['PID Enable (P7-00)','Disable','Enable','Enable'],
+  ],
+  'Allen-Bradley': [
+    ['Motor Control Mode (P035)','V/Hz (0)','V/Hz (0)','V/Hz (0)'],
+    ['Speed Ref (P047)','Analog In 1','Analog In 1','Analog In 1'],
+    ['Min Freq (P033)','12 Hz','15 Hz','10 Hz'],
+    ['Max Freq (P034)','60 Hz','60 Hz','60 Hz'],
+    ['Accel Time (P049)','30 sec','20 sec','45 sec'],
+    ['Decel Time (P050)','30 sec','20 sec','45 sec'],
+    ['Relay 1 (P340)','Running','Running','Running'],
+    ['Relay 2 (P341)','Fault','Fault','Fault'],
+    ['Flying Start (P062)','Enable','Enable','Enable'],
+    ['Carrier (P038)','4-8 kHz','4-8 kHz','2-4 kHz'],
+    ['Stall Prevent (P072)','Enable','Enable','Enable'],
+    ['PID Enable (P160)','Disable','Enable','Enable'],
+  ],
+  'Yaskawa': [
+    ['Control Mode (A1-02)','V/f','V/f','V/f'],
+    ['Speed Ref (b1-01)','Terminal (1)','Terminal (1)','Terminal (1)'],
+    ['Min Freq (E1-04)','12 Hz','15 Hz','10 Hz'],
+    ['Max Freq (E1-06)','60 Hz','60 Hz','60 Hz'],
+    ['Accel (C1-01)','30 sec','20 sec','45 sec'],
+    ['Decel (C1-02)','30 sec','20 sec','45 sec'],
+    ['AI1 Type (H3-09)','V or mA','V or mA','V or mA'],
+    ['Relay 1 (H2-01)','During Run (0)','During Run (0)','During Run (0)'],
+    ['Relay 2 (H2-02)','Fault (E)','Fault (E)','Fault (E)'],
+    ['Carrier (C6-02)','8 kHz','8 kHz','2 kHz'],
+    ['Fire Mode (A1-06)','Per code','Per code','Per code'],
+    ['PID (b5-01)','Disable','Enable','Enable'],
+  ]
+};
+
+// Troubleshooting scenarios
+var TROUBLE = {
+  'nostart':{name:"Won't Start / No Display",icon:"\u26d4",desc:"Drive won't power up or respond",
+    tree:{q:"Does the VFD display light up?",info:"Check for any LEDs, keypad display, or status indicators.",
+      no:{q:"Is there incoming line voltage at L1/L2/L3?",info:"Measure phase-to-phase with multimeter. All three phases should read within 10% of rated voltage.",
+        no:{fix:"No input power",detail:"Missing or low line voltage. Check disconnect switch, upstream breaker/fuses, and main panel. Verify all 3 phases present (L1-L2, L2-L3, L1-L3). If only 2 phases, check for blown upstream fuse."},
+        yes:{q:"Is the internal DC bus charging?",info:"Most drives have a 'ready' LED or show DC bus voltage. DC bus = Line voltage \u00d7 1.41. For 460V, expect ~650 VDC.",
+          no:{fix:"Drive internal failure",detail:"Input power present but drive not charging. Likely causes: (1) Input fuses open (check with meter), (2) Charging resistor failed, (3) Diode bridge damaged from surge. Drive repair or replacement needed."},
+          yes:{fix:"Control circuit fault",detail:"Drive has power but display is dead. Check: (1) 24V control supply at terminals, (2) Keypad cable connection, (3) Internal control board fault. Try power cycle. If repeats, contact manufacturer."}
+        }
+      },
+      yes:{q:"Is there a fault code or warning shown?",info:"Look for red LED, fault code, or alarm message on the display.",
+        yes:{fix:"Fault condition active",detail:"See the Fault Codes tab for your specific code. Common causes at power-up: undervoltage (Uv1/F004), ground fault (GF/F013), or configuration error. Fix root cause before resetting."},
+        no:{q:"Is there a run command signal?",info:"Check Digital Input 1 (run/start). It must be activated via external switch, HAND mode button, or remote command. Measure +24V at the input.",
+          yes:{fix:"Run command present but no output",detail:"Drive accepts command but won't ramp. Check: (1) Speed reference >0 (AI1), (2) Forward/reverse enable, (3) Drive not in LOCAL mode when remote command expected, (4) Interlock/safety input open. Check command source parameter."},
+          no:{fix:"No run command",detail:"Set command source correctly (par 1000/P700/b1-02). For HAND/local test, use keypad. For AUTO/remote, ensure digital input is wired and energized. Check BAS or external start signal."}
+        }
+      }
+    }
+  },
+  'overcurrent':{name:'Overcurrent Trips',icon:'\u26a1',desc:'F01/oC/2310 faults during run',
+    tree:{q:"Does it trip during acceleration or at steady speed?",info:"The timing tells you the cause.",
+      acc:{q:"Has the accel time been checked?",info:"Too-fast acceleration on a heavy load causes high starting current.",
+        no:{fix:"Increase acceleration time",detail:"Current VFD of heavy loads like large fans and pumps often needs longer accel times. Start with 30-60 seconds. If still trips: check that the motor is properly sized, then check coupling for binding."},
+        yes:{q:"Has autotune been performed?",info:"Autotune measures actual motor parameters. Without it, the drive uses default V/Hz values that may not match your motor well.",
+          no:{fix:"Run motor autotune",detail:"Stop drive, enter autotune mode (par P046=3 on AB, T1-01=2 on Yaskawa, etc). Follow prompts. Motor should be decoupled if possible. Rotational autotune is more accurate than stationary."},
+          yes:{fix:"Motor or VFD sized incorrectly",detail:"Despite optimal settings, drive can't handle starting load. Options: (1) Upsize the VFD (one size up), (2) Switch to constant-torque VFD rating, (3) Check for mechanical binding in load, (4) Verify motor nameplate FLA matches parameter setting."}
+        }
+      },
+      steady:{q:"Is the load higher than normal?",info:"Dirty filters, failing bearings, closed dampers/valves all increase current.",
+        yes:{fix:"Mechanical load issue",detail:"Check: (1) Air/water filters - replace if dirty, (2) Coupling alignment, (3) Bearing condition (listen for noise), (4) Dampers/valves positioned correctly, (5) Belt tension on fans, (6) Impeller/rotor for damage or debris."},
+        no:{q:"Has the motor been checked with a megger?",info:"Insulation breakdown causes high current. Disconnect motor, measure resistance phase-to-phase and phase-to-ground. Should read >1 M\u03a9.",
+          yes:{q:"Did insulation test pass?",info:"All readings >1 M\u03a9?",
+            yes:{fix:"VFD parameter issue",detail:"Motor is OK. Check: (1) Motor FLA matches VFD parameter exactly, (2) V/Hz boost too high (reduce torque boost), (3) Carrier frequency too low (try 4-8 kHz), (4) Control mode (try switching from V/Hz to sensorless vector)."},
+            no:{fix:"Motor insulation failure",detail:"Motor windings breaking down. Must be repaired or replaced. Common causes: (1) Moisture, (2) Age, (3) Inverter-duty motor not used with VFD (voltage reflections damaged insulation), (4) Overheating."}
+          },
+          no:{fix:"Megger the motor",detail:"Disconnect motor cables from VFD. Use insulation tester (megger) at 500V or 1000V DC. Measure phase-to-ground and phase-to-phase. Good motor: >1 M\u03a9 (ideally >100 M\u03a9). Bad motor: <1 M\u03a9."}
+        }
+      }
+    }
+  },
+  'overvolt':{name:'DC Overvoltage',icon:'\u26a0',desc:'DC bus too high during decel',
+    tree:{q:"Is decel time set too short?",info:"Fast deceleration of a high-inertia load causes regeneration back to the DC bus.",
+      yes:{fix:"Increase deceleration time",detail:"Double the current decel time and retest. For fans with large blades, try 30-60 sec. If load requires fast stops, add a brake resistor to dissipate regenerative energy. Set parameter per manual."},
+      no:{q:"Is the incoming line voltage high?",info:"Measure line-to-line voltage. Should be within +10% of nominal.",
+        yes:{fix:"High line voltage",detail:"Line voltage exceeds drive rating. Options: (1) Install step-down transformer, (2) Check utility for voltage regulation issue, (3) Verify drive voltage class matches installation, (4) Enable overvoltage stall prevention if supported."},
+        no:{fix:"Regenerative load",detail:"Load is driving the motor (overhauling). Common with: (1) Gravity loads (cranes, elevators), (2) Opposing flow in pumps, (3) Wind-driven fans. Solution: Install brake resistor, enable dynamic braking, or use regenerative drive."}
+      }
+    }
+  },
+  'noresponse':{name:'Not Responding to BMS',icon:'\ud83d\udcdf',desc:'BACnet/Modbus command not working',
+    tree:{q:"Is the drive in AUTO or REMOTE mode?",info:"Drive must be set to accept remote commands, not local HAND mode.",
+      no:{fix:"Switch to AUTO/REMOTE",detail:"Press HAND/AUTO button or change parameter: ABB P10.01, Danfoss P0-01, AB P046. Drive must be in AUTO (remote) to accept BMS commands. HAND = local keypad only."},
+      yes:{q:"Are the communication parameters correct?",info:"Address, baud rate, parity, and protocol must match exactly between BMS and VFD.",
+        no:{fix:"Set communication parameters",detail:"Typical defaults: Protocol=BACnet MS/TP or Modbus RTU. Baud=38400 or 9600. Parity=None. Node address=unique 1-127 per drive. Check BMS system documentation for exact required values."},
+        yes:{q:"Is the RS-485 wiring correct?",info:"A+ to A+, B\u2212 to B\u2212. No crossovers. Shield grounded at one end only (usually BMS panel).",
+          no:{fix:"Fix RS-485 wiring",detail:"Common errors: (1) A/B polarity reversed, (2) Shield grounded at both ends causes loop, (3) Daisy chain not continuous, (4) Missing 120\u03a9 termination resistor at each end, (5) Cable too long (>4000 ft), (6) Poor cable (must be twisted pair, not flat phone cable)."},
+          yes:{fix:"BMS configuration issue",detail:"Wiring and drive are OK. Check BMS side: (1) Correct object/register mapping, (2) Scan rate not too fast (min 500ms per drive), (3) Address conflict with another device, (4) BACnet network number. Use protocol analyzer to see actual traffic."}
+        }
+      }
+    }
+  }
+};
+
+var selFB = 'ABB ACS580'; // selected fault brand
+var state = {scr:'menu', sc:null, path:[], hist:[]};
+
+// ============ HELPERS ============
+function sT(id){
+  ['params','wiring','sizing','faults','trouble','hvac','ref'].forEach(function(t){
+    document.getElementById('tab-'+t).style.display=t===id?'':'none';
+  });
+  document.querySelectorAll('.tab').forEach(function(t,i){
+    t.classList.toggle('active',['params','wiring','sizing','faults','trouble','hvac','ref'][i]===id);
+  });
+  if(id==='faults'&&!document.getElementById('fault-brands').innerHTML)drawFaults();
+  if(id==='trouble')renderTrouble();
+  if(id==='hvac'&&!document.getElementById('hvac-table').innerHTML)drawHVAC();
+  if(id==='sizing'){calcSize();calcConv('hp');}
+  if(id==='wiring'){if(!document.getElementById('fn-select').innerHTML)populateFunctionWiring();drawWiring();}
+}
+
+function escHtml(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+// ============ PARAMETERS ============
+function drawParams(){
+  var fromBrand=document.getElementById('p-from').value;
+  var toBrand=document.getElementById('p-to').value;
+  var search=document.getElementById('p-search').value.toLowerCase().trim();
+  var fromI=BRAND_IDX[fromBrand],toI=BRAND_IDX[toBrand];
+  
+  var filtered=PARAMS.filter(function(p){
+    if(!search)return true;
+    return p.join(' ').toLowerCase().indexOf(search)>=0;
+  });
+  
+  document.getElementById('p-count').textContent=filtered.length+' of '+PARAMS.length+' parameters';
+  
+  var html='<div class="tbl-wrap"><table><thead><tr><th>Category</th><th>Parameter</th>';
+  BRAND_COLS.forEach(function(b,i){
+    var hi=(i+2===fromI||i+2===toI)?' style="color:var(--accent);background:rgba(167,139,250,.1)"':'';
+    html+='<th'+hi+'>'+escHtml(b)+'</th>';
+  });
+  html+='</tr></thead><tbody>';
+  filtered.forEach(function(p){
+    html+='<tr>';
+    html+='<td class="cat">'+escHtml(p[0])+'</td>';
+    html+='<td class="desc-col">'+escHtml(p[1])+'</td>';
+    for(var i=2;i<p.length;i++){
+      var cls=(i===fromI||i===toI)?' class="hi"':'';
+      html+='<td'+cls+'>'+escHtml(p[i])+'</td>';
+    }
+    html+='</tr>';
+  });
+  html+='</tbody></table></div>';
+  document.getElementById('param-table').innerHTML=html;
+}
+
+// ============ WIRING ============
+function drawWiring(){
+  var search=(document.getElementById('w-search').value||'').toLowerCase().trim();
+  var filtered=WIRING.filter(function(w){if(!search)return true;return w.join(' ').toLowerCase().indexOf(search)>=0;});
+  
+  var html='<div class="tbl-wrap"><table><thead><tr><th>Function</th>';
+  BRAND_COLS.forEach(function(b){html+='<th>'+escHtml(b)+'</th>';});
+  html+='</tr></thead><tbody>';
+  filtered.forEach(function(w){
+    html+='<tr><td class="desc-col" style="font-weight:600;color:var(--accent)">'+escHtml(w[0])+'</td>';
+    for(var i=1;i<w.length;i++)html+='<td>'+escHtml(w[i])+'</td>';
+    html+='</tr>';
+  });
+  html+='</tbody></table></div>';
+  html+='<div class="note"><strong>Safety:</strong> Always verify with the manufacturer\'s wiring diagram for your specific model and firmware. Terminal designations can vary between frame sizes and firmware revisions.</div>';
+  document.getElementById('wire-table').innerHTML=html;
+}
+
+// ============ SIZING ============
+function calcSize(){
+  var hp=parseFloat(document.getElementById('s-hp').value);
+  var v=parseInt(document.getElementById('s-volt').value);
+  var app=document.getElementById('s-app').value;
+  
+  var vIdx={230:0,208:0,460:1,575:2}[v];
+  var fla=FLA_TABLE[hp]?FLA_TABLE[hp][vIdx]:null;
+  // 208V gets slight bump
+  if(v===208&&fla)fla=fla*1.1;
+  
+  if(!fla){document.getElementById('s-result').innerHTML='<div class="verdict no"><div class="vt">Size not in standard table</div></div>';return;}
+  
+  // Multipliers by duty
+  var mult=app==='vt'?1.0:app==='ct'?1.2:1.5;
+  var overloadNote=app==='vt'?'110% for 60 sec':app==='ct'?'150% for 60 sec':'200%+ for 60 sec';
+  var vfdFLA=fla*mult;
+  
+  // Find next standard VFD size
+  var stdSizes=[2.2,3.5,4.6,6.6,7.8,10.8,13.7,17.6,24,31,40,52,65,77,96,124,156,180,240,310,415,590];
+  var rec=stdSizes.find(function(s){return s>=vfdFLA;})||vfdFLA;
+  
+  var html='<div class="rb"><h3>Sizing Result</h3>';
+  html+='<div class="ri"><span class="rl">Motor nameplate</span><span class="rv">'+hp+' HP @ '+v+'V</span></div>';
+  html+='<div class="ri"><span class="rl">Motor FLA (NEC 430.250)</span><span class="rv">'+fla.toFixed(1)+' A</span></div>';
+  html+='<div class="ri"><span class="rl">Application multiplier</span><span class="rv">\u00d7 '+mult.toFixed(1)+' ('+(app==='vt'?'VT':app==='ct'?'CT':'HD')+')</span></div>';
+  html+='<div class="ri"><span class="rl">Required VFD current</span><span class="rv">'+vfdFLA.toFixed(1)+' A</span></div>';
+  html+='<div class="ri" style="border-top:2px solid var(--accent);padding-top:10px"><span class="rl" style="font-weight:700;font-size:1.05em">Minimum VFD Rating</span><span class="rv" style="font-size:1.2em">'+rec+' A</span></div>';
+  html+='<div class="ri"><span class="rl">Required overload</span><span class="rv">'+overloadNote+'</span></div>';
+  html+='</div>';
+  
+  html+='<div class="tip"><strong>Note:</strong> ';
+  if(app==='vt'){html+='Variable Torque is ideal for fans, pumps, and blowers. Motor current is lowest at reduced speed.';}
+  else if(app==='ct'){html+='Constant Torque drives need to be sized up. Used for compressors, conveyors, and positive displacement pumps.';}
+  else{html+='Heavy Duty drives handle shock loads and high starting torque. Verify actual starting torque requirements with load.';}
+  html+='</div>';
+  
+  document.getElementById('s-result').innerHTML=html;
+}
+
+function calcConv(src){
+  var hp=parseFloat(document.getElementById('c-hp').value)||0;
+  var kw=parseFloat(document.getElementById('c-kw').value)||0;
+  var v=parseInt(document.getElementById('c-v').value);
+  
+  if(src==='hp'){
+    kw=hp*0.746;
+    document.getElementById('c-kw').value=kw.toFixed(2);
+  } else {
+    hp=kw/0.746;
+    document.getElementById('c-hp').value=hp.toFixed(2);
+  }
+  
+  // Lookup or interpolate FLA
+  var vIdx={230:0,208:0,460:1,575:2}[v];
+  var fla=FLA_TABLE[hp]?FLA_TABLE[hp][vIdx]:null;
+  if(!fla){
+    // Estimate: FLA = (HP \xd7 746) / (V \xd7 1.732 \xd7 0.85 eff \xd7 0.85 pf)
+    fla=(hp*746)/(v*1.732*0.85*0.85);
+  }
+  if(v===208)fla=fla*1.1;
+  
+  var html='<div class="rb"><h3>Conversion Result</h3>';
+  html+='<div class="ri"><span class="rl">Horsepower</span><span class="rv">'+hp.toFixed(2)+' HP</span></div>';
+  html+='<div class="ri"><span class="rl">Kilowatts</span><span class="rv">'+kw.toFixed(2)+' kW</span></div>';
+  html+='<div class="ri"><span class="rl">Approximate FLA @ '+v+'V (3-phase)</span><span class="rv">'+fla.toFixed(1)+' A</span></div>';
+  html+='<div class="ri"><span class="rl">Formula</span><span class="rv" style="font-size:.82em">1 HP = 746 W</span></div>';
+  html+='</div>';
+  document.getElementById('c-result').innerHTML=html;
+}
+
+// ============ FAULTS ============
+function drawFaults(){
+  // Brand pills
+  var pillsHTML='';
+  Object.keys(FAULTS).forEach(function(b){
+    pillsHTML+='<button class="bpill'+(b===selFB?' active':'')+'" onclick="selFB=\''+b+'\';drawFaults()">'+b+'</button>';
+  });
+  document.getElementById('fault-brands').innerHTML=pillsHTML;
+  
+  // Fault list filtered by search
+  var search=(document.getElementById('f-search').value||'').toLowerCase().trim();
+  var faults=FAULTS[selFB]||[];
+  var filtered=faults.filter(function(f){if(!search)return true;return(f.c+' '+f.d+' '+f.cat+' '+f.fix).toLowerCase().indexOf(search)>=0;});
+  
+  var html='';
+  if(filtered.length===0){html='<div style="text-align:center;padding:30px;color:var(--text2)">No fault codes match your search.</div>';}
+  else{
+    filtered.forEach(function(f){
+      html+='<div class="fault-row"><span class="fault-code">'+escHtml(f.c)+'</span>';
+      html+='<div class="fault-desc"><div style="font-weight:600">'+escHtml(f.d)+' <span class="fault-cat">'+escHtml(f.cat)+'</span></div>';
+      html+='<div style="color:var(--text2);font-size:.85em;margin-top:2px">'+escHtml(f.fix)+'</div></div></div>';
+    });
+  }
+  document.getElementById('fault-list').innerHTML=html;
+}
+
+// ============ TROUBLESHOOTING ============
+function renderTrouble(){
+  var el=document.getElementById('trouble-area');
+  if(state.scr==='menu'){
+    var html='<div class="ts-grid">';
+    Object.keys(TROUBLE).forEach(function(k){
+      var t=TROUBLE[k];
+      html+='<button class="ts-btn" onclick="startTS(\''+k+'\')"><div class="ti">'+t.icon+'</div><div class="tn">'+t.name+'</div><div class="td">'+t.desc+'</div></button>';
+    });
+    html+='</div>';
+    el.innerHTML=html;
+  } else if(state.scr==='flow'){
+    var sc=TROUBLE[state.sc];
+    var node=sc.tree;
+    for(var i=0;i<state.path.length;i++)node=node[state.path[i]];
+    
+    var histHTML='';
+    if(state.hist.length>0){
+      histHTML='<div class="hist">';
+      state.hist.forEach(function(h){histHTML+='<div class="hist-step"><span style="color:var(--text2)">'+escHtml(h.q)+'</span> \u2192 <span style="color:var(--accent);font-weight:600">'+escHtml(h.a)+'</span></div>';});
+      histHTML+='</div>';
+    }
+    
+    var html='<button class="nb" onclick="backTS()">&larr; Back</button><button class="nb" onclick="state.scr=\'menu\';renderTrouble()">All Scenarios</button>';
+    html+='<div style="font-size:.85em;color:var(--text2);margin-top:8px"><strong>'+sc.icon+' '+sc.name+'</strong> &middot; Step '+(state.path.length+1)+'</div>';
+    html+=histHTML;
+    
+    if(node.fix){
+      html+='<div class="diag-fix"><h4>\u2705 Diagnosis: '+escHtml(node.fix)+'</h4><p>'+escHtml(node.detail)+'</p></div>';
+      html+='<button class="nb" onclick="startTS(\''+state.sc+'\')">Restart This Scenario</button>';
+    } else {
+      html+='<div class="diag-node"><div class="diag-q">'+escHtml(node.q)+'</div>';
+      if(node.info)html+='<div class="diag-info">'+escHtml(node.info)+'</div>';
+      html+='<div class="diag-btns">';
+      Object.keys(node).forEach(function(k){
+        if(k==='q'||k==='info')return;
+        var label={yes:'\u2705 Yes',no:'\u274c No',acc:'During acceleration',steady:'At steady speed'}[k]||k;
+        html+='<button class="diag-btn" onclick="chooseTS(\''+k+'\')">'+label+'</button>';
+      });
+      html+='</div></div>';
+    }
+    el.innerHTML=html;
+  }
+}
+
+function startTS(key){state.sc=key;state.path=[];state.hist=[];state.scr='flow';renderTrouble();window.scrollTo(0,0);}
+function chooseTS(k){
+  var sc=TROUBLE[state.sc];var node=sc.tree;
+  for(var i=0;i<state.path.length;i++)node=node[state.path[i]];
+  var label={yes:'Yes',no:'No',acc:'Acceleration',steady:'Steady speed'}[k]||k;
+  state.hist.push({q:node.q,a:label});
+  state.path.push(k);
+  renderTrouble();window.scrollTo(0,0);
+}
+function backTS(){
+  if(state.path.length>0){state.path.pop();state.hist.pop();renderTrouble();}
+  else{state.scr='menu';renderTrouble();}
+  window.scrollTo(0,0);
+}
+
+// ============ HVAC PRESETS ============
+function drawHVAC(){
+  var brand=document.getElementById('h-brand').value;
+  var presets=HVAC_PRESETS[brand]||HVAC_PRESETS['ABB'];
+  var html='<div class="tbl-wrap"><table><thead><tr><th>Parameter</th><th>Fan (VAV)</th><th>Pump (Variable Flow)</th><th>Cooling Tower</th></tr></thead><tbody>';
+  presets.forEach(function(p){
+    html+='<tr><td class="desc-col" style="font-weight:600">'+escHtml(p[0])+'</td>';
+    html+='<td>'+escHtml(p[1])+'</td>';
+    html+='<td>'+escHtml(p[2])+'</td>';
+    html+='<td>'+escHtml(p[3])+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  html+='<div class="note"><strong>Remember:</strong> These are starting points. Always adjust based on application, motor nameplate, and BAS feedback. Fire mode and life-safety features must be commissioned per local code.</div>';
+  document.getElementById('hvac-table').innerHTML=html;
+}
+
+
+// ============ FUNCTION WIRING DATA ============
+var FN_BRANDS = ['ABB ACS580','Danfoss FC102','Allen-Bradley PF525','Yaskawa GA500','Siemens G120','Toshiba VFS15'];
+
+var FUNCTION_WIRING = {
+  '2wire_start':{
+    name:'2-Wire Start/Stop (Maintained)',
+    purpose:'A maintained (latching) switch or relay contact signals the drive to run. Contact closed = run, contact open = stop. Most common for BAS/PLC control where a relay output maintains its state.',
+    wiring:{
+      'ABB ACS580':{terms:['DI1','DGND'],jumpers:['Set P20.01 = Start/Stop','Set P10.04 (DI1 Ref) = "Start Fwd"'],
+        diagram:'  +24V (drive supply)\n     |\n    [ ]  External dry contact\n     |  (BAS relay, thermostat, HOA)\n    DI1  -----> Run when closed\n     |\n   DGND (common)'},
+      'Danfoss FC102':{terms:['12 (+24V)','18 (DI1)','20 (GND)'],jumpers:['Set par 5-10 = "Start"','Set par 1-00 = "Open Loop"'],
+        diagram:'  Term 12 (+24V)\n     |\n    [ ]  External dry contact\n     |\n   Term 18 (DI1)  -----> Start\n     |\n   Term 20 (GND)'},
+      'Allen-Bradley PF525':{terms:['TB2: +24V','TB3: IN1','TB3: COM'],jumpers:['t062 = 48 (Start)','P046 = 1 (Terminal)'],
+        diagram:'  TB2: +24V\n     |\n    [ ]  Maintained contact\n     |\n   TB3: IN1  -----> Start/Run\n     |\n   TB3: COM'},
+      'Yaskawa GA500':{terms:['+V','S1','SC'],jumpers:['H1-01 = 0 (Forward Run)','b1-02 = 1 (Terminals)'],
+        diagram:'  +V (drive supply)\n     |\n    [ ]  Dry contact\n     |\n    S1  -----> Forward Run\n     |\n    SC (digital common)'},
+      'Siemens G120':{terms:['9 (+24V)','5 (DI0)','10 (0V)'],jumpers:['P0700 = 2 (Terminals)','P0701 = 1 (ON/OFF1)'],
+        diagram:'  Term 9 (+24V)\n     |\n    [ ]  Dry contact\n     |\n  Term 5 (DI0)  -----> ON/OFF1\n     |\n  Term 10 (0V)'},
+      'Toshiba VFS15':{terms:['PP (+24V)','F','CC'],jumpers:['F108 = 1 (Terminal input)','F201 = 1 (Start/Stop)'],
+        diagram:'  PP (+24V)\n     |\n    [ ]  Dry contact\n     |\n    F  -----> Forward run\n     |\n   CC (common)'}
+    },
+    tips:['2-wire control is stateful: if power is cycled while the switch is closed, the drive will automatically restart. Consider "Start Inhibit on Power-Up" parameter if this is a safety concern.','Use shielded control cable for runs over 10 ft in noisy environments.','The external contact must be a dry (volt-free) relay or switch \u2014 do NOT send 24V from another source.'],
+    common:['Sink logic is default on most drives (contact pulls DI to common to close the input). Source logic is a setting.','If drive has a safety-rated STO input, that must be wired correctly or the drive won\'t start no matter what.']
+  },
+  '3wire_start':{
+    name:'3-Wire Start/Stop (Momentary Buttons)',
+    purpose:'Traditional motor-starter-style control: momentary START button latches the drive RUNNING, momentary STOP button drops it out. Used for local panels with pushbuttons.',
+    wiring:{
+      'ABB ACS580':{terms:['DI1 (Start)','DI2 (Stop)','DGND'],jumpers:['P20.01 = "Start/Stop 3-wire"','DI1 = momentary NO start','DI2 = momentary NC stop'],
+        diagram:'  +24V\n     |\n   [ NO ]  START button\n     |\n    DI1  (Start)\n     \n  +24V\n     |\n   [ NC ]  STOP button\n     |\n    DI2  (Stop - must be held HIGH to run)\n     |\n   DGND'},
+      'Danfoss FC102':{terms:['12 (+24V)','18 (DI1 Start)','19 (DI2 Stop)','20 (GND)'],jumpers:['Par 5-10 = "Start" for DI1','Par 5-11 = "Stop inverse" for DI2','Par 5-12 = "Coast inverse" if E-stop'],
+        diagram:'  Term 12 (+24V)\n     |\n   [ NO ]  START (momentary)\n     |\n   Term 18 (DI1)\n     \n  Term 12 (+24V)\n     |\n   [ NC ]  STOP (momentary, held HIGH)\n     |\n   Term 19 (DI2)\n     |\n   Term 20 (GND)'},
+      'Allen-Bradley PF525':{terms:['TB2: +24V','TB3: IN1 (Start)','TB3: IN2 (Stop)','TB3: COM'],jumpers:['t062 = 48 (Start)','t063 = 49 (Stop)','P046 = 1 (Terminal)'],
+        diagram:'  +24V\n     |\n   [ NO ] START\n     |\n   IN1 (start)\n    \n  +24V\n     |\n   [ NC ] STOP (held HIGH)\n     |\n   IN2 (stop)\n     |\n  COM'},
+      'Yaskawa GA500':{terms:['+V','S1 (Run)','S2 (Stop)','SC'],jumpers:['H1-01 = 41 (3-wire Start)','H1-02 = 42 (3-wire Stop)','b1-17 = 1 (3-wire mode)'],
+        diagram:'  +V\n     |\n   [ NO ] START\n     |\n   S1 (run)\n    \n  +V\n     |\n   [ NC ] STOP (held HIGH)\n     |\n   S2 (stop)\n     |\n   SC'},
+      'Siemens G120':{terms:['9 (+24V)','5 (DI0 Start)','6 (DI1 Stop)','10 (0V)'],jumpers:['P0700 = 2','P0701 = 1 (ON/OFF1)','P0702 = 2 (OFF2 coast)'],
+        diagram:'  Term 9 (+24V)\n     |\n   [ NO ] START\n     |\n   Term 5 (DI0)\n    \n  Term 9 (+24V)\n     |\n   [ NC ] STOP (held HIGH)\n     |\n   Term 6 (DI1)\n     |\n   Term 10 (0V)'},
+      'Toshiba VFS15':{terms:['PP (+24V)','F (Start)','ST (Stop)','CC'],jumpers:['F108 = 1','F111 = Start assign','F112 = Stop assign'],
+        diagram:'  PP (+24V)\n     |\n   [ NO ] START\n     |\n    F (forward start)\n    \n  PP (+24V)\n     |\n   [ NC ] STOP\n     |\n    ST (stop, held HIGH)\n     |\n    CC'}
+    },
+    tips:['3-wire control is safer than 2-wire: after power outage, the drive will NOT auto-restart. Operator must press Start again.','STOP button is Normally Closed. It breaks the holding circuit when pressed.','This matches the classic Start/Stop logic of a motor starter \u2014 familiar to electricians.'],
+    common:['Start button is momentary NO (push to close).','Stop button is momentary NC (push to open).','Drive latches itself once started. Internal logic holds the run signal until Stop opens.']
+  },
+  'speed_010v':{
+    name:'Speed Reference (0-10V Analog)',
+    purpose:'A 0-10V analog signal from a BAS controller, potentiometer, or PLC sets the motor speed. 0V = min frequency, 10V = max frequency. The most common BAS interface.',
+    wiring:{
+      'ABB ACS580':{terms:['AI1','AGND','+10V (if using pot)'],jumpers:['P11.01 (Speed Ref) = "AI1"','P12.03 (AI1 type) = "0-10V"','P12.04 = 0V, P12.05 = 10V (scaling)'],
+        diagram:'  BAS/PLC 0-10V signal\n     |\n    AI1  (+ input)\n     \n  BAS common (signal ground)\n     |\n   AGND\n\n  [Pot option: 10k ohm]\n   +10V --> [ Pot ] --> AI1\n                    |\n                   AGND'},
+      'Danfoss FC102':{terms:['53 (AI1)','55 (AI COM)','50 (+10V)'],jumpers:['Par 3-15 = "AI53"','Par 6-10 = 0.07V, Par 6-11 = 10V','Switch A53 = U (voltage)'],
+        diagram:'  BAS 0-10V signal\n     |\n   Term 53 (AI53+)\n     \n  BAS common\n     |\n   Term 55 (AI COM)\n\n  Pot option:\n  Term 50 (+10V) --> [Pot] --> Term 53'},
+      'Allen-Bradley PF525':{terms:['TB2: 0-10V IN','TB2: AIN COM','TB2: +10V (for pot)'],jumpers:['P047 = 2 (Analog In)','t091 = 0 (0-10V mode)','A412 = scaling min/max'],
+        diagram:'  BAS 0-10V signal\n     |\n   TB2: 0-10V IN 1\n     \n  BAS common\n     |\n   TB2: AIN COM\n\n  Pot option:\n  +10V --> [10k Pot] --> 0-10V IN'},
+      'Yaskawa GA500':{terms:['A1','AC','+V'],jumpers:['b1-01 = 1 (Terminals)','H3-01 = 0-10V mode','H3-02 = 0 (frequency reference)'],
+        diagram:'  BAS 0-10V signal\n     |\n    A1 (analog input 1)\n     \n  BAS common\n     |\n    AC (analog common)\n\n  Pot option:\n   +V --> [2k Pot] --> A1'},
+      'Siemens G120':{terms:['3 (AI0+)','4 (AI0-)','1 (+10V)'],jumpers:['P1000 = 2 (AI0)','P0756 = 0 (unipolar voltage)','P0757-0760 = scaling'],
+        diagram:'  BAS 0-10V signal\n     |\n   Term 3 (AI0+)\n     \n  BAS common\n     |\n   Term 4 (AI0-)\n\n  Pot option:\n  Term 1 (+10V) --> [Pot] --> Term 3'},
+      'Toshiba VFS15':{terms:['FV (analog in)','CC (common)','PP (+10V)'],jumpers:['F006 = 1 (VI/II terminal)','F207 = 0-10V','F201 = frequency ref'],
+        diagram:'  BAS 0-10V signal\n     |\n    FV (voltage input)\n     \n  BAS common\n     |\n    CC\n\n  Pot option:\n   PP (+10V) --> [Pot] --> FV'}
+    },
+    tips:['Use shielded cable with the shield grounded at the DRIVE end only (not the BAS end) to avoid ground loops.','BAS and drive must share the same signal ground \u2014 connect commons together.','If signal is noisy, check cable shield grounding and separate from power cables.','Verify jumper/switch setting for voltage mode (not current) on the AI.'],
+    common:['0V = min freq (often 0 Hz or 20 Hz with VAV), 10V = max freq (60 Hz).','Scale parameters set the relationship: 0-10V could map to 20-60 Hz if you have a minimum speed.','For remote potentiometer control, use the drive\'s +10V reference output, 2k-10k ohm pot.']
+  },
+  'speed_420ma':{
+    name:'Speed Reference (4-20mA Current Loop)',
+    purpose:'A 4-20mA current signal from a BAS or sensor sets the motor speed. 4mA = min, 20mA = max. Current loops are immune to long-cable voltage drops \u2014 good for distances over 50 ft.',
+    wiring:{
+      'ABB ACS580':{terms:['AI1','AGND'],jumpers:['P11.01 = "AI1"','P12.03 = "4-20mA" (software)','On some models: hardware jumper or DIP switch for mA mode'],
+        diagram:'  BAS 4-20mA source\n     |\n    AI1 (+ input, set to mA)\n     |\n  (250 ohm internal sense resistor)\n     |\n   AGND\n\n  For 2-wire loop-powered transmitter:\n   Drive +24V --> Transmitter --> AI1 --> AGND'},
+      'Danfoss FC102':{terms:['60 (AI54)','55 (AI COM)'],jumpers:['Par 3-15 = "AI54"','Par 6-22 = "4mA", Par 6-23 = "20mA"','Switch A54 = I (current)'],
+        diagram:'  BAS 4-20mA source\n     |\n   Term 60 (AI54)\n     |\n   Term 55 (AI COM)\n\n  Set slide switch A54 to position "I" (current mode)\n  DO NOT connect as voltage - internal shunt resistor only works in I mode.'},
+      'Allen-Bradley PF525':{terms:['TB2: 4-20 IN','TB2: AIN COM'],jumpers:['t091 = 1 (4-20mA mode)','P047 = 2 (analog reference)'],
+        diagram:'  BAS 4-20mA source\n     |\n   TB2: 4-20 IN\n     |\n   TB2: AIN COM\n\n  PF525 has a dedicated 4-20mA input terminal \u2014\n  no jumper setting needed, just wire to the right terminal.'},
+      'Yaskawa GA500':{terms:['A1','AC'],jumpers:['H3-01 set to 4-20mA mode','S1-1 DIP switch to "mA" position','H3-02 = 0 (freq ref)','b1-01 = 1 (terminals)'],
+        diagram:'  BAS 4-20mA source\n     |\n    A1 (current input)\n     |\n   AC (analog common)\n\n  Set DIP switch S1-1 on the control board to mA.\n  Confirm H3-01 parameter matches (4-20mA range).'},
+      'Siemens G120':{terms:['3 (AI0+)','4 (AI0-)'],jumpers:['P1000 = 2','P0756 = 2 (unipolar current)','DIP switch for mA mode on some models'],
+        diagram:'  BAS 4-20mA source\n     |\n   Term 3 (AI0+)\n     |\n   Term 4 (AI0-)\n\n  Set parameter P0756 = 2 for 4-20mA.\n  On some models, also set hardware DIP switch.'},
+      'Toshiba VFS15':{terms:['FI (current in)','CC'],jumpers:['F207 = 4-20mA mode','F006 = 2 (FI terminal)','F201 = freq ref'],
+        diagram:'  BAS 4-20mA source\n     |\n    FI (dedicated current input)\n     |\n    CC (common)\n\n  VFS15 has separate FI and FV terminals \u2014\n  use FI for current loop, FV for voltage.'}
+    },
+    tips:['4-20mA is superior to 0-10V for long runs (over 50 ft) \u2014 current loop rejects voltage drop and noise.','A dead 4-20mA loop (0mA) should trigger a "loss of signal" alarm \u2014 configure the drive to go to a safe speed (usually min) on signal loss.','Use shielded twisted-pair cable. Ground shield at drive only.','Check polarity \u2014 some BAS systems source current (Active), others expect the drive to source (Passive/Loop-Powered).'],
+    common:['4mA = min frequency, 20mA = max frequency. 2mA typically flags "signal loss".','Most drives have internal 250 ohm sense resistor \u2014 DON\'T add external one.','For loop-powered sensors (pressure, temp), the drive\'s +24V powers the sensor, current returns via AI.']
+  },
+  'run_permissive':{
+    name:'Run Permissive / Safety Interlock',
+    purpose:'A safety interlock that must be made before the drive will run. Common uses: freeze stat, high-limit static pressure switch, smoke damper end switch, duct smoke detector. When open, the drive cannot run regardless of start command.',
+    wiring:{
+      'ABB ACS580':{terms:['DI3 or Safe Torque Off (STO1+ / STO2+)'],jumpers:['DI3: P20.06 = "Run Enable"','STO: hardware wired per safety schematic (preferred for life-safety)'],
+        diagram:'  FREEZE STAT / SMOKE DETECTOR\n  [ NC contact ]\n     |\n    +24V\n     |\n   [ Safety ] (opens on trip)\n     |\n   DI3 (Run Enable)\n     |\n   DGND\n\n  For life-safety: Use dedicated STO input\n  STO must be rated per IEC 61800-5-2.'},
+      'Danfoss FC102':{terms:['27 (DI3)','12 (+24V)','20 (GND)','or Safe Stop terminals 37, 12'],jumpers:['DI3: Par 5-12 = "Coast Inv" (open=coast stop)','Safe Stop: hardware wired per IEC 60204-1'],
+        diagram:'  +24V (Term 12)\n     |\n  [NC safety contact]\n     |\n   DI3 (Term 27, "Coast Inverse")\n     |\n   GND (Term 20)\n\n  For life-safety:\n  Use terminals 37 (Safe Stop) \u2014 drive disables\n  output when contact opens.'},
+      'Allen-Bradley PF525':{terms:['TB3: IN3','TB3: +24V','TB3: COM'],jumpers:['t063 = 50 (Coast Stop Inv) or','t064 = 8 (Run Permissive)'],
+        diagram:'  +24V\n     |\n  [NC safety contact]\n     |\n  TB3: IN3 (Run Permissive)\n     |\n  TB3: COM\n\n  Contact open = drive coasts to stop.\n  Contact closed = drive allowed to run.'},
+      'Yaskawa GA500':{terms:['+V','S3','SC','HC / H1-HC (STO terminals)'],jumpers:['S3: H1-03 = 6 (Run Permissive)','STO: hardware inputs, safety-rated'],
+        diagram:'  +V\n     |\n  [NC safety]\n     |\n   S3 (Digital Input 3)\n     |\n   SC\n\n  H1-03 = 6 means "Drive Enable"\n  Contact open = drive cannot run.\n\n  Safety-rated: HC terminals (STO)'},
+      'Siemens G120':{terms:['5, 6, 7, 8 (DI0-DI3)','STO terminals (safety-rated)'],jumpers:['DI assignment: P0701-P0704 set to "Run Enable"','STO per function manual'],
+        diagram:'  +24V (Term 9)\n     |\n  [NC safety]\n     |\n  Term 7 (DI2, "Enable")\n     |\n  Term 10 (0V)\n\n  Configure via P0703 = 32 (Run Enable)'},
+      'Toshiba VFS15':{terms:['F, R, S1-S3','CC'],jumpers:['F111-F113 terminal assignments','F602 = Run enable'],
+        diagram:'  PP (+24V)\n     |\n  [NC safety]\n     |\n  S1 or S2 (configured input)\n     |\n  CC\n\n  Assign the DI to "Run enable" function\n  via F111 or F112 parameter.'}
+    },
+    tips:['For life-safety interlocks (freeze stat, smoke, fire), use the drive\'s SAFE TORQUE OFF (STO) input if available. STO is IEC 61800-5-2 rated and removes power to the motor\'s drive stage.','Standard digital inputs (Run Enable / Coast Stop Inv) are fine for process permissives but NOT for life-safety.','Wire safety contacts in SERIES: any one opens = drive stops. Freeze stat + smoke + high limit can all feed into the same Run Enable input.','Document the interlocks so the next tech knows what they mean when a drive won\'t start.'],
+    common:['Contact is Normally Closed \u2014 opens on trip. This is fail-safe logic: loss of wire = trip.','When in a chain, wire multiple NC contacts in series.','Do NOT bypass \u2014 understand why it\'s tripping before jumpering.','STO inputs typically need 24V on BOTH inputs for the drive to run; dual-channel safety.']
+  },
+  'fault_reset':{
+    name:'Fault Reset (External)',
+    purpose:'A momentary pushbutton or BAS output that clears drive faults remotely. Useful when the drive panel is not accessible, or integrated with BMS alarming.',
+    wiring:{
+      'ABB ACS580':{terms:['DI4','DGND'],jumpers:['P31.01 = "DI4" for Fault Reset','Momentary signal (falling edge resets)'],
+        diagram:'  +24V\n     |\n  [ NO momentary ]  RESET button\n     |\n   DI4\n     |\n   DGND\n\n  Configure P31.01 (Fault Reset Source) = DI4'},
+      'Danfoss FC102':{terms:['29 (DI4)','12 (+24V)','20 (GND)'],jumpers:['Par 5-13 = "Reset" (value 1)','Momentary contact'],
+        diagram:'  Term 12 (+24V)\n     |\n  [ NO momentary ] RESET\n     |\n  Term 29 (DI4)\n     |\n  Term 20 (GND)'},
+      'Allen-Bradley PF525':{terms:['TB3: IN4','TB3: COM'],jumpers:['t065 = 35 (Fault Reset)','Momentary signal'],
+        diagram:'  +24V\n     |\n  [ NO momentary ] RESET\n     |\n  TB3: IN4\n     |\n  TB3: COM'},
+      'Yaskawa GA500':{terms:['+V','S4','SC'],jumpers:['H1-04 = 14 (Fault Reset)'],
+        diagram:'  +V\n     |\n  [ NO momentary ] RESET\n     |\n   S4\n     |\n   SC'},
+      'Siemens G120':{terms:['9 (+24V)','8 (DI3)','10 (0V)'],jumpers:['P0704 = 9 (Acknowledge fault)'],
+        diagram:'  Term 9 (+24V)\n     |\n  [ NO momentary ] RESET\n     |\n  Term 8 (DI3)\n     |\n  Term 10 (0V)'},
+      'Toshiba VFS15':{terms:['PP','S3','CC'],jumpers:['F113 = Fault reset assignment'],
+        diagram:'  PP (+24V)\n     |\n  [ NO momentary ] RESET\n     |\n   S3\n     |\n   CC'}
+    },
+    tips:['Fault reset should be a MOMENTARY pushbutton, not maintained.','Investigate the fault before resetting. Blindly cycling through fault resets can damage the motor or drive.','Configure auto-restart separately (P31.10 on ABB) for faults that are transient (e.g., undervoltage during brownouts).','Some drives auto-reset on a rising edge, others on falling edge \u2014 test with a known fault.'],
+    common:['Always NO momentary contact.','Rising edge of the input triggers the reset on most drives.','Fault reset does NOT clear active faults \u2014 the cause must be gone first.']
+  },
+  'relay_run_fault':{
+    name:'Run Status & Fault Output (Relays)',
+    purpose:'Two relay outputs commonly wired to BAS: one closes when the drive is running (Run feedback), another closes on fault (alarm to BAS). Used for BAS visualization and alarm notification.',
+    wiring:{
+      'ABB ACS580':{terms:['RO1: 01C, 01NO (Run)','RO2: 02C, 02NO (Fault)'],jumpers:['P13.01 (RO1) = "Running" (1)','P13.02 (RO2) = "Fault" (3)'],
+        diagram:'  RO1: Run relay (NO contacts)\n  ------ 01C --- 01NO --- to BAS Run DI\n\n  RO2: Fault relay (NO contacts)\n  ------ 02C --- 02NO --- to BAS Alarm DI\n\n  Note: Some systems prefer NC for fault (loss of wire = alarm).\n  ABB relays can be configured as NO or NC in software.'},
+      'Danfoss FC102':{terms:['Relay 1: 01 (C), 02 (NO), 03 (NC)','Relay 2: 04 (C), 05 (NO), 06 (NC)'],jumpers:['Par 5-40 = 9 (Running) for Relay 1','Par 5-41 = 5 (Alarm) for Relay 2'],
+        diagram:'  Relay 1: Run status\n  01 (common) --- 02 (NO) --- BAS Run\n\n  Relay 2: Fault/Alarm\n  04 (common) --- 06 (NC) --- BAS Alarm\n         (NC opens on fault \u2014 fail-safe)\n\n  Danfoss provides both NO and NC contacts.'},
+      'Allen-Bradley PF525':{terms:['TB1: R1 (Run)','TB1: R2 (Fault)'],jumpers:['P340 = 1 (Run) for R1','P341 = 4 (Fault) for R2'],
+        diagram:'  R1: Relay 1 (Run)\n   R1-C --- R1-NO --- BAS Run\n\n  R2: Relay 2 (Fault)\n   R2-C --- R2-NO --- BAS Alarm\n\n  PF525 relays are configurable in software.'},
+      'Yaskawa GA500':{terms:['MA (NO), MB (NC), MC (Common) \u2014 Multi-function Relay','M1, M2 (Photo-coupler out \u2014 open collector)'],jumpers:['H2-01 = 0 (During Run) for MA/MB','H2-02 = E (Fault) for M1/M2'],
+        diagram:'  MA-MC (NO) --- Run status --- BAS DI\n  (MB-MC is NC)\n\n  M1-M2 (photo-coupler) --- Fault --- BAS DI\n  (M1-M2 is transistor, not relay)\n\n  Note: M1/M2 needs external pullup on BAS side.'},
+      'Siemens G120':{terms:['14, 15 (Relay Out)','Additional relays on option cards'],jumpers:['P0731 = 52.3 (Run) or P0731 = 52.7 (Fault)'],
+        diagram:'  Term 14 (Relay common)\n  Term 15 (Relay NO) --- BAS input\n\n  Only one onboard relay on basic G120.\n  Add relay module for more outputs.'},
+      'Toshiba VFS15':{terms:['RY-RC (Run) 1A','FLA-FLB-FLC (Fault) 1B'],jumpers:['F130 = Run signal','F131 = Fault signal'],
+        diagram:'  RY-RC: 1-pole relay (Run)\n  ---- RY (NO) --- RC (common) --- BAS DI\n\n  FLA-FLB-FLC: SPDT relay (Fault)\n  ---- FLA (NO) --- FLC (common) --- BAS Alarm\n  ---- FLB (NC) --- FLC (common) (optional)'}
+    },
+    tips:['For fault alarms, prefer NC contact to BAS (wire-break fails safe). Drive running = relay energized = NC contact open. Drive faults OR loses power = relay de-energizes = NC closes = BAS sees alarm.','Relay contact rating is typically 2-3A at 30VDC or 240VAC resistive. For higher loads, use an interposing relay.','Both "Running" and "Ready" are different status signals. "Running" = motor is turning. "Ready" = drive is powered and has no faults but may not be running.','For inverter-duty loads, may want "At Speed" or "At Setpoint" relay output instead of just "Running".'],
+    common:['Typical config: Relay 1 = Run Status, Relay 2 = Fault.','BAS typically wants a dry contact \u2014 these are exactly that.','Fault relay fails SAFE on power loss (NC style): a dead drive reads as a fault to BAS.']
+  },
+  'bacnet_mstp':{
+    name:'BACnet MS/TP Network',
+    purpose:'RS-485 serial network for BAS integration. The drive becomes a BACnet device that the JACE/supervisor can read and write to. Replaces discrete hardwired points with packet-based communication.',
+    wiring:{
+      'ABB ACS580':{terms:['RS-485 A(+), B(\u2212)','B: BACnet MS/TP on board (no option card needed)'],jumpers:['P51.01 = 1 (BACnet MS/TP)','P51.02 = device address','P51.03 = baud rate (usually 38400 or 76800)'],
+        diagram:'  BAS supervisor (JACE)\n     |\n   trunk cable\n     |\n    A(+) ---- A(+) (on drive)\n    B(\u2212) ---- B(\u2212)\n  Shield ---- GND or PE (drive end only)\n\n  If last drive on trunk: set 120 ohm terminator DIP.\n  Else: terminator OFF.'},
+      'Danfoss FC102':{terms:['68 (+), 69 (\u2212), 61 (Screen)'],jumpers:['Par 8-30 = BACnet','Par 8-31 = address','Par 8-32 = baud','Par 8-33 = parity'],
+        diagram:'  JACE trunk\n     |\n   Term 68 (A+)\n   Term 69 (B-)\n   Term 61 (Screen/shield)\n\n  Terminator: DIP switch on top of drive,\n  set to ON only at the two ends of the trunk.'},
+      'Allen-Bradley PF525':{terms:['TB4: S+, S\u2212, GND'],jumpers:['P080 = 1 (BACnet MS/TP)','P081 = MAC address','P082 = baud rate','P083 = parity'],
+        diagram:'  JACE trunk\n     |\n   TB4: S+ --- (from A+ of supervisor)\n   TB4: S- --- (from B- of supervisor)\n   TB4: GND --- shield (drive end only)\n\n  End of trunk: set DIP switch for 120 ohm term.'},
+      'Yaskawa GA500':{terms:['R+, R\u2212, S (shield)'],jumpers:['H5-01 = MAC address','H5-02 = baud rate','H5-03 = parity','b1-01 = 3 (comms as speed ref if needed)','b1-02 = 3 (comms as run source)'],
+        diagram:'  JACE trunk\n     |\n    R+ (A+) \n    R- (B-)\n     S (shield) --- drive end only\n\n  Termination: switch at end of trunk only.'},
+      'Siemens G120':{terms:['14 (+), 15 (\u2212)','on CU240E-2 or similar BACnet card'],jumpers:['P2020 = baud','P2021 = address','P2030 = BACnet protocol'],
+        diagram:'  JACE trunk\n     |\n   Term 14 (A+)\n   Term 15 (B-)\n   Shield to PE only at drive end\n\n  May need optional fieldbus module for BACnet.'},
+      'Toshiba VFS15':{terms:['RS485 +, \u2212, SG','Dedicated RJ-45 on some models'],jumpers:['F800 = BACnet','F801 = address','F802 = baud'],
+        diagram:'  JACE trunk\n     |\n   RS485 + (A)\n   RS485 - (B)\n   SG (signal ground/shield)\n\n  Set terminator per trunk position.'}
+    },
+    tips:['Use shielded twisted-pair cable, typically 24 AWG (Belden 1076A, 3106A, or equivalent). Don\'t use phone cable or Cat5/6.','Max 32 devices per segment, max 4,000 ft total length.','Daisy-chain topology \u2014 NO stars, tees, or home runs from trunk.','Ground the shield at ONE end only (typically supervisor/JACE). Grounding at both ends creates a loop that degrades signal.','Terminator resistors (120 ohm) only at the TWO ends of the trunk. Inline drives have terminator switch OFF.','Baud rate must match every device on the trunk. 38400 is common; 76800 for faster response.','Device address must be unique per drive (1-127 typical).'],
+    common:['A+ on drive connects to A+ on supervisor. DO NOT reverse.','Shield = cable drain wire, NOT signal common.','Baud, parity, and address must match what the supervisor is configured to poll.','If only seeing "offline" or "no response", check: polarity, termination, baud, address.']
+  }
+};
+
+function drawFunctionWiring(){
+  var fn = document.getElementById('fn-select').value;
+  var from = document.getElementById('fn-from').value;
+  var to = document.getElementById('fn-to').value;
+  if(!fn||!FUNCTION_WIRING[fn])return;
+  
+  var f = FUNCTION_WIRING[fn];
+  var fromW = f.wiring[from];
+  var toW = f.wiring[to];
+  
+  var html = '<div class="fn-header"><div class="fn-name">' + escHtml(f.name) + '</div><div class="fn-purpose">' + escHtml(f.purpose) + '</div></div>';
+  
+  // Side-by-side diagrams
+  html += '<div class="fn-split">';
+  
+  // FROM column
+  html += '<div class="fn-col"><h4>' + escHtml(from) + '</h4>';
+  if(fromW){
+    html += '<div style="font-size:.78em;color:var(--text2);margin-bottom:4px">Terminals used:</div>';
+    html += '<div style="font-family:monospace;font-weight:700;font-size:.88em;margin-bottom:10px">' + fromW.terms.map(escHtml).join(' \u00b7 ') + '</div>';
+    html += '<div style="font-size:.78em;color:var(--text2);margin-bottom:4px">Wiring diagram:</div>';
+    html += '<div class="fn-diag">' + escHtml(fromW.diagram) + '</div>';
+    html += '<div style="font-size:.78em;color:var(--text2);margin-bottom:4px;margin-top:8px">Parameters to set:</div>';
+    html += '<div style="font-size:.85em;line-height:1.7">' + fromW.jumpers.map(function(j){return '\u2022 ' + escHtml(j);}).join('<br>') + '</div>';
+  } else {
+    html += '<div style="color:var(--text2)">Not available for this brand.</div>';
+  }
+  html += '</div>';
+  
+  // TO column
+  html += '<div class="fn-col"><h4>' + escHtml(to) + '</h4>';
+  if(toW){
+    html += '<div style="font-size:.78em;color:var(--text2);margin-bottom:4px">Terminals used:</div>';
+    html += '<div style="font-family:monospace;font-weight:700;font-size:.88em;margin-bottom:10px">' + toW.terms.map(escHtml).join(' \u00b7 ') + '</div>';
+    html += '<div style="font-size:.78em;color:var(--text2);margin-bottom:4px">Wiring diagram:</div>';
+    html += '<div class="fn-diag">' + escHtml(toW.diagram) + '</div>';
+    html += '<div style="font-size:.78em;color:var(--text2);margin-bottom:4px;margin-top:8px">Parameters to set:</div>';
+    html += '<div style="font-size:.85em;line-height:1.7">' + toW.jumpers.map(function(j){return '\u2022 ' + escHtml(j);}).join('<br>') + '</div>';
+  }
+  html += '</div>';
+  html += '</div>';
+  
+  // Terminal mapping if FROM and TO differ
+  if(from!==to && fromW && toW){
+    html += '<div class="fn-compare-box"><h4>\u21c4 Terminal Migration Map</h4>';
+    html += '<div style="font-size:.82em;color:var(--text2);margin-bottom:10px">Re-land each wire from the old terminal onto the new terminal:</div>';
+    // Map term-by-term
+    var len = Math.max(fromW.terms.length, toW.terms.length);
+    for(var i=0;i<len;i++){
+      html += '<div class="fn-term-map">';
+      html += '<div><div class="label">' + escHtml(from) + '</div><div class="term">' + escHtml(fromW.terms[i] || '\u2014') + '</div></div>';
+      html += '<div class="arrow">\u2192</div>';
+      html += '<div><div class="label">' + escHtml(to) + '</div><div class="term">' + escHtml(toW.terms[i] || '\u2014') + '</div></div>';
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  
+  // Tips
+  if(f.tips && f.tips.length){
+    html += '<div style="margin-top:14px"><h4 style="font-size:.92em;color:var(--accent);margin-bottom:8px">\u{1f4a1} Wiring Tips</h4>';
+    f.tips.forEach(function(t,i){
+      html += '<div class="fn-step"><div class="fn-step-num">' + (i+1) + '</div>' + escHtml(t) + '</div>';
+    });
+    html += '</div>';
+  }
+  
+  // Common notes
+  if(f.common && f.common.length){
+    html += '<div class="note" style="margin-top:12px"><strong>Things All Brands Have in Common:</strong><ul style="margin-top:6px;padding-left:18px">';
+    f.common.forEach(function(c){ html += '<li style="margin-bottom:3px">' + escHtml(c) + '</li>'; });
+    html += '</ul></div>';
+  }
+  
+  document.getElementById('function-wiring-content').innerHTML = html;
+}
+
+function populateFunctionWiring(){
+  var fnSel = document.getElementById('fn-select');
+  fnSel.innerHTML = '';
+  Object.keys(FUNCTION_WIRING).forEach(function(k){
+    var opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = FUNCTION_WIRING[k].name;
+    fnSel.appendChild(opt);
+  });
+  
+  var brandSelects = [document.getElementById('fn-from'), document.getElementById('fn-to')];
+  brandSelects.forEach(function(sel, i){
+    sel.innerHTML = '';
+    FN_BRANDS.forEach(function(b){
+      var opt = document.createElement('option');
+      opt.value = b;
+      opt.textContent = b;
+      sel.appendChild(opt);
+    });
+    if(i === 1) sel.value = 'Danfoss FC102';
+    else sel.value = 'ABB ACS580';
+  });
+  
+  drawFunctionWiring();
+}
+
+// ============ INIT ============
+populateFunctionWiring();
+drawParams();
+</script></body></html>
