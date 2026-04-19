@@ -1248,8 +1248,9 @@ const TOOLS = [
   { id: 'troubleshoot', file: 'Troubleshooting_Flowcharts.html', icon: '\ud83d\udd27', name: 'Troubleshooting', desc: '5 interactive diagnostic trees: no-start, high head, low suction, no heat, short cycling.', questions: 0, types: 'Interactive', section: 'tools' },
   { id: 'vfdxref', file: 'VFD_Cross_Reference.html', icon: '\u26a1', name: 'VFD Cross Reference', desc: 'Parameter mapping and control wiring between ABB, Danfoss, Allen-Bradley, Yaskawa, Siemens, Toshiba.', questions: 0, types: 'Reference', section: 'tools' },
   { id: 'n2test', file: 'Nitrogen_Pressure_Test.html', icon: '\ud83e\uddea', name: 'Nitrogen Pressure Test', desc: 'Temperature compensation calculator. Is it a leak or temp change? Gay-Lussac\'s Law with full tables.', questions: 0, types: 'Calculator', section: 'tools' },
-  { id: 'mathreview', file: 'HVAC_Math_Review.html', icon: '\ud83e\uddee', name: 'Math Review', desc: '360 math questions pulled from all exams. BTU, pressure, gas laws, superheat, electrical, conversions.', questions: 360, types: 'All Types', section: 'specialty' },
+  { id: 'mathrev', file: 'HVAC_Math_Review.html', icon: '\ud83d\udcd0', name: 'HVAC Math Review', desc: '100 calculation-only problems. BTU, tonnage, compression ratio, superheat/subcooling, Ohm\'s Law, hydronic, airflow, conversions.', questions: 100, types: 'Calculations', section: 'specialty' },
   { id: 'symbols', file: 'Electrical_Symbols.html', icon: '\u26a1', name: 'Electrical Symbols', desc: '19 HVAC schematic symbols as flashcards with SVG diagrams.', questions: 19, types: 'Flashcards', section: 'specialty' },
+  { id: 'ctrlswap', file: 'Controller_Swap.html', icon: '\ud83d\udd00', name: 'Controller Swap Planner', desc: 'BAS controller retrofit tool. Map points between EasyIO, iSMA MAC36, Distech, JACE, KMC, and more. CSV export.', questions: 0, types: 'Planner', section: 'tools' },
 ];
 
 function getToolStats(toolId) {
